@@ -123,6 +123,35 @@ def test_429_then_success_is_retried_by_the_sdk(api: MockRouter) -> None:
     assert route.call_count == 2
 
 
+@pytest.mark.parametrize("code", ["insufficient_quota", "credit_balance_exhausted"])
+def test_quota_exhausted_is_not_retryable_and_logged(api: MockRouter, code: str) -> None:
+    api.add("POST", "/embeddings", error(429, code))
+
+    with pytest.raises(ProviderError) as excinfo, capture_logs() as logs:
+        embedder(api).embed(["text"])
+
+    assert (excinfo.value.kind, excinfo.value.retryable) == (ProviderErrorKind.RATE_LIMITED, False)
+    assert {
+        "event": "provider.quota_exhausted",
+        "provider": "openai",
+        "code": code,
+        "log_level": "error",
+    } in logs
+
+
+def test_plain_rate_limit_is_retryable_and_retried(api: MockRouter) -> None:
+    route = api.add(
+        "POST",
+        "/embeddings",
+        [
+            error(429, "rate_limit_exceeded", **{"retry-after-ms": "1"}),
+            ok(embeddings_body([[1.0, 0, 0]])),
+        ],
+    )
+    assert embedder(api, max_retries=1).embed(["text"]) == [[1.0, 0, 0]]
+    assert route.call_count == 2
+
+
 def test_auth_failure_maps_to_auth_kind_and_is_logged(api: MockRouter) -> None:
     api.add("POST", "/embeddings", error(401, "invalid_api_key"))
 

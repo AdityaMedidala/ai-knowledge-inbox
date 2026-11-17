@@ -30,6 +30,16 @@ def status_error(cls: type[openai.APIStatusError], status: int, code: str | None
             ProviderErrorKind.RATE_LIMITED,
             False,
         ),
+        (
+            status_error(openai.RateLimitError, 429, "credit_balance_exhausted"),
+            ProviderErrorKind.RATE_LIMITED,
+            False,
+        ),
+        (
+            status_error(openai.RateLimitError, 429, "rate_limit_exceeded"),
+            ProviderErrorKind.RATE_LIMITED,
+            True,
+        ),
         (status_error(openai.InternalServerError, 503), ProviderErrorKind.UNAVAILABLE, True),
         (status_error(openai.AuthenticationError, 401), ProviderErrorKind.AUTH, False),
         (status_error(openai.PermissionDeniedError, 403), ProviderErrorKind.AUTH, False),

@@ -7,6 +7,9 @@ from app.domain.errors import ProviderError, ProviderErrorKind
 
 logger = structlog.get_logger(__name__)
 
+# 429s that mean "no money", not "slow down": retrying cannot help.
+QUOTA_EXHAUSTED_CODES = frozenset({"insufficient_quota", "credit_balance_exhausted"})
+
 
 def kind_for_status(status: int) -> ProviderErrorKind:
     if status == 429:
@@ -38,7 +41,8 @@ def map_openai_error(exc: openai.OpenAIError, provider: str = "openai") -> Provi
     if isinstance(exc, openai.APIStatusError):
         kind = kind_for_status(exc.status_code)
         message = f"HTTP {exc.status_code} ({exc.code or 'no code'})"
-        if isinstance(exc, openai.RateLimitError) and exc.code == "insufficient_quota":
+        if isinstance(exc, openai.RateLimitError) and exc.code in QUOTA_EXHAUSTED_CODES:
+            logger.error("provider.quota_exhausted", provider=provider, code=exc.code)
             return provider_error(kind, provider, message, retryable=False)
         return provider_error(kind, provider, message)
     return provider_error(ProviderErrorKind.UNAVAILABLE, provider, type(exc).__name__)

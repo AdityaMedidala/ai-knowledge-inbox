@@ -8,10 +8,13 @@ import sys
 from pydantic import SecretStr, ValidationError
 
 from app.config import Settings
+from app.domain.errors import ProviderError, ProviderErrorKind
 from app.logging import configure_logging
 from app.providers.base import ChatMessage
 from app.providers.openai_provider import OpenAIChatModel, OpenAIEmbedder, build_client
 from app.utils.timing import Timer
+
+OPENAI_HOST = "api.openai.com"
 
 
 def _require(value: SecretStr | str | None, name: str) -> str:
@@ -46,5 +49,20 @@ def main() -> None:
     client.close()
 
 
+def explain(error: ProviderError, host: str) -> str:
+    if error.kind is ProviderErrorKind.RATE_LIMITED and not error.retryable:
+        return f"Account has no credits — add billing ({error.provider})."
+    if error.kind is ProviderErrorKind.RATE_LIMITED:
+        return f"Rate limited by {error.provider} — wait a minute and retry."
+    if error.kind is ProviderErrorKind.AUTH:
+        return f"{error.provider} rejected the API key — check it in .env."
+    if error.kind in (ProviderErrorKind.UNAVAILABLE, ProviderErrorKind.TIMEOUT):
+        return f"Could not reach {host} (network/DNS) — check your connection and retry."
+    return f"{error.provider} call failed: {error.kind} ({error.message})."
+
+
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ProviderError as exc:
+        sys.exit(f"smoke-openai: {explain(exc, host=OPENAI_HOST)}")
