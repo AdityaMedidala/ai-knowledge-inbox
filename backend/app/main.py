@@ -13,6 +13,8 @@ from app.config import Settings
 from app.errors import register_exception_handlers
 from app.logging import configure_logging
 from app.middleware import AccessLogMiddleware, UnhandledErrorMiddleware
+from app.store.db import connect
+from app.store.migrations import apply_migrations
 
 logger = structlog.get_logger(__name__)
 
@@ -23,6 +25,16 @@ REQUEST_ID_HEADER = "X-Request-ID"
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings: Settings = app.state.settings
     settings.db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = connect(settings.db_path)
+    try:
+        apply_migrations(
+            conn,
+            embedding_model=settings.embedding_model,
+            embedding_dim=settings.embedding_dim,
+            db_label=str(settings.db_path),
+        )
+    finally:
+        conn.close()
     logger.info(
         "app.startup",
         db_path=str(settings.db_path),

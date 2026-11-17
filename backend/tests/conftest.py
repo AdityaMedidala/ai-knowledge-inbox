@@ -1,7 +1,9 @@
 import io
 import json
 import logging
+import sqlite3
 from collections.abc import Callable, Iterator
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -10,7 +12,11 @@ from fastapi.testclient import TestClient
 from structlog.stdlib import ProcessorFormatter
 
 from app.config import Settings
+from app.domain.models import Item, ItemStatus, ItemType, NewChunk, NewItem
 from app.main import create_app
+from app.store.db import connect
+from app.store.migrations import apply_migrations
+from app.store.repository import Repository
 
 ALLOWED_ORIGIN = "http://localhost:5173"
 
@@ -56,3 +62,64 @@ def log_lines(app: FastAPI) -> Iterator[Callable[[], list[dict]]]:
 
     yield read
     root.removeHandler(handler)
+
+
+# --- store fixtures -------------------------------------------------------------------------
+
+TEST_DIM = 4
+TEST_MODEL = "fake-embedding"
+
+
+class FakeClock:
+    """Deterministic clock: each call returns the current time, then advances by `step`."""
+
+    def __init__(self, start: datetime | None = None, step: timedelta = timedelta(seconds=1)):
+        self.now = start or datetime(2026, 1, 1, tzinfo=UTC)
+        self.step = step
+
+    def __call__(self) -> datetime:
+        current = self.now
+        self.now += self.step
+        return current
+
+
+@pytest.fixture
+def db_conn(tmp_path: Path) -> Iterator[sqlite3.Connection]:
+    conn = connect(tmp_path / "store.db")
+    apply_migrations(conn, embedding_model=TEST_MODEL, embedding_dim=TEST_DIM, db_label="test")
+    yield conn
+    conn.close()
+
+
+@pytest.fixture
+def clock() -> FakeClock:
+    return FakeClock()
+
+
+@pytest.fixture
+def repo(db_conn: sqlite3.Connection, clock: FakeClock) -> Repository:
+    return Repository(db_conn, embedding_dim=TEST_DIM, clock=clock)
+
+
+def make_note(repo: Repository, text: str = "a note", **overrides: object) -> Item:
+    fields = {"type": ItemType.NOTE, "content_hash": f"hash-{text}", "raw_content": text}
+    fields.update(overrides)
+    return repo.create_item(NewItem(**fields))  # type: ignore[arg-type]
+
+
+def make_chunk(ordinal: int, text: str, header: str = "Title: t\nSection: s") -> NewChunk:
+    return NewChunk(
+        ordinal=ordinal, section="s", context_header=header, text=text, token_count=len(text)
+    )
+
+
+def make_ready(
+    repo: Repository, texts_and_vectors: list[tuple[str, list[float]]], **item_fields: object
+) -> Item:
+    item = make_note(repo, texts_and_vectors[0][0], **item_fields)
+    repo.set_status(item.id, ItemStatus.PROCESSING)
+    chunks = [make_chunk(i, text) for i, (text, _) in enumerate(texts_and_vectors)]
+    repo.replace_chunks(item.id, chunks, [vec for _, vec in texts_and_vectors])
+    ready = repo.get_item(item.id)
+    assert ready is not None
+    return ready

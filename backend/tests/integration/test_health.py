@@ -1,3 +1,4 @@
+import sqlite3
 from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
@@ -6,7 +7,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from app.api import health as health_api
 from app.config import Settings
+from app.domain.errors import EmbeddingConfigMismatchError
 from app.main import create_app
 from tests.conftest import ALLOWED_ORIGIN
 
@@ -23,14 +26,14 @@ def test_health_reports_db_and_providers(client: TestClient) -> None:
     assert body["llm_provider"] == "fake"
 
 
-def test_health_degrades_with_503_when_db_cannot_open(tmp_path: Path) -> None:
-    unopenable = tmp_path / "is-a-directory.db"
-    unopenable.mkdir()
-    settings = Settings(
-        _env_file=None, embedding_provider="fake", llm_provider="fake", db_path=unopenable
-    )
-    with TestClient(create_app(settings)) as client:
-        response = client.get("/health")
+def test_health_degrades_with_503_when_db_cannot_open(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def unavailable(_: Path) -> None:
+        raise sqlite3.OperationalError("unable to open database file")
+
+    monkeypatch.setattr(health_api, "connect", unavailable)
+    response = client.get("/health")
 
     assert response.status_code == 503
     assert response.json()["db"] == "error"
@@ -88,3 +91,15 @@ def test_cors_allows_only_configured_origins(
     assert ("access-control-allow-origin" in response.headers) is allowed
     if allowed:
         assert "X-Request-ID" in response.headers["access-control-expose-headers"]
+
+
+def test_startup_refuses_when_embedding_config_changed(settings: Settings) -> None:
+    with TestClient(create_app(settings)):
+        pass
+    changed = settings.model_copy(update={"embedding_dim": 768})
+
+    with (
+        pytest.raises(EmbeddingConfigMismatchError, match="make reindex"),
+        TestClient(create_app(changed)),
+    ):
+        pass
