@@ -1,0 +1,14 @@
+reference/
+.env
+data/
+node_modules/
+__pycache__/
+.venv/
+.idea/
+PROMPTS.md
+*.db
+*.db-wal
+*.db-shm
+.pytest_cache/
+.ruff_cache/
+frontend/dist/
