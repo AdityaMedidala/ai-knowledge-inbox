@@ -11,13 +11,20 @@ dependencies = [
     "structlog>=24.4",
     "asgi-correlation-id>=4.3",
     "sqlite-vec>=0.1.6",
+    "openai>=3.52",
+    "tiktoken>=0.14",
+    "httpx2>=2.16",
+]
+
+[project.optional-dependencies]
+cohere = [
+    "cohere>=7.3",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.3",
     "ruff>=0.8",
-    "httpx>=0.28",
 ]
 
 [tool.uv]

@@ -26,8 +26,15 @@ class Settings(BaseSettings):
     embedding_dim: int = Field(default=1536, gt=0)
     llm_provider: ProviderName = "openai"
     llm_model: str | None = None
+    llm_temperature: float | None = Field(default=None, ge=0, le=2)  # sent only when set
     reranker: Literal["none", "cohere"] = "none"
     cohere_api_key: SecretStr | None = None
+    rerank_model: str = "rerank-v3.5"
+
+    openai_max_retries: int = Field(default=2, ge=0)  # SDK retries 429/5xx/timeouts w/ backoff
+    embedding_timeout_s: float = Field(default=30, gt=0)
+    llm_timeout_s: float = Field(default=60, gt=0)
+    rerank_timeout_s: float = Field(default=10, gt=0)
 
     db_path: Path = Path("./data/inbox.db")
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]

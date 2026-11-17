@@ -11,6 +11,7 @@ from app.api import health as health_api
 from app.config import Settings
 from app.domain.errors import EmbeddingConfigMismatchError
 from app.main import create_app
+from app.providers.fakes import FakeChatModel, FakeEmbedder
 from tests.conftest import ALLOWED_ORIGIN
 
 
@@ -103,3 +104,13 @@ def test_startup_refuses_when_embedding_config_changed(settings: Settings) -> No
         TestClient(create_app(changed)),
     ):
         pass
+
+
+def test_providers_are_built_once_in_lifespan(app: FastAPI, settings: Settings) -> None:
+    with TestClient(app):
+        providers = app.state.providers
+        assert isinstance(providers.embedder, FakeEmbedder)
+        assert isinstance(providers.chat, FakeChatModel)
+        assert providers.reranker is None
+        (vector,) = providers.embedder.embed(["x"])
+        assert len(vector) == settings.embedding_dim

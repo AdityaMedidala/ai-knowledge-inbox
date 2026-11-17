@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import os
 import sqlite3
 from collections.abc import Callable, Iterator
 from datetime import UTC, datetime, timedelta
@@ -17,6 +18,8 @@ from app.main import create_app
 from app.store.db import connect
 from app.store.migrations import apply_migrations
 from app.store.repository import Repository
+from tests.support.mock_http import MockRouter, mock_router_fixture
+from tests.support.network_guard import NetworkGuard
 
 ALLOWED_ORIGIN = "http://localhost:5173"
 
@@ -123,3 +126,23 @@ def make_ready(
     ready = repo.get_item(item.id)
     assert ready is not None
     return ready
+
+
+def pytest_configure() -> None:
+    # Same persistent cache `make install` warms, so tiktoken never hits the network in tests.
+    os.environ.setdefault("TIKTOKEN_CACHE_DIR", str(Path(__file__).parents[1] / ".cache/tiktoken"))
+
+
+@pytest.fixture(autouse=True)
+def network_guard(monkeypatch: pytest.MonkeyPatch) -> Iterator[NetworkGuard]:
+    """No real network in tests. Fails at teardown too, in case an SDK swallowed the error."""
+    guard = NetworkGuard()
+    guard.install(monkeypatch)
+    yield guard
+    if guard.blocked:
+        pytest.fail(f"Test attempted network access: {guard.blocked}")
+
+
+@pytest.fixture
+def mock_http() -> Iterator[MockRouter]:
+    yield from mock_router_fixture()

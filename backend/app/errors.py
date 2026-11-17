@@ -16,7 +16,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.domain.errors import AppError, ErrorCode
+from app.domain.errors import AppError, ErrorCode, ProviderError
 from app.schemas.common import ErrorBody, ErrorEnvelope
 
 logger = structlog.get_logger(__name__)
@@ -97,7 +97,19 @@ async def _handle_http_exception(_: Request, exc: StarletteHTTPException) -> JSO
     return error_response(code, message, headers=exc.headers, status_code=exc.status_code)
 
 
+async def _handle_provider_error(_: Request, exc: ProviderError) -> JSONResponse:
+    logger.warning(
+        "request.provider_error", provider=exc.provider, kind=exc.kind, retryable=exc.retryable
+    )
+    return error_response(
+        ErrorCode.UPSTREAM_UNAVAILABLE,
+        "The AI provider is unavailable right now. Please try again shortly.",
+        {"provider": exc.provider, "kind": exc.kind, "retryable": exc.retryable},
+    )
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, _handle_app_error)
     app.add_exception_handler(RequestValidationError, _handle_validation_error)
     app.add_exception_handler(StarletteHTTPException, _handle_http_exception)
+    app.add_exception_handler(ProviderError, _handle_provider_error)

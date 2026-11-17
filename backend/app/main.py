@@ -13,6 +13,7 @@ from app.config import Settings
 from app.errors import register_exception_handlers
 from app.logging import configure_logging
 from app.middleware import AccessLogMiddleware, UnhandledErrorMiddleware
+from app.providers.factory import build_providers
 from app.store.db import connect
 from app.store.migrations import apply_migrations
 
@@ -41,8 +42,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         embedding_provider=settings.embedding_provider,
         llm_provider=settings.llm_provider,
     )
-    yield
-    logger.info("app.shutdown")
+    app.state.providers = build_providers(settings)
+    try:
+        yield
+    finally:
+        app.state.providers.close()
+        logger.info("app.shutdown")
 
 
 def _add_middleware(app: FastAPI, settings: Settings) -> None:

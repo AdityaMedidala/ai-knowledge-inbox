@@ -62,3 +62,35 @@ class EmbeddingDimensionError(ValueError):
 
 class EmbeddingConfigMismatchError(RuntimeError):
     pass
+
+
+class ProviderErrorKind(StrEnum):
+    RATE_LIMITED = "rate_limited"
+    TIMEOUT = "timeout"
+    UNAVAILABLE = "unavailable"
+    AUTH = "auth"
+    BAD_REQUEST = "bad_request"  # a 4xx we caused
+    INVALID_RESPONSE = "invalid_response"  # wrong dims, malformed or missing items
+
+
+RETRYABLE_PROVIDER_ERRORS = frozenset(
+    {ProviderErrorKind.RATE_LIMITED, ProviderErrorKind.TIMEOUT, ProviderErrorKind.UNAVAILABLE}
+)
+
+
+class ProviderError(Exception):
+    """An embedding / chat / rerank provider call failed. `message` is for logs, not clients."""
+
+    def __init__(
+        self,
+        kind: ProviderErrorKind,
+        provider: str,
+        message: str,
+        *,
+        retryable: bool | None = None,
+    ) -> None:
+        super().__init__(f"{provider} {kind}: {message}")
+        self.kind = kind
+        self.provider = provider
+        self.message = message
+        self.retryable = kind in RETRYABLE_PROVIDER_ERRORS if retryable is None else retryable

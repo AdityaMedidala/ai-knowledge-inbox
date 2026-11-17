@@ -4,90 +4,16 @@ Raw user text in MATCH is a syntax error waiting to happen (quotes, `&`, `-`, `*
 We keep only word tokens, quote each one (so FTS5 treats it as a literal term) and OR them.
 """
 
-import re
+from app.utils.text import STOP_WORDS, word_tokens
 
 MAX_FTS_TOKENS = 32
-_WORD = re.compile(r"\w+")
-
-STOP_WORDS = frozenset(
-    [
-        "a",
-        "about",
-        "an",
-        "and",
-        "any",
-        "are",
-        "as",
-        "at",
-        "be",
-        "been",
-        "but",
-        "by",
-        "can",
-        "could",
-        "did",
-        "do",
-        "does",
-        "for",
-        "from",
-        "had",
-        "has",
-        "have",
-        "how",
-        "i",
-        "if",
-        "in",
-        "into",
-        "is",
-        "it",
-        "its",
-        "me",
-        "my",
-        "no",
-        "not",
-        "of",
-        "on",
-        "or",
-        "our",
-        "s",
-        "should",
-        "so",
-        "t",
-        "than",
-        "that",
-        "the",
-        "their",
-        "them",
-        "then",
-        "there",
-        "these",
-        "they",
-        "this",
-        "to",
-        "was",
-        "we",
-        "were",
-        "what",
-        "when",
-        "where",
-        "which",
-        "who",
-        "whom",
-        "why",
-        "will",
-        "with",
-        "would",
-        "you",
-        "your",
-    ]
-)
 
 
 def build_fts_query(text: str) -> str | None:
     """Return a MATCH expression, or None when no searchable terms remain."""
     terms: list[str] = []
     seen: set[str] = set()
-    for token in _WORD.findall(text.lower()):
+    for token in word_tokens(text):
         if token in STOP_WORDS or token in seen:
             continue
         seen.add(token)

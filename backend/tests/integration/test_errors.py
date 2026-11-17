@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel, Field
 
-from app.domain.errors import AppError, ErrorCode
+from app.domain.errors import AppError, ErrorCode, ProviderError, ProviderErrorKind
 from tests.conftest import ALLOWED_ORIGIN
 
 SECRET_DETAIL = "db password is hunter2"
@@ -27,6 +27,10 @@ def app(app: FastAPI) -> FastAPI:
     @app.get("/_test/app-error")
     def app_error() -> None:
         raise AppError(ErrorCode.DUPLICATE_ITEM, "Already saved.", {"existing_id": "abc"})
+
+    @app.get("/_test/provider-down")
+    def provider_down() -> None:
+        raise ProviderError(ProviderErrorKind.TIMEOUT, "openai", "sdk text that may echo input")
 
     @app.get("/_test/boom")
     def boom() -> None:
@@ -111,3 +115,13 @@ def test_unhandled_exception_returns_generic_500_with_request_id_and_cors(
     assert errors[0]["level"] == "error"
     assert "Traceback" in errors[0]["exception"]
     assert SECRET_DETAIL in errors[0]["exception"]
+
+
+def test_provider_error_returns_503_envelope_without_sdk_text(client: TestClient) -> None:
+    response = client.get("/_test/provider-down")
+
+    assert response.status_code == 503
+    body = response.json()
+    assert_envelope(body, "UPSTREAM_UNAVAILABLE")
+    assert body["error"]["details"] == {"provider": "openai", "kind": "timeout", "retryable": True}
+    assert "sdk text" not in response.text

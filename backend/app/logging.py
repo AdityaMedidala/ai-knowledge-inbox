@@ -32,7 +32,7 @@ def configure_logging(level: str, json_logs: bool) -> None:
         processors=[*shared, structlog.stdlib.ProcessorFormatter.wrap_for_formatter],
         logger_factory=structlog.stdlib.LoggerFactory(),
         wrapper_class=structlog.stdlib.BoundLogger,
-        cache_logger_on_first_use=True,
+        cache_logger_on_first_use=False,  # lets tests capture logs reliably
     )
 
     final: list[Processor] = [structlog.stdlib.ProcessorFormatter.remove_processors_meta]
