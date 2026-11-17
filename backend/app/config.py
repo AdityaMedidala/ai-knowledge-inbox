@@ -50,8 +50,12 @@ class Settings(BaseSettings):
     log_json: bool = False
 
     worker_concurrency: int = Field(default=2, ge=1)
+    ingest_max_attempts: int = Field(default=3, ge=1)
+    ingest_retry_base_s: float = Field(default=2.0, ge=0)  # backoff = base * 2^(attempt-1)
     chunk_tokens: int = Field(default=350, gt=0)  # bge max_length is 512
     chunk_overlap_tokens: int = Field(default=60, ge=0)
+    # Tables / code blocks up to this size stay whole. 400 tiktoken ~ 460 bge + header < 512.
+    chunk_max_block_tokens: int = Field(default=400, gt=0)
     retrieval_candidates: int = Field(default=20, gt=0)
     rrf_k: int = Field(default=60, gt=0)
     max_chunks_per_item: int = Field(default=3, gt=0)
@@ -92,6 +96,8 @@ class Settings(BaseSettings):
             raise ValueError("COHERE_API_KEY is required when RERANKER=cohere.")
         if self.chunk_overlap_tokens >= self.chunk_tokens:
             raise ValueError("CHUNK_OVERLAP_TOKENS must be smaller than CHUNK_TOKENS.")
+        if self.chunk_max_block_tokens < self.chunk_tokens:
+            raise ValueError("CHUNK_MAX_BLOCK_TOKENS must be at least CHUNK_TOKENS.")
         if self.relevance_min_partial > self.relevance_min_full:
             raise ValueError("RELEVANCE_MIN_PARTIAL must not exceed RELEVANCE_MIN_FULL.")
         return self

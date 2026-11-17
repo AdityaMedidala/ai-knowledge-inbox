@@ -13,12 +13,9 @@ from app.domain.models import (
     NewItem,
     PageKey,
 )
+from app.store.db import transaction
+from app.store.repository.rows import ITEM_COLUMNS, SUMMARY_COLUMNS, row_to_item, row_to_summary
 from app.utils.time import Clock, utc_now_iso
-
-_COLUMNS = (
-    "id, type, title, source_url, normalized_url, content_hash, raw_content, extracted_text, "
-    "status, error_code, error_message, attempts, chunk_count, created_at, updated_at"
-)
 
 # target status -> statuses it may be entered from. 'ready' is absent on purpose: only
 # ChunksRepository.replace_chunks may set it, atomically with writing the chunks.
@@ -27,26 +24,6 @@ _ALLOWED_SOURCES: dict[ItemStatus, tuple[ItemStatus, ...]] = {
     ItemStatus.PENDING: (ItemStatus.PROCESSING,),
     ItemStatus.FAILED: (ItemStatus.PROCESSING,),
 }
-
-
-def row_to_item(row: sqlite3.Row) -> Item:
-    return Item(
-        id=row["id"],
-        type=ItemType(row["type"]),
-        title=row["title"],
-        source_url=row["source_url"],
-        normalized_url=row["normalized_url"],
-        content_hash=row["content_hash"],
-        raw_content=row["raw_content"],
-        extracted_text=row["extracted_text"],
-        status=ItemStatus(row["status"]),
-        error_code=ItemErrorCode(row["error_code"]) if row["error_code"] else None,
-        error_message=row["error_message"],
-        attempts=row["attempts"],
-        chunk_count=row["chunk_count"],
-        created_at=row["created_at"],
-        updated_at=row["updated_at"],
-    )
 
 
 class ItemsRepository:
@@ -61,8 +38,8 @@ class ItemsRepository:
         try:
             self._conn.execute(
                 "INSERT INTO items (id, type, title, source_url, normalized_url, content_hash, "
-                "raw_content, status, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)",
+                "raw_content, extracted_text, status, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)",
                 (
                     item_id,
                     new.type,
@@ -71,6 +48,7 @@ class ItemsRepository:
                     new.normalized_url,
                     new.content_hash,
                     new.raw_content,
+                    new.extracted_text,
                     now,
                     now,
                 ),
@@ -81,12 +59,12 @@ class ItemsRepository:
             )
             if existing is None:
                 raise
-            raise DuplicateItemError(existing.id) from exc
+            raise DuplicateItemError(existing.id, existing.status) from exc
         return self._require(item_id)
 
     def get_item(self, item_id: str) -> Item | None:
         row = self._conn.execute(
-            f"SELECT {_COLUMNS} FROM items WHERE id = ?",  # noqa: S608  # constant column list / placeholders only
+            f"SELECT {ITEM_COLUMNS} FROM items WHERE id = ?",  # noqa: S608  # constant column list / placeholders only
             (item_id,),
         ).fetchone()
         return row_to_item(row) if row else None
@@ -105,7 +83,7 @@ class ItemsRepository:
         if key is None:
             return None
         row = self._conn.execute(
-            f"SELECT {_COLUMNS} FROM items WHERE {sql}",  # noqa: S608  # constant column list / placeholders only
+            f"SELECT {ITEM_COLUMNS} FROM items WHERE {sql}",  # noqa: S608  # constant column list / placeholders only
             (key,),
         ).fetchone()
         return row_to_item(row) if row else None
@@ -134,11 +112,12 @@ class ItemsRepository:
             params += [after.created_at, after.id]
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
         rows = self._conn.execute(
-            f"SELECT {_COLUMNS} FROM items {where} ORDER BY created_at DESC, id DESC LIMIT ?",  # noqa: S608  # constant column list / placeholders only
+            f"SELECT {SUMMARY_COLUMNS} FROM items {where} "  # noqa: S608  # constant column list / placeholders only
+            "ORDER BY created_at DESC, id DESC LIMIT ?",
             (*params, limit + 1),
         ).fetchall()
 
-        items = [row_to_item(row) for row in rows[:limit]]
+        items = [row_to_summary(row) for row in rows[:limit]]
         has_more = len(rows) > limit
         next_key = PageKey(items[-1].created_at, items[-1].id) if has_more else None
         return ItemPage(items=items, next_key=next_key)
@@ -183,19 +162,41 @@ class ItemsRepository:
         raise InvalidStatusTransitionError(item_id, current=current["status"], target=status)
 
     def set_content(
-        self, item_id: str, *, title: str | None, extracted_text: str, content_hash: str
+        self,
+        item_id: str,
+        *,
+        title: str | None,
+        extracted_text: str,
+        content_hash: str,
+        raw_content: str | None = None,
     ) -> None:
         """Record extraction results. Only valid while the item is being processed."""
         cursor = self._conn.execute(
             "UPDATE items SET title = COALESCE(?, title), extracted_text = ?, content_hash = ?, "
-            "updated_at = ? WHERE id = ? AND status = 'processing'",
-            (title, extracted_text, content_hash, utc_now_iso(self._clock), item_id),
+            "raw_content = COALESCE(?, raw_content), updated_at = ? "
+            "WHERE id = ? AND status = 'processing'",
+            (title, extracted_text, content_hash, raw_content, utc_now_iso(self._clock), item_id),
         )
         if cursor.rowcount != 1:
             current = self.get_item(item_id)
             if current is None:
                 raise ItemNotFoundError(item_id)
             raise InvalidStatusTransitionError(item_id, current.status, "processing (set_content)")
+
+    def recover_interrupted(self) -> list[str]:
+        """Crash recovery: 'processing' items were abandoned mid-job; make them 'pending' again.
+
+        Returns every pending item id, oldest first, for re-enqueueing.
+        """
+        with transaction(self._conn) as conn:
+            conn.execute(
+                "UPDATE items SET status = 'pending', updated_at = ? WHERE status = 'processing'",
+                (utc_now_iso(self._clock),),
+            )
+            rows = conn.execute(
+                "SELECT id FROM items WHERE status = 'pending' ORDER BY created_at, id"
+            ).fetchall()
+        return [row["id"] for row in rows]
 
     def delete_item(self, item_id: str) -> bool:
         """Delete an item; FK cascade + triggers remove its chunks, FTS and vector rows."""

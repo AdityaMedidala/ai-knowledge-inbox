@@ -23,3 +23,17 @@ def count_tokens(text: str) -> int:
 def truncate_to_tokens(text: str, max_tokens: int) -> str:
     tokens = _encoding().encode(text, disallowed_special=())
     return text if len(tokens) <= max_tokens else _encoding().decode(tokens[:max_tokens])
+
+
+def split_by_tokens(text: str, max_tokens: int) -> list[str]:
+    """Hard split into consecutive pieces of at most `max_tokens` (last resort for run-on text).
+
+    A cut can land inside a multi-byte character; tiktoken's decode replaces the broken bytes.
+    """
+    if max_tokens <= 0:
+        raise ValueError(f"max_tokens must be positive, got {max_tokens}.")
+    tokens = _encoding().encode(text, disallowed_special=())
+    return [
+        _encoding().decode(tokens[start : start + max_tokens])
+        for start in range(0, len(tokens), max_tokens)
+    ]

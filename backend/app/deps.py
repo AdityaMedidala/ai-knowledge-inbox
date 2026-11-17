@@ -1,5 +1,6 @@
 """FastAPI dependencies. Handlers get collaborators from here, never from module globals."""
 
+from collections.abc import Iterator
 from typing import Annotated
 
 from fastapi import Depends, Request
@@ -7,6 +8,10 @@ from fastapi import Depends, Request
 from app.config import Settings
 from app.providers.base import ChatModel, Embedder, Reranker
 from app.providers.factory import Providers
+from app.services.submission import SubmissionService
+from app.store.repository import Repository
+from app.store.session import repository_session
+from app.worker import IngestionWorker
 
 
 def get_settings(request: Request) -> Settings:
@@ -29,7 +34,27 @@ def get_reranker(request: Request) -> Reranker | None:
     return get_providers(request).reranker
 
 
+def get_repository(request: Request) -> Iterator[Repository]:
+    """One connection per request, closed after the response is sent."""
+    settings = get_settings(request)
+    with repository_session(settings.db_path, settings.embedding_dim) as repo:
+        yield repo
+
+
+def get_worker(request: Request) -> IngestionWorker:
+    return request.app.state.worker
+
+
+def get_submission(
+    request: Request, repo: Annotated[Repository, Depends(get_repository)]
+) -> SubmissionService:
+    return SubmissionService(repo, note_max_chars=get_settings(request).note_max_chars)
+
+
 SettingsDep = Annotated[Settings, Depends(get_settings)]
+RepositoryDep = Annotated[Repository, Depends(get_repository)]
+WorkerDep = Annotated[IngestionWorker, Depends(get_worker)]
+SubmissionDep = Annotated[SubmissionService, Depends(get_submission)]
 EmbedderDep = Annotated[Embedder, Depends(get_embedder)]
 ChatModelDep = Annotated[ChatModel, Depends(get_chat_model)]
 RerankerDep = Annotated[Reranker | None, Depends(get_reranker)]

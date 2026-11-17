@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Write-Ahead Logging in SQLite | Example Engineering Blog</title>
+  <meta property="og:title" content="Write-Ahead Logging in SQLite">
+  <meta name="author" content="Sam Rivera">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/archive">Archive</a></li>
+        <li><a href="/subscribe">Subscribe to our newsletter</a></li>
+        <li><a href="/careers">We are hiring engineers</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>Write-Ahead Logging in SQLite</h1>
+      <p class="byline">By Sam Rivera · March 3, 2026</p>
+
+      <p>SQLite ships with two journaling strategies. The default rollback journal copies original
+      pages aside before changing the database file, while write-ahead logging appends changes to
+      a separate WAL file and leaves the database untouched until a checkpoint. This article walks
+      through why WAL mode usually wins for applications with concurrent readers.</p>
+
+      <h2>How the rollback journal works</h2>
+      <p>In rollback mode a writer first copies every page it will modify into the journal file.
+      Only then does it overwrite the pages in the main database. If the process crashes halfway
+      through, the next connection notices the hot journal and restores the original pages, so the
+      database is never left half-written.</p>
+      <p>The cost is that a writer needs an exclusive lock on the whole database while it commits.
+      Readers are blocked for the duration of every write transaction, which hurts latency on
+      busy web servers.</p>
+
+      <h2>How WAL mode works</h2>
+      <p>With write-ahead logging, commits append new versions of pages to the WAL file. Readers
+      keep seeing a consistent snapshot by consulting the WAL index, a shared-memory structure that
+      maps page numbers to their latest committed frame. Writers never block readers and readers
+      never block writers.</p>
+
+      <h3>Checkpoints</h3>
+      <p>Periodically SQLite runs a checkpoint that copies committed frames from the WAL back into
+      the main database file. By default this happens automatically once the WAL reaches 1000
+      pages. A checkpoint cannot complete past a frame that an active reader still needs, so very
+      long read transactions can make the WAL grow without bound.</p>
+
+      <h3>Comparing the modes</h3>
+      <table>
+        <thead>
+          <tr><th>Property</th><th>Rollback journal</th><th>WAL</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Readers during a write</td><td>Blocked</td><td>Allowed</td></tr>
+          <tr><td>Files on disk</td><td>db + journal</td><td>db + wal + shm</td></tr>
+          <tr><td>Network filesystems</td><td>Supported</td><td>Not supported</td></tr>
+          <tr><td>Write throughput</td><td>Lower</td><td>Higher</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Enabling WAL</h2>
+      <p>WAL mode is persistent: once a database is switched, every later connection uses it. You
+      enable it with a single pragma and should also set a busy timeout so writers wait instead of
+      failing immediately.</p>
+      <pre><code class="language-python">import sqlite3
+
+conn = sqlite3.connect("app.db")
+conn.execute("PRAGMA journal_mode=WAL")
+conn.execute("PRAGMA busy_timeout=5000")
+conn.execute("PRAGMA foreign_keys=ON")
+</code></pre>
+      <p>Remember that foreign key enforcement is a per-connection setting and must be enabled
+      every time a connection is opened, unlike the journal mode.</p>
+    </article>
+  </main>
+
+  <aside class="sidebar">
+    <h4>Related posts</h4>
+    <ul>
+      <li><a href="/posts/vacuum">Understanding VACUUM</a></li>
+      <li><a href="/posts/fts5">Full-text search with FTS5</a></li>
+    </ul>
+  </aside>
+
+  <footer class="site-footer">
+    <p>Copyright 2026 Example Engineering Blog. All rights reserved.</p>
+    <p><a href="/privacy">Privacy policy</a> · <a href="/cookies">Cookie settings</a></p>
+  </footer>
+</body>
+</html>

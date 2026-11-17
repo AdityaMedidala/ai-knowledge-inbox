@@ -5,6 +5,7 @@ import pytest
 from app.domain.errors import DuplicateItemError, InvalidStatusTransitionError, ItemNotFoundError
 from app.domain.models import ItemErrorCode, ItemStatus, ItemType, NewItem
 from app.store.repository import Repository
+from app.utils.text import PREVIEW_CHARS
 from app.utils.time import is_timestamp
 from tests.conftest import FakeClock, make_note
 
@@ -35,7 +36,7 @@ def test_duplicate_url_raises_with_existing_id(repo: Repository) -> None:
     with pytest.raises(DuplicateItemError) as excinfo:
         repo.create_item(new_url("https://example.com/a"))
     assert excinfo.value.existing_id == first.id
-    assert excinfo.value.details == {"existing_id": first.id}
+    assert excinfo.value.details == {"existing_id": first.id, "existing_status": "pending"}
 
 
 def test_duplicate_note_hash_raises(repo: Repository) -> None:
@@ -173,3 +174,49 @@ def test_delete_item_reports_whether_it_existed(repo: Repository) -> None:
     assert repo.delete_item(item.id) is True
     assert repo.delete_item(item.id) is False
     assert repo.get_item(item.id) is None
+
+
+# --- M3: summaries, raw_content handling, crash recovery ----------------------------------
+
+
+def test_list_items_returns_summaries_without_raw_content(repo: Repository) -> None:
+    long_text = "word " * 100
+    repo.create_item(
+        NewItem(
+            type=ItemType.NOTE, content_hash="n1", raw_content=long_text, extracted_text=long_text
+        )
+    )
+    repo.create_item(new_url("https://example.com/pending"))
+    note_summary, url_summary = sorted(repo.list_items(limit=10).items, key=lambda i: i.type)
+    assert not hasattr(note_summary, "raw_content")
+    assert not hasattr(note_summary, "extracted_text")
+    assert note_summary.preview is not None and len(note_summary.preview) <= PREVIEW_CHARS
+    assert note_summary.preview.endswith("…")
+    assert url_summary.preview is None  # no extracted text yet
+
+
+def test_set_content_stores_raw_content_when_given(repo: Repository) -> None:
+    item = repo.create_item(new_url("https://example.com/raw"))
+    repo.set_status(item.id, ItemStatus.PROCESSING)
+    repo.set_content(
+        item.id, title="T", extracted_text="body", content_hash="h", raw_content="<html>…</html>"
+    )
+    stored = repo.get_item(item.id)
+    assert stored is not None
+    assert (stored.raw_content, stored.extracted_text) == ("<html>…</html>", "body")
+
+
+def test_recover_interrupted_resets_processing_and_lists_pending_oldest_first(
+    repo: Repository,
+) -> None:
+    first = make_note(repo, "one")
+    second = make_note(repo, "two")
+    done = make_note(repo, "three")
+    repo.set_status(second.id, ItemStatus.PROCESSING)
+    repo.set_status(done.id, ItemStatus.PROCESSING)
+    repo.set_status(done.id, ItemStatus.FAILED, error_code=ItemErrorCode.FETCH_FAILED)
+
+    assert repo.recover_interrupted() == [first.id, second.id]
+    recovered = repo.get_item(second.id)
+    assert recovered is not None and recovered.status is ItemStatus.PENDING
+    assert recovered.attempts == 1  # attempts survive recovery

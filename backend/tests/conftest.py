@@ -15,9 +15,11 @@ from structlog.stdlib import ProcessorFormatter
 from app.config import Settings
 from app.domain.models import Item, ItemStatus, ItemType, NewChunk, NewItem
 from app.main import create_app
+from app.services.fetcher import Fetcher
 from app.store.db import connect
 from app.store.migrations import apply_migrations
 from app.store.repository import Repository
+from tests.support.dns import PUBLIC_IP, fake_resolver
 from tests.support.mock_http import MockRouter, mock_router_fixture
 from tests.support.network_guard import NetworkGuard
 
@@ -38,8 +40,16 @@ def settings(tmp_path: Path) -> Settings:
 
 
 @pytest.fixture
-def app(settings: Settings) -> FastAPI:
-    return create_app(settings)
+def app(settings: Settings, mock_http: MockRouter) -> FastAPI:
+    """Pages the worker fetches come from `mock_http` routes; every host resolves publicly."""
+    fetcher = Fetcher(
+        mock_http.client(),
+        timeout_s=settings.fetch_timeout_s,
+        max_bytes=settings.fetch_max_bytes,
+        max_redirects=settings.fetch_max_redirects,
+        resolver=fake_resolver(PUBLIC_IP),
+    )
+    return create_app(settings, fetcher=fetcher)
 
 
 @pytest.fixture

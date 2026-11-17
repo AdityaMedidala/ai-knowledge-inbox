@@ -9,12 +9,15 @@ from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import health, ingest, items
 from app.config import Settings
 from app.errors import register_exception_handlers
+from app.ingest_jobs import build_worker
 from app.logging import configure_logging
 from app.middleware import AccessLogMiddleware, UnhandledErrorMiddleware
 from app.providers.factory import build_providers
+from app.services.fetcher import Fetcher, build_fetch_client
+from app.services.ingestion import PageFetcher
 from app.store.db import connect
 from app.store.migrations import apply_migrations
 
@@ -45,9 +48,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     # Loading a local embedding model takes ~1s of CPU; keep it off the event loop.
     app.state.providers = await asyncio.to_thread(build_providers, settings)
+    fetch_client = build_fetch_client()
+    fetcher: PageFetcher = app.state.fetcher_override or Fetcher(
+        fetch_client,
+        timeout_s=settings.fetch_timeout_s,
+        max_bytes=settings.fetch_max_bytes,
+        max_redirects=settings.fetch_max_redirects,
+    )
+    worker = build_worker(settings, app.state.providers.embedder, fetcher)
+    await worker.start()
+    app.state.worker = worker
     try:
         yield
     finally:
+        await worker.stop()  # before closing what running jobs use
+        fetch_client.close()
         app.state.providers.close()
         logger.info("app.shutdown")
 
@@ -76,13 +91,17 @@ def _add_middleware(app: FastAPI, settings: Settings) -> None:
     app.add_middleware(CorrelationIdMiddleware, header_name=REQUEST_ID_HEADER)
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, *, fetcher: PageFetcher | None = None) -> FastAPI:
+    """`fetcher` replaces the real HTTP fetcher (tests serve pages from a mock transport)."""
     settings = settings or Settings()
     configure_logging(settings.log_level, settings.log_json)
 
     app = FastAPI(title="AI Knowledge Inbox", version="0.1.0", lifespan=lifespan)
     app.state.settings = settings
+    app.state.fetcher_override = fetcher
     register_exception_handlers(app)
     _add_middleware(app, settings)
     app.include_router(health.router)
+    app.include_router(ingest.router)
+    app.include_router(items.router)
     return app

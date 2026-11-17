@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
+from app.utils.text import preview_of
+
 
 class ItemType(StrEnum):
     NOTE = "note"
@@ -26,6 +28,7 @@ class ItemErrorCode(StrEnum):
     CONTENT_TOO_LARGE = "CONTENT_TOO_LARGE"
     EMPTY_CONTENT = "EMPTY_CONTENT"
     EMBEDDING_FAILED = "EMBEDDING_FAILED"
+    INTERNAL_ERROR = "INTERNAL_ERROR"  # an unexpected bug; details are in the logs
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +39,7 @@ class NewItem:
     normalized_url: str | None = None
     content_hash: str | None = None
     raw_content: str | None = None
+    extracted_text: str | None = None  # notes have it at submit time; URLs after extraction
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +60,38 @@ class Item:
     created_at: str
     updated_at: str
 
+    def summary(self) -> "ItemSummary":
+        return ItemSummary(
+            id=self.id,
+            type=self.type,
+            title=self.title,
+            source_url=self.source_url,
+            status=self.status,
+            error_code=self.error_code,
+            error_message=self.error_message,
+            chunk_count=self.chunk_count,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            preview=preview_of(self.extracted_text),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ItemSummary:
+    """List-view projection: never carries raw_content or the full extracted text."""
+
+    id: str
+    type: ItemType
+    title: str | None
+    source_url: str | None
+    status: ItemStatus
+    error_code: ItemErrorCode | None
+    error_message: str | None
+    chunk_count: int
+    created_at: str
+    updated_at: str
+    preview: str | None
+
 
 @dataclass(frozen=True, slots=True)
 class PageKey:
@@ -67,7 +103,7 @@ class PageKey:
 
 @dataclass(frozen=True, slots=True)
 class ItemPage:
-    items: list[Item]
+    items: list[ItemSummary]
     next_key: PageKey | None
 
 

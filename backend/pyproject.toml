@@ -15,6 +15,7 @@ dependencies = [
     "tiktoken>=0.14",
     "httpx2>=2.16",
     "fastembed>=0.9.1",
+    "trafilatura>=2.3.1",
 ]
 
 [project.optional-dependencies]
@@ -41,7 +42,7 @@ target-version = "py312"
 select = ["E", "F", "I", "B", "UP", "SIM", "N", "S", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106"]
+"tests/**" = ["S101", "S105", "S106", "S311"]  # S311: seeded random for test data
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
@@ -49,3 +50,5 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+# trafilatura imports urllib3.contrib.socks; we never use SOCKS proxies.
+filterwarnings = ["ignore:SOCKS support in urllib3:urllib3.exceptions.DependencyWarning"]

@@ -3,6 +3,8 @@
 from enum import StrEnum
 from typing import Any
 
+from app.domain.models import ItemErrorCode
+
 
 class ErrorCode(StrEnum):
     VALIDATION_ERROR = "VALIDATION_ERROR"
@@ -29,10 +31,15 @@ class AppError(Exception):
 
 class DuplicateItemError(AppError):
     def __init__(
-        self, existing_id: str, message: str = "This item is already in your inbox."
+        self,
+        existing_id: str,
+        existing_status: str,
+        message: str = "This item is already in your inbox.",
     ) -> None:
-        super().__init__(ErrorCode.DUPLICATE_ITEM, message, {"existing_id": existing_id})
+        details = {"existing_id": existing_id, "existing_status": existing_status}
+        super().__init__(ErrorCode.DUPLICATE_ITEM, message, details)
         self.existing_id = existing_id
+        self.existing_status = existing_status
 
 
 class InvalidStatusTransitionError(Exception):
@@ -54,6 +61,17 @@ class ItemNotProcessingError(Exception):
         state = "deleted" if current is None else f"in status '{current}'"
         super().__init__(f"Item {item_id} is {state}, expected 'processing'.")
         self.item_id, self.current = item_id, current
+
+
+class IngestError(Exception):
+    """One ingestion stage failed for one item. `message` is stored on the item and shown in the
+    UI, so it must never contain secrets (no query strings, no document text)."""
+
+    def __init__(self, code: ItemErrorCode, message: str, *, retryable: bool = False) -> None:
+        super().__init__(f"{code}: {message}")
+        self.code = code
+        self.message = message
+        self.retryable = retryable
 
 
 class EmbeddingDimensionError(ValueError):

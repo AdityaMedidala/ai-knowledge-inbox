@@ -11,6 +11,8 @@ import structlog
 from asgi_correlation_id import correlation_id
 from structlog.types import EventDict, Processor, WrappedLogger
 
+QUIET_LIBRARY_LOGGERS = ("httpx2", "httpcore2", "trafilatura")
+
 
 def _add_request_id(_: WrappedLogger, __: str, event_dict: EventDict) -> EventDict:
     request_id = correlation_id.get()
@@ -58,3 +60,7 @@ def configure_logging(level: str, json_logs: bool) -> None:
     access_logger = logging.getLogger("uvicorn.access")
     access_logger.handlers.clear()
     access_logger.propagate = False
+    # Their INFO lines print full request URLs; user-submitted URLs can carry secrets in the
+    # query string. Our own fetch logs use redact_url() instead.
+    for name in QUIET_LIBRARY_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)

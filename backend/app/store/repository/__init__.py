@@ -69,11 +69,24 @@ class Repository:
         self._items.set_status(item_id, status, error_code=error_code, error_message=error_message)
 
     def set_content(
-        self, item_id: str, *, title: str | None, extracted_text: str, content_hash: str
+        self,
+        item_id: str,
+        *,
+        title: str | None,
+        extracted_text: str,
+        content_hash: str,
+        raw_content: str | None = None,
     ) -> None:
         self._items.set_content(
-            item_id, title=title, extracted_text=extracted_text, content_hash=content_hash
+            item_id,
+            title=title,
+            extracted_text=extracted_text,
+            content_hash=content_hash,
+            raw_content=raw_content,
         )
+
+    def recover_interrupted(self) -> list[str]:
+        return self._items.recover_interrupted()
 
     def delete_item(self, item_id: str) -> bool:
         return self._items.delete_item(item_id)
