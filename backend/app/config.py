@@ -3,12 +3,13 @@
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import Field, HttpUrl, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-ProviderName = Literal["openai", "fake"]
+EmbeddingProviderName = Literal["fastembed", "openai", "fake"]
+ChatProviderName = Literal["openai_compatible", "openai", "fake"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 
 
@@ -21,11 +22,18 @@ class Settings(BaseSettings):
     )
 
     openai_api_key: SecretStr | None = None
-    embedding_provider: ProviderName = "openai"
-    embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = Field(default=1536, gt=0)
-    llm_provider: ProviderName = "openai"
+    embedding_provider: EmbeddingProviderName = "fastembed"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_dim: int = Field(default=384, gt=0)
+    embedding_threads: int | None = Field(default=None, ge=1)  # fastembed ONNX threads
+    fastembed_cache_dir: Path = Path("./.cache/fastembed")
+    llm_provider: ChatProviderName = "openai_compatible"
     llm_model: str | None = None
+    llm_base_url: HttpUrl | None = (
+        None  # openai_compatible only, e.g. https://api.groq.com/openai/v1
+    )
+    llm_api_key: SecretStr | None = None  # openai_compatible only
+    llm_reasoning_effort: Literal["low", "medium", "high"] | None = None  # sent only when set
     llm_temperature: float | None = Field(default=None, ge=0, le=2)  # sent only when set
     reranker: Literal["none", "cohere"] = "none"
     cohere_api_key: SecretStr | None = None
@@ -42,14 +50,14 @@ class Settings(BaseSettings):
     log_json: bool = False
 
     worker_concurrency: int = Field(default=2, ge=1)
-    chunk_tokens: int = Field(default=400, gt=0)
+    chunk_tokens: int = Field(default=350, gt=0)  # bge max_length is 512
     chunk_overlap_tokens: int = Field(default=60, ge=0)
     retrieval_candidates: int = Field(default=20, gt=0)
     rrf_k: int = Field(default=60, gt=0)
     max_chunks_per_item: int = Field(default=3, gt=0)
-    # Provisional values; calibrated against the eval set in M6.
-    relevance_min_full: float = Field(default=0.45, ge=0, le=1)
-    relevance_min_partial: float = Field(default=0.30, ge=0, le=1)
+    # Provisional values for bge-small cosine similarity; calibrated against the eval set in M6.
+    relevance_min_full: float = Field(default=0.70, ge=0, le=1)
+    relevance_min_partial: float = Field(default=0.60, ge=0, le=1)
 
     fetch_timeout_s: float = Field(default=10, gt=0)
     fetch_max_bytes: int = Field(default=5_000_000, gt=0)
@@ -74,8 +82,12 @@ class Settings(BaseSettings):
         uses_openai = "openai" in (self.embedding_provider, self.llm_provider)
         if uses_openai and self.openai_api_key is None:
             raise ValueError("OPENAI_API_KEY is required when a provider is 'openai'.")
-        if self.llm_provider == "openai" and not self.llm_model:
-            raise ValueError("LLM_MODEL is required when LLM_PROVIDER=openai.")
+        if self.llm_provider != "fake" and not self.llm_model:
+            raise ValueError(f"LLM_MODEL is required when LLM_PROVIDER={self.llm_provider}.")
+        if self.llm_provider == "openai_compatible" and (
+            self.llm_base_url is None or self.llm_api_key is None
+        ):
+            raise ValueError("LLM_BASE_URL and LLM_API_KEY are required for openai_compatible.")
         if self.reranker == "cohere" and self.cohere_api_key is None:
             raise ValueError("COHERE_API_KEY is required when RERANKER=cohere.")
         if self.chunk_overlap_tokens >= self.chunk_tokens:

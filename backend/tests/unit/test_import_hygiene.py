@@ -12,7 +12,7 @@ _PROBE = """
 import socket
 originals = (socket.getaddrinfo, socket.create_connection, socket.socket.connect,
              socket.socket.connect_ex)
-import app.main, app.providers.factory, scripts.smoke_openai
+import app.main, app.providers.factory, scripts.smoke, scripts.warm_caches
 current = (socket.getaddrinfo, socket.create_connection, socket.socket.connect,
            socket.socket.connect_ex)
 assert current == originals, "socket functions were patched by an import"

@@ -13,6 +13,7 @@ from app.domain.errors import ProviderError, ProviderErrorKind
 from app.providers.base import ChatMessage
 from app.providers.batching import plan_batches
 from app.providers.error_mapping import map_openai_error
+from app.providers.usage import log_chat_completed
 from app.utils.timing import Timer
 from app.utils.tokens import count_tokens, truncate_to_tokens
 
@@ -29,11 +30,16 @@ def build_client(
     *,
     timeout_s: float,
     max_retries: int,
+    base_url: str | None = None,
     http_client: httpx2.Client | None = None,
 ) -> openai.OpenAI:
-    """`http_client` is for tests (mock transport); production uses the SDK's default client."""
+    """`base_url` targets OpenAI-compatible APIs; `http_client` is for tests (mock transport)."""
     return openai.OpenAI(
-        api_key=api_key, timeout=timeout_s, max_retries=max_retries, http_client=http_client
+        api_key=api_key,
+        base_url=base_url,
+        timeout=timeout_s,
+        max_retries=max_retries,
+        http_client=http_client,
     )
 
 
@@ -43,7 +49,10 @@ class OpenAIEmbedder:
         self._model = model
         self._dim = dim
 
-    def embed(self, texts: Sequence[str]) -> list[list[float]]:
+    def embed_query(self, text: str) -> list[float]:
+        return self.embed_documents([text])[0]  # OpenAI embeddings are symmetric
+
+    def embed_documents(self, texts: Sequence[str]) -> list[list[float]]:
         for ordinal, text in enumerate(texts):
             if not text.strip():
                 raise ValueError(f"Cannot embed empty text (input {ordinal}).")
@@ -159,9 +168,8 @@ class OpenAIChatModel:
         return request
 
     def _log_completed(self, usage: ResponseUsage | None, ms: float, *, streamed: bool) -> None:
-        logger.info(
-            "provider.chat_completed",
-            model=self._model,
+        log_chat_completed(
+            self._model,
             input_tokens=usage.input_tokens if usage else None,
             output_tokens=usage.output_tokens if usage else None,
             ms=ms,

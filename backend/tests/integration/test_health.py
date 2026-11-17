@@ -112,5 +112,5 @@ def test_providers_are_built_once_in_lifespan(app: FastAPI, settings: Settings) 
         assert isinstance(providers.embedder, FakeEmbedder)
         assert isinstance(providers.chat, FakeChatModel)
         assert providers.reranker is None
-        (vector,) = providers.embedder.embed(["x"])
+        (vector,) = providers.embedder.embed_documents(["x"])
         assert len(vector) == settings.embedding_dim

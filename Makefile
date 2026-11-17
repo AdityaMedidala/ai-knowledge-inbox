@@ -4,11 +4,11 @@ UV := cd $(BACKEND) && uv run
 # tests run offline after `make install`.
 export TIKTOKEN_CACHE_DIR := $(abspath $(BACKEND)/.cache/tiktoken)
 
-.PHONY: install dev dev-backend test lint fmt check-vec smoke-openai
+.PHONY: install dev dev-backend test lint fmt check-vec smoke
 
 install:
 	cd $(BACKEND) && uv sync
-	$(UV) python -c "from app.utils.tokens import count_tokens; count_tokens('warm cache')"
+	$(UV) python -m scripts.warm_caches
 
 dev: dev-backend
 
@@ -30,6 +30,6 @@ fmt:
 check-vec:
 	$(UV) python -c "import sqlite3, sys; from pathlib import Path; from app.store.db import connect, sqlite_vec_version; c = connect(Path(':memory:')); print(f'python {sys.version.split()[0]}  sqlite {sqlite3.sqlite_version}  sqlite-vec {sqlite_vec_version(c)}')"
 
-# Real API calls using .env (costs a fraction of a cent). Not part of `make test`.
-smoke-openai:
-	$(UV) python -m scripts.smoke_openai
+# Real calls to the providers configured in .env. Not part of `make test`.
+smoke:
+	$(UV) python -m scripts.smoke

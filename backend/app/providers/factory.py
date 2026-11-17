@@ -9,6 +9,8 @@ from app.config import Settings
 from app.providers.base import ChatModel, Embedder, Reranker
 from app.providers.cohere_reranker import build_cohere_reranker
 from app.providers.fakes import FakeChatModel, FakeEmbedder
+from app.providers.fastembed_provider import build_fastembed_embedder
+from app.providers.openai_compatible import OpenAICompatibleChatModel
 from app.providers.openai_provider import OpenAIChatModel, OpenAIEmbedder, build_client
 
 
@@ -37,6 +39,13 @@ def build_providers(settings: Settings) -> Providers:
 def build_embedder(settings: Settings, closers: list[Callable[[], None]]) -> Embedder:
     if settings.embedding_provider == "fake":
         return FakeEmbedder(settings.embedding_dim)
+    if settings.embedding_provider == "fastembed":
+        return build_fastembed_embedder(
+            settings.embedding_model,
+            dim=settings.embedding_dim,
+            cache_dir=settings.fastembed_cache_dir,
+            threads=settings.embedding_threads,
+        )
     client = build_client(
         _secret(settings.openai_api_key),
         timeout_s=settings.embedding_timeout_s,
@@ -49,13 +58,30 @@ def build_embedder(settings: Settings, closers: list[Callable[[], None]]) -> Emb
 def build_chat_model(settings: Settings, closers: list[Callable[[], None]]) -> ChatModel:
     if settings.llm_provider == "fake":
         return FakeChatModel()
+    assert settings.llm_model is not None  # noqa: S101 — guaranteed by Settings validation
+    if settings.llm_provider == "openai_compatible":
+        assert settings.llm_base_url is not None  # noqa: S101 — guaranteed by Settings validation
+        base_url = str(settings.llm_base_url)
+        client = build_client(
+            _secret(settings.llm_api_key),
+            base_url=base_url,
+            timeout_s=settings.llm_timeout_s,
+            max_retries=settings.openai_max_retries,
+        )
+        closers.append(client.close)
+        return OpenAICompatibleChatModel(
+            client,
+            model=settings.llm_model,
+            provider=settings.llm_base_url.host or base_url,
+            temperature=settings.llm_temperature,
+            reasoning_effort=settings.llm_reasoning_effort,
+        )
     client = build_client(
         _secret(settings.openai_api_key),
         timeout_s=settings.llm_timeout_s,
         max_retries=settings.openai_max_retries,
     )
     closers.append(client.close)
-    assert settings.llm_model is not None  # noqa: S101 — guaranteed by Settings validation
     return OpenAIChatModel(client, model=settings.llm_model, temperature=settings.llm_temperature)
 
 

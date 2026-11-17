@@ -18,15 +18,15 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 def test_fake_embedder_is_deterministic_and_unit_norm() -> None:
-    first = FakeEmbedder(DIM).embed(["Sourdough bread recipe"])[0]
-    again = FakeEmbedder(DIM).embed(["sourdough BREAD recipe!"])[0]
+    first = FakeEmbedder(DIM).embed_documents(["Sourdough bread recipe"])[0]
+    again = FakeEmbedder(DIM).embed_documents(["sourdough BREAD recipe!"])[0]
     assert first == again
     assert len(first) == DIM
     assert math.isclose(math.sqrt(sum(v * v for v in first)), 1.0)
 
 
 def test_fake_embedder_similar_texts_score_higher() -> None:
-    query, related, unrelated = FakeEmbedder(DIM).embed(
+    query, related, unrelated = FakeEmbedder(DIM).embed_documents(
         [
             "how do I bake sourdough bread",
             "baking sourdough bread at home",
@@ -38,7 +38,7 @@ def test_fake_embedder_similar_texts_score_higher() -> None:
 
 @pytest.mark.parametrize("text", ["", "   ", "what is the", "?!"])
 def test_fake_embedder_returns_fixed_unit_vector_for_empty_text(text: str) -> None:
-    (vector,) = FakeEmbedder(DIM).embed([text])
+    (vector,) = FakeEmbedder(DIM).embed_documents([text])
     assert vector == [1.0] + [0.0] * (DIM - 1)
 
 
@@ -72,3 +72,10 @@ def test_fake_chat_can_fail_mid_stream() -> None:
         )
     assert len(received) == 2
     assert excinfo.value.kind is ProviderErrorKind.UNAVAILABLE
+
+
+def test_fake_embedder_query_matches_document_embedding() -> None:
+    embedder = FakeEmbedder(DIM)
+    assert (
+        embedder.embed_query("sourdough bread") == embedder.embed_documents(["sourdough bread"])[0]
+    )

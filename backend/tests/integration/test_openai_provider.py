@@ -98,7 +98,7 @@ def test_embeddings_success_sends_dimensions_and_reorders_by_index(api: MockRout
     route = api.add("POST", "/embeddings", ok(embeddings_body(vectors, order=[1, 0])))
 
     with capture_logs() as logs:
-        result = embedder(api).embed(["first", "second"])
+        result = embedder(api).embed_documents(["first", "second"])
 
     assert result == vectors
     sent = sent_json(route)
@@ -119,7 +119,7 @@ def test_429_then_success_is_retried_by_the_sdk(api: MockRouter) -> None:
         [error(429, **{"retry-after-ms": "1"}), ok(embeddings_body([[1.0, 0, 0]]))],
     )
 
-    assert embedder(api, max_retries=2).embed(["text"]) == [[1.0, 0, 0]]
+    assert embedder(api, max_retries=2).embed_documents(["text"]) == [[1.0, 0, 0]]
     assert route.call_count == 2
 
 
@@ -128,7 +128,7 @@ def test_quota_exhausted_is_not_retryable_and_logged(api: MockRouter, code: str)
     api.add("POST", "/embeddings", error(429, code))
 
     with pytest.raises(ProviderError) as excinfo, capture_logs() as logs:
-        embedder(api).embed(["text"])
+        embedder(api).embed_documents(["text"])
 
     assert (excinfo.value.kind, excinfo.value.retryable) == (ProviderErrorKind.RATE_LIMITED, False)
     assert {
@@ -148,7 +148,7 @@ def test_plain_rate_limit_is_retryable_and_retried(api: MockRouter) -> None:
             ok(embeddings_body([[1.0, 0, 0]])),
         ],
     )
-    assert embedder(api, max_retries=1).embed(["text"]) == [[1.0, 0, 0]]
+    assert embedder(api, max_retries=1).embed_documents(["text"]) == [[1.0, 0, 0]]
     assert route.call_count == 2
 
 
@@ -156,7 +156,7 @@ def test_auth_failure_maps_to_auth_kind_and_is_logged(api: MockRouter) -> None:
     api.add("POST", "/embeddings", error(401, "invalid_api_key"))
 
     with pytest.raises(ProviderError) as excinfo, capture_logs() as logs:
-        embedder(api).embed(["text"])
+        embedder(api).embed_documents(["text"])
 
     assert (excinfo.value.kind, excinfo.value.retryable) == (ProviderErrorKind.AUTH, False)
     assert any(entry["event"] == "provider.auth_failed" for entry in logs)
@@ -166,7 +166,7 @@ def test_timeout_maps_to_retryable_timeout(api: MockRouter) -> None:
     api.add("POST", "/embeddings", httpx2.ReadTimeout("slow"))
 
     with pytest.raises(ProviderError) as excinfo:
-        embedder(api).embed(["text"])
+        embedder(api).embed_documents(["text"])
 
     assert (excinfo.value.kind, excinfo.value.retryable) == (ProviderErrorKind.TIMEOUT, True)
 
@@ -174,7 +174,7 @@ def test_timeout_maps_to_retryable_timeout(api: MockRouter) -> None:
 def test_server_error_maps_to_unavailable(api: MockRouter) -> None:
     api.add("POST", "/embeddings", error(503))
     with pytest.raises(ProviderError) as excinfo:
-        embedder(api).embed(["text"])
+        embedder(api).embed_documents(["text"])
     assert excinfo.value.kind is ProviderErrorKind.UNAVAILABLE
 
 
@@ -192,7 +192,7 @@ def test_malformed_embedding_responses_are_invalid_response(
 ) -> None:
     api.add("POST", "/embeddings", ok(body))
     with pytest.raises(ProviderError) as excinfo:
-        embedder(api).embed(inputs)
+        embedder(api).embed_documents(inputs)
     assert (excinfo.value.kind, excinfo.value.retryable) == (
         ProviderErrorKind.INVALID_RESPONSE,
         False,
@@ -209,7 +209,7 @@ def test_large_input_sets_are_split_into_batches(
         return ok(embeddings_body([[1.0, 0, 0]] * count))
 
     route = api.add("POST", "/embeddings", handler=respond)
-    assert len(embedder(api).embed(["a", "b", "c", "d", "e"])) == 5
+    assert len(embedder(api).embed_documents(["a", "b", "c", "d", "e"])) == 5
     assert route.call_count == 3
 
 
@@ -220,7 +220,7 @@ def test_over_long_input_is_truncated_with_a_text_free_warning(
     route = api.add("POST", "/embeddings", ok(embeddings_body([[1.0, 0, 0]])))
 
     with capture_logs() as logs:
-        embedder(api).embed(["one two three four five"])
+        embedder(api).embed_documents(["one two three four five"])
 
     assert sent_json(route)["input"] == ["one two three"]
     warning = next(e for e in logs if e["event"] == "provider.embedding_input_truncated")
@@ -236,7 +236,7 @@ def test_over_long_input_is_truncated_with_a_text_free_warning(
 def test_empty_text_is_rejected_before_any_call(api: MockRouter) -> None:
     route = api.add("POST", "/embeddings", error(500))
     with pytest.raises(ValueError, match="input 1"):
-        embedder(api).embed(["ok", "  "])
+        embedder(api).embed_documents(["ok", "  "])
     assert route.call_count == 0
 
 

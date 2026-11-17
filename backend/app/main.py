@@ -1,5 +1,6 @@
 """App factory. Run with: uvicorn app.main:create_app --factory"""
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -42,7 +43,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         embedding_provider=settings.embedding_provider,
         llm_provider=settings.llm_provider,
     )
-    app.state.providers = build_providers(settings)
+    # Loading a local embedding model takes ~1s of CPU; keep it off the event loop.
+    app.state.providers = await asyncio.to_thread(build_providers, settings)
     try:
         yield
     finally:

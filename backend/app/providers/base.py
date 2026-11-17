@@ -18,7 +18,11 @@ class RerankResult:
 
 
 class Embedder(Protocol):
-    def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
+    """Documents and queries are embedded separately: asymmetric models (bge) prefix them."""
+
+    def embed_documents(self, texts: Sequence[str]) -> list[list[float]]: ...
+
+    def embed_query(self, text: str) -> list[float]: ...
 
 
 class ChatModel(Protocol):

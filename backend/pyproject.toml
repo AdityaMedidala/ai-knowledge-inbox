@@ -14,6 +14,7 @@ dependencies = [
     "openai>=3.52",
     "tiktoken>=0.14",
     "httpx2>=2.16",
+    "fastembed>=0.9.1",
 ]
 
 [project.optional-dependencies]
