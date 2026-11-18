@@ -4,6 +4,8 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
+from app.domain.verification import Claim, VerifierRun
+
 
 @dataclass(frozen=True, slots=True)
 class ChatMessage:
@@ -34,4 +36,14 @@ class ChatModel(Protocol):
 class Reranker(Protocol):
     def rerank(self, query: str, documents: Sequence[str]) -> list[RerankResult]:
         """Return results best first."""
+        ...
+
+
+class Verifier(Protocol):
+    """Judges answer sentences against their cited evidence. One call per batch of claims."""
+
+    name: str
+
+    def verify(self, claims: Sequence[Claim]) -> VerifierRun:
+        """Return one judgement per claim, in the same order."""
         ...

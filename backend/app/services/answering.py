@@ -12,10 +12,12 @@ import structlog
 
 from app.domain.errors import field_validation_error
 from app.domain.models import RetrievalMode, RetrievedChunk
+from app.domain.verification import VerificationResult
 from app.providers.base import ChatMessage, ChatModel
 from app.services.citations import Citation, build_citations
 from app.services.prompting import build_messages
 from app.services.retrieval import RetrievalResult, RetrievalService
+from app.services.verification import VerificationService
 
 logger = structlog.get_logger(__name__)
 
@@ -64,6 +66,7 @@ class Answer:
     citations: list[Citation]
     timings: QueryTimings
     candidates: list[RetrievedChunk]
+    verification: VerificationResult | None = None  # None: off, mode none, or verifier failed
 
 
 def _ms(seconds: float) -> float:
@@ -72,11 +75,17 @@ def _ms(seconds: float) -> float:
 
 class AnsweringService:
     def __init__(
-        self, retrieval: RetrievalService, chat: ChatModel, *, question_max_chars: int
+        self,
+        retrieval: RetrievalService,
+        chat: ChatModel,
+        *,
+        question_max_chars: int,
+        verification: VerificationService | None = None,
     ) -> None:
         self._retrieval = retrieval
         self._chat = chat
         self._question_max_chars = question_max_chars
+        self._verification = verification
 
     def answer(self, question: str, top_k: int) -> Answer:
         prepared = self.prepare(question, top_k)
@@ -114,12 +123,15 @@ class AnsweringService:
         now = perf_counter()
         retrieval = prepared.retrieval
         citations = [] if prepared.messages is None else build_citations(text, prepared.sources)
+        verification = None
+        if prepared.messages is not None and self._verification is not None:
+            verification = self._verification.verify(text, prepared.sources)
         timings = QueryTimings(
             embed=retrieval.embed_ms,
             retrieve=retrieval.retrieve_ms,
             rerank=retrieval.rerank_ms,
             generate=0.0 if prepared.messages is None else _ms(now - prepared.retrieved_at),
-            total=_ms(now - prepared.started_at),
+            total=_ms(perf_counter() - prepared.started_at),  # includes verification
         )
         logger.info(
             "query.answered",
@@ -128,4 +140,4 @@ class AnsweringService:
             n_cited=len(citations),
             timings_ms=timings.as_dict(),
         )
-        return Answer(text, retrieval.mode, citations, timings, retrieval.candidates)
+        return Answer(text, retrieval.mode, citations, timings, retrieval.candidates, verification)

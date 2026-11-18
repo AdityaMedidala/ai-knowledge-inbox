@@ -6,10 +6,12 @@ from dataclasses import dataclass, field
 from pydantic import SecretStr
 
 from app.config import Settings
-from app.providers.base import ChatModel, Embedder, Reranker
+from app.providers.base import ChatModel, Embedder, Reranker, Verifier
 from app.providers.cohere_reranker import build_cohere_reranker
-from app.providers.fakes import FakeChatModel, FakeEmbedder
+from app.providers.fakes import FakeChatModel, FakeEmbedder, FakeVerifier
 from app.providers.fastembed_provider import build_fastembed_embedder
+from app.providers.groq_verifier import GroqVerifier
+from app.providers.jev_verifier import JevVerifier, build_jev_client
 from app.providers.openai_compatible import OpenAICompatibleChatModel
 from app.providers.openai_provider import OpenAIChatModel, OpenAIEmbedder, build_client
 
@@ -19,6 +21,8 @@ class Providers:
     embedder: Embedder
     chat: ChatModel
     reranker: Reranker | None
+    verifier: Verifier | None = None
+    escalation: Verifier | None = None  # re-checks low-confidence Jev verdicts
     closers: list[Callable[[], None]] = field(default_factory=list)
 
     def close(self) -> None:
@@ -28,10 +32,14 @@ class Providers:
 
 def build_providers(settings: Settings) -> Providers:
     closers: list[Callable[[], None]] = []
+    chat = build_chat_model(settings, closers)
+    verifier, escalation = build_verifiers(settings, chat, closers)
     return Providers(
         embedder=build_embedder(settings, closers),
-        chat=build_chat_model(settings, closers),
+        chat=chat,
         reranker=build_reranker(settings),
+        verifier=verifier,
+        escalation=escalation,
         closers=closers,
     )
 
@@ -93,6 +101,27 @@ def build_reranker(settings: Settings) -> Reranker | None:
         model=settings.rerank_model,
         timeout_s=settings.rerank_timeout_s,
     )
+
+
+def build_verifiers(
+    settings: Settings, chat: ChatModel, closers: list[Callable[[], None]]
+) -> tuple[Verifier | None, Verifier | None]:
+    """(verifier, escalation). Escalation exists only for Jev, and only when Groq is set up."""
+    if settings.verifier == "off":
+        return None, None
+    if settings.verifier == "fake":
+        return FakeVerifier(), None
+    if settings.verifier == "groq":
+        return GroqVerifier(chat), None
+    client = build_jev_client(settings.verify_timeout_s)
+    closers.append(client.close)
+    jev = JevVerifier(
+        client,
+        api_key=_secret(settings.openrouter_api_key),
+        model=settings.jev_model,
+        base_url=settings.openrouter_base_url,
+    )
+    return jev, GroqVerifier(chat) if settings.groq_configured else None
 
 
 def _secret(value: SecretStr | None) -> str:

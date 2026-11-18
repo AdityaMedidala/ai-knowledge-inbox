@@ -7,6 +7,7 @@ from enum import StrEnum
 from hashlib import blake2b
 
 from app.domain.errors import ProviderError, ProviderErrorKind
+from app.domain.verification import Claim, Judgement, Verdict, VerifierRun
 from app.providers.base import ChatMessage
 from app.utils.text import STOP_WORDS, word_tokens
 
@@ -92,3 +93,34 @@ class FakeChatModel:
         if self.script is FakeChatScript.FAIL_RETRYABLE:
             return ProviderError(ProviderErrorKind.UNAVAILABLE, PROVIDER, "scripted outage")
         return ProviderError(ProviderErrorKind.BAD_REQUEST, PROVIDER, "scripted rejection")
+
+
+class FakeVerifier:
+    """Word overlap between sentence and evidence decides the verdict. Records every call.
+
+    `confidence` is fixed so tests can push claims above or below the escalation threshold.
+    """
+
+    def __init__(self, name: str = PROVIDER, *, confidence: float = 0.9, fail: bool = False):
+        self.name = name
+        self.confidence = confidence
+        self.fail = fail
+        self.calls: list[list[Claim]] = []
+
+    def verify(self, claims: Sequence[Claim]) -> VerifierRun:
+        self.calls.append(list(claims))
+        if self.fail:
+            raise ProviderError(ProviderErrorKind.UNAVAILABLE, self.name, "scripted outage")
+        return VerifierRun([self._judge(claim) for claim in claims], cost_usd=0.0)
+
+    def _judge(self, claim: Claim) -> Judgement:
+        words = {w for w in word_tokens(claim.sentence) if w not in STOP_WORDS}
+        evidence = set(word_tokens(" ".join(claim.evidence)))
+        overlap = len(words & evidence) / len(words) if words else 0.0
+        if overlap >= 0.8:
+            verdict = Verdict.SUPPORTED
+        elif overlap >= 0.4:
+            verdict = Verdict.PARTIAL
+        else:
+            verdict = Verdict.UNSUPPORTED
+        return Judgement(verdict, self.confidence, self.name)

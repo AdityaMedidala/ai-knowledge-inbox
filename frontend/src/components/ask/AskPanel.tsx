@@ -4,6 +4,7 @@ import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { AnswerView } from '@/components/ask/AnswerView'
 import { CitationList } from '@/components/ask/CitationList'
 import { ModeBanner } from '@/components/ask/ModeBanner'
+import { VerificationView } from '@/components/ask/VerificationView'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -86,6 +87,8 @@ export function AskPanel() {
           onSelect={setActiveRef}
         />
       )}
+
+      {state.verification && <VerificationView verification={state.verification} />}
 
       {state.error && (
         <Alert variant="destructive">

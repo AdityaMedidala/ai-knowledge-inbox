@@ -67,6 +67,7 @@ def test_query_cites_the_matching_item(
     assert body["mode"] == "full"
     assert body["request_id"] == response.headers["x-request-id"]
     assert body["debug"] is None
+    assert body["verification"] is None  # VERIFIER=off by default
     assert "[1]" in body["answer"]
     first = body["citations"][0]
     assert (first["ref"], first["item_id"], first["item_type"]) == (1, item_ids["bike"], "note")
@@ -157,6 +158,7 @@ def test_stream_sends_meta_sources_tokens_done_in_order(
 
     assert names[:2] == ["meta", "sources"]
     assert names[-1] == "done"
+    assert "verification" not in names  # VERIFIER=off by default
     assert set(names[2:-1]) == {"token"}
     assert events[0][1]["request_id"]
     sources = events[1][1]

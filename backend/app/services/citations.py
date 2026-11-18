@@ -14,7 +14,7 @@ logger = structlog.get_logger(__name__)
 SNIPPET_MAX_CHARS = 320
 # [1], [1, 2] and [1][2] (the latter as two matches). Some models (gpt-oss) emit fullwidth
 # lenticular brackets 【1】 despite the prompt, so those count too.
-_MARKER = re.compile(r"[\[【](\d+(?:\s*,\s*\d+)*)[\]】]")
+MARKER = re.compile(r"[\[【](\d+(?:\s*,\s*\d+)*)[\]】]")
 _SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
 
 
@@ -27,7 +27,7 @@ class Citation:
 
 def parse_refs(answer: str) -> list[int]:
     """Every referenced number in order of first appearance, duplicates removed."""
-    refs = (int(n) for match in _MARKER.finditer(answer) for n in match.group(1).split(","))
+    refs = (int(n) for match in MARKER.finditer(answer) for n in match.group(1).split(","))
     return list(dict.fromkeys(refs))
 
 

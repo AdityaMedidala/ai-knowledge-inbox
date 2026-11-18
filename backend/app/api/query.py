@@ -21,7 +21,8 @@ from app.schemas.query import (
     debug_info,
     numbered_sources,
 )
-from app.services.answering import AnsweringService
+from app.schemas.verification import Verification
+from app.services.answering import Answer, AnsweringService
 
 logger = structlog.get_logger(__name__)
 router = APIRouter(tags=["query"])
@@ -43,6 +44,7 @@ def query(body: QueryRequest, answering: AnsweringDep) -> QueryResponse:
         citations=[Citation.from_domain(c) for c in answer.citations],
         timings_ms=QueryTimings.from_domain(answer.timings),
         request_id=correlation_id.get(),
+        verification=_verification(answer),
         debug=debug_info(answer.candidates) if body.debug else None,
     )
 
@@ -53,7 +55,7 @@ def query(body: QueryRequest, answering: AnsweringDep) -> QueryResponse:
     responses={200: {"content": {"text/event-stream": {}}}, 422: ERRORS[422]},
 )
 async def query_stream(body: QueryRequest, answering: AnsweringDep) -> StreamingResponse:
-    """SSE: meta → sources → token… → done, or error (then the stream closes)."""
+    """SSE: meta → sources → token… → verification (if on) → done, or error (then it closes)."""
     answering.validate_question(body.question)  # a 422 before the stream starts
     return StreamingResponse(
         _events(answering, body), media_type="text/event-stream", headers=SSE_HEADERS
@@ -71,6 +73,9 @@ async def _events(answering: AnsweringService, body: QueryRequest) -> AsyncItera
             parts.append(token)
             yield _sse("token", {"text": token})
         answer = await asyncio.to_thread(answering.finish, prepared, "".join(parts))
+        verification = _verification(answer)
+        if verification is not None:
+            yield _sse("verification", verification.model_dump(mode="json"))
         citations = [Citation.from_domain(c).model_dump(mode="json") for c in answer.citations]
         yield _sse("done", {"citations": citations, "timings_ms": answer.timings.as_dict()})
     except ProviderError as exc:
@@ -83,6 +88,10 @@ async def _events(answering: AnsweringService, body: QueryRequest) -> AsyncItera
     except Exception:
         logger.exception("query.stream_failed")
         yield _error(ErrorCode.INTERNAL_ERROR, INTERNAL_ERROR_MESSAGE)
+
+
+def _verification(answer: Answer) -> Verification | None:
+    return Verification.from_domain(answer.verification) if answer.verification else None
 
 
 def _error(code: ErrorCode, message: str) -> str:

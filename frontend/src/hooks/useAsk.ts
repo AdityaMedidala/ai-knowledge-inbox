@@ -6,6 +6,7 @@ import {
   type Citation,
   type QueryTimings,
   type RetrievalMode,
+  type Verification,
 } from '@/lib/api'
 import { notifyIfServerError } from '@/lib/notify'
 import { streamSse, type SseMessage } from '@/lib/sse'
@@ -26,6 +27,7 @@ export interface AskState {
   answer: string
   citations: Citation[] // only the cited ones, known once `done` arrives
   timings: QueryTimings | null
+  verification: Verification | null // only when the server has VERIFIER on
   error: AskError | null
 }
 
@@ -34,6 +36,7 @@ type Action =
   | { type: 'meta'; requestId: string }
   | { type: 'sources'; mode: RetrievalMode; sources: Citation[] }
   | { type: 'token'; text: string }
+  | { type: 'verification'; verification: Verification }
   | { type: 'done'; citations: Citation[]; timings: QueryTimings }
   | { type: 'fail'; error: AskError }
   | { type: 'cancel' }
@@ -46,6 +49,7 @@ const INITIAL: AskState = {
   answer: '',
   citations: [],
   timings: null,
+  verification: null,
   error: null,
 }
 
@@ -61,6 +65,8 @@ function reducer(state: AskState, action: Action): AskState {
       return { ...state, status: 'streaming', mode: action.mode, sources: action.sources }
     case 'token':
       return { ...state, answer: state.answer + action.text }
+    case 'verification':
+      return { ...state, verification: action.verification }
     case 'done':
       return { ...state, status: 'done', citations: action.citations, timings: action.timings }
     case 'fail':
@@ -70,7 +76,7 @@ function reducer(state: AskState, action: Action): AskState {
   }
 }
 
-/** Server events of POST /query/stream, in order: meta → sources → token… → done | error. */
+/** POST /query/stream events, in order: meta → sources → token… → verification? → done | error. */
 function toAction(message: SseMessage, requestId: string | null): Action | null {
   const data = JSON.parse(message.data)
   switch (message.event) {
@@ -80,6 +86,8 @@ function toAction(message: SseMessage, requestId: string | null): Action | null 
       return { type: 'sources', mode: data.mode, sources: data.sources }
     case 'token':
       return { type: 'token', text: data.text }
+    case 'verification':
+      return { type: 'verification', verification: data }
     case 'done':
       return { type: 'done', citations: data.citations, timings: data.timings_ms }
     case 'error':

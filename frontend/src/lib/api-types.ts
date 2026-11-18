@@ -113,7 +113,7 @@ export interface paths {
         put?: never;
         /**
          * Query Stream
-         * @description SSE: meta → sources → token… → done, or error (then the stream closes).
+         * @description SSE: meta → sources → token… → verification (if on) → done, or error (then it closes).
          */
         post: operations["query_stream_query_stream_post"];
         delete?: never;
@@ -363,6 +363,8 @@ export interface components {
             timings_ms: components["schemas"]["QueryTimings"];
             /** Request Id */
             request_id: string | null;
+            /** @description Per-sentence check against the cited sources. Null when VERIFIER=off, in mode none, or when the verifier failed (the answer is still returned). */
+            verification?: components["schemas"]["Verification"] | null;
             /** @description Only when debug=true. */
             debug?: components["schemas"]["QueryDebug"] | null;
         };
@@ -385,6 +387,32 @@ export interface components {
          * @enum {string}
          */
         RetrievalMode: "full" | "partial" | "none";
+        /** SentenceVerdict */
+        SentenceVerdict: {
+            /**
+             * Index
+             * @description Position among the answer's sentences.
+             */
+            index: number;
+            /**
+             * Sentence
+             * @description The sentence text, without [n] markers.
+             */
+            sentence: string;
+            /**
+             * Refs
+             * @description Valid [n] refs the sentence cites; empty if uncited.
+             */
+            refs: number[];
+            verdict: components["schemas"]["Verdict"];
+            /** Confidence */
+            confidence: number;
+            /**
+             * Decided By
+             * @description groq, jev, fake, or no_citation (no backend call).
+             */
+            decided_by: string;
+        };
         /** UrlIngest */
         UrlIngest: {
             /**
@@ -410,6 +438,40 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /**
+         * Verdict
+         * @enum {string}
+         */
+        Verdict: "supported" | "partial" | "unsupported";
+        /** Verification */
+        Verification: {
+            /**
+             * Backend
+             * @description The configured verifier (VERIFIER).
+             */
+            backend: string;
+            summary: components["schemas"]["VerificationSummary"];
+            /** Sentences */
+            sentences: components["schemas"]["SentenceVerdict"][];
+            /**
+             * Escalated
+             * @description Sentences Jev was unsure about and Groq re-checked.
+             */
+            escalated: number;
+            /** Ms */
+            ms: number;
+        };
+        /** VerificationSummary */
+        VerificationSummary: {
+            /** Supported */
+            supported: number;
+            /** Partial */
+            partial: number;
+            /** Unsupported */
+            unsupported: number;
+            /** Total */
+            total: number;
         };
     };
     responses: never;

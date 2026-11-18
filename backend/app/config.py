@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 EmbeddingProviderName = Literal["fastembed", "openai", "fake"]
 ChatProviderName = Literal["openai_compatible", "openai", "fake"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
+VerifierName = Literal["off", "groq", "jev", "fake"]
 
 
 class Settings(BaseSettings):
@@ -38,6 +39,15 @@ class Settings(BaseSettings):
     reranker: Literal["none", "cohere"] = "none"
     cohere_api_key: SecretStr | None = None
     rerank_model: str = "rerank-v3.5"
+
+    # Answer verification. "groq" reuses the LLM_* chat client; "jev" is TypeSafe Jev on OpenRouter.
+    verifier: VerifierName = "off"
+    openrouter_api_key: SecretStr | None = None
+    openrouter_base_url: str = "https://openrouter.ai"
+    jev_model: str = "typesafe/jev-1.14"
+    # Jev verdicts whose top probability is below this are re-checked by Groq (when configured).
+    verify_escalate_below: float = Field(default=0.8, ge=0, le=1)
+    verify_timeout_s: float = Field(default=30, gt=0)
 
     openai_max_retries: int = Field(default=2, ge=0)  # SDK retries 429/5xx/timeouts w/ backoff
     embedding_timeout_s: float = Field(default=30, gt=0)
@@ -94,6 +104,10 @@ class Settings(BaseSettings):
             raise ValueError("LLM_BASE_URL and LLM_API_KEY are required for openai_compatible.")
         if self.reranker == "cohere" and self.cohere_api_key is None:
             raise ValueError("COHERE_API_KEY is required when RERANKER=cohere.")
+        if self.verifier == "jev" and self.openrouter_api_key is None:
+            raise ValueError("OPENROUTER_API_KEY is required when VERIFIER=jev.")
+        if self.verifier == "groq" and self.llm_provider != "openai_compatible":
+            raise ValueError("VERIFIER=groq needs LLM_PROVIDER=openai_compatible (Groq).")
         if self.chunk_overlap_tokens >= self.chunk_tokens:
             raise ValueError("CHUNK_OVERLAP_TOKENS must be smaller than CHUNK_TOKENS.")
         if self.chunk_max_block_tokens < self.chunk_tokens:
@@ -101,3 +115,7 @@ class Settings(BaseSettings):
         if self.relevance_min_partial > self.relevance_min_full:
             raise ValueError("RELEVANCE_MIN_PARTIAL must not exceed RELEVANCE_MIN_FULL.")
         return self
+
+    @property
+    def groq_configured(self) -> bool:
+        return self.llm_provider == "openai_compatible" and self.llm_api_key is not None

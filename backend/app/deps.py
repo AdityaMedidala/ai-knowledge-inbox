@@ -11,6 +11,7 @@ from app.providers.factory import Providers
 from app.services.answering import AnsweringService
 from app.services.retrieval import RetrievalConfig, RetrievalService
 from app.services.submission import SubmissionService
+from app.services.verification import VerificationService
 from app.store.repository import Repository
 from app.store.session import repository_session
 from app.worker import IngestionWorker
@@ -66,8 +67,18 @@ def get_answering(
         min_partial=settings.relevance_min_partial,
     )
     retrieval = RetrievalService(repo, providers.embedder, providers.reranker, config)
+    verification = None
+    if providers.verifier is not None:
+        verification = VerificationService(
+            providers.verifier,
+            providers.escalation,
+            escalate_below=settings.verify_escalate_below,
+        )
     return AnsweringService(
-        retrieval, providers.chat, question_max_chars=settings.question_max_chars
+        retrieval,
+        providers.chat,
+        question_max_chars=settings.question_max_chars,
+        verification=verification,
     )
 
 

@@ -4,7 +4,7 @@ UV := cd $(BACKEND) && uv run
 # tests run offline after `make install`.
 export TIKTOKEN_CACHE_DIR := $(abspath $(BACKEND)/.cache/tiktoken)
 
-.PHONY: install dev dev-backend dev-frontend test lint lint-backend lint-frontend fmt build-frontend types check-vec smoke
+.PHONY: install dev dev-backend dev-frontend test lint lint-backend lint-frontend fmt build-frontend types check-vec smoke eval
 
 FRONTEND := frontend
 NPM := cd $(FRONTEND) && npm
@@ -53,6 +53,11 @@ fmt:
 
 check-vec:
 	$(UV) python -c "import sqlite3, sys; from pathlib import Path; from app.store.db import connect, sqlite_vec_version; c = connect(Path(':memory:')); print(f'python {sys.version.split()[0]}  sqlite {sqlite3.sqlite_version}  sqlite-vec {sqlite_vec_version(c)}')"
+
+# Gate + verifier evaluation with the providers in .env (real calls). Not part of `make test`.
+# make eval ARGS="gate" | "generate" | "verify groq" | "verify jev" | "verify jev+esc" | "report"
+eval:
+	$(UV) python -m scripts.eval $(ARGS)
 
 # Real calls to the providers configured in .env. Not part of `make test`.
 smoke:

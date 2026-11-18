@@ -38,3 +38,14 @@ def test_free_defaults() -> None:
     assert fields["embedding_provider"].default == "fastembed"
     assert (settings.embedding_model, settings.embedding_dim) == ("BAAI/bge-small-en-v1.5", 384)
     assert settings.chunk_tokens == 350
+
+
+def test_jev_verifier_requires_an_openrouter_key() -> None:
+    with pytest.raises(ValidationError, match="OPENROUTER_API_KEY"):
+        Settings(_env_file=None, embedding_provider="fake", llm_provider="fake", verifier="jev")
+
+
+def test_verifier_is_off_by_default() -> None:
+    assert (
+        Settings(_env_file=None, embedding_provider="fake", llm_provider="fake").verifier == "off"
+    )

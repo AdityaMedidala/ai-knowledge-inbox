@@ -5,6 +5,7 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.domain.models import ItemType, RetrievalMode, RetrievedChunk
+from app.schemas.verification import Verification
 from app.services import answering, citations
 
 TOP_K_DEFAULT = 5
@@ -89,6 +90,11 @@ class QueryResponse(BaseModel):
     citations: list[Citation]
     timings_ms: QueryTimings
     request_id: str | None
+    verification: Verification | None = Field(
+        default=None,
+        description="Per-sentence check against the cited sources. Null when VERIFIER=off, "
+        "in mode none, or when the verifier failed (the answer is still returned).",
+    )
     debug: QueryDebug | None = Field(default=None, description="Only when debug=true.")
 
 

@@ -8,6 +8,8 @@ export type IngestResponse = Schemas['IngestResponse']
 export type Citation = Schemas['Citation']
 export type QueryTimings = Schemas['QueryTimings']
 export type RetrievalMode = Schemas['QueryResponse']['mode']
+export type Verification = Schemas['Verification']
+export type SentenceVerdict = Schemas['SentenceVerdict']
 type ErrorEnvelope = Schemas['ErrorEnvelope']
 
 /** Vite proxies /api to the backend (stripping the prefix). */
