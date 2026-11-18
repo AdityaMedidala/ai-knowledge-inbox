@@ -31,6 +31,10 @@ def test_parse_refs_handles_all_marker_formats_in_first_appearance_order() -> No
     assert parse_refs("A [2]. B [1][3]. C [3, 4]. D [2].") == [2, 1, 3, 4]
 
 
+def test_parse_refs_accepts_fullwidth_brackets() -> None:
+    assert parse_refs("Threshold is 1000 pages【1】【3】 and more [2].") == [1, 3, 2]
+
+
 def test_parse_refs_ignores_non_numeric_brackets() -> None:
     assert parse_refs("See [docs] and [a1] and [].") == []
 

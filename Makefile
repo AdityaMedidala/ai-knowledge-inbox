@@ -4,24 +4,48 @@ UV := cd $(BACKEND) && uv run
 # tests run offline after `make install`.
 export TIKTOKEN_CACHE_DIR := $(abspath $(BACKEND)/.cache/tiktoken)
 
-.PHONY: install dev dev-backend test lint fmt check-vec smoke
+.PHONY: install dev dev-backend dev-frontend test lint lint-backend lint-frontend fmt build-frontend types check-vec smoke
+
+FRONTEND := frontend
+NPM := cd $(FRONTEND) && npm
+# openapi-typescript peers on TypeScript 5 while the app uses TS 7, so it runs via a pinned npx.
+OPENAPI_TS := openapi-typescript@7.13.0
 
 install:
 	cd $(BACKEND) && uv sync
 	$(UV) python -m scripts.warm_caches
+	$(NPM) install
 
-dev: dev-backend
+# Backend on :8000 and Vite on :5173 (proxies /api to the backend).
+dev:
+	$(MAKE) -j2 dev-backend dev-frontend
 
 # Our AccessLogMiddleware emits http.request lines; uvicorn's access log would duplicate them.
 dev-backend:
 	$(UV) uvicorn app.main:create_app --factory --reload --port 8000 --no-access-log
 
+dev-frontend:
+	$(NPM) run dev
+
 test:
 	$(UV) pytest
 
-lint:
+lint: lint-backend lint-frontend
+
+lint-backend:
 	$(UV) ruff check .
 	$(UV) ruff format --check .
+
+lint-frontend:
+	$(NPM) run lint
+	$(NPM) run typecheck
+
+build-frontend:
+	$(NPM) run build
+
+# Regenerate frontend API types from the running backend's OpenAPI schema.
+types:
+	cd $(FRONTEND) && npx -y $(OPENAPI_TS) http://localhost:8000/openapi.json -o src/lib/api-types.ts
 
 fmt:
 	$(UV) ruff format .
