@@ -25,7 +25,7 @@ def source(text: str = EVIDENCE) -> RetrievedChunk:
 
 
 def service(verifier: FakeVerifier, escalation: FakeVerifier | None = None) -> VerificationService:
-    return VerificationService(verifier, escalation, escalate_below=0.8)
+    return VerificationService(verifier, escalation, escalate_below=0.8, sleep=lambda _: None)
 
 
 # --- sentence splitting ---------------------------------------------------------------------
@@ -169,3 +169,21 @@ def test_escalation_failure_keeps_the_jev_verdicts() -> None:
     assert result is not None
     assert (result.sentences[0].decided_by, result.escalated) == ("jev", 0)
     assert any(log["event"] == "query.verify_escalation_failed" for log in logs)
+
+
+def test_a_transient_verifier_failure_is_retried_once_after_a_backoff() -> None:
+    verifier, waits = FakeVerifier(fail_first=1), []
+    svc = VerificationService(verifier, None, escalate_below=0.8, sleep=waits.append)
+    with capture_logs() as logs:
+        result = svc.verify("The default checkpoint threshold is 1000 pages [1].", [source()])
+    assert result is not None and result.sentences[0].verdict is Verdict.SUPPORTED
+    assert len(verifier.calls) == 2 and waits == [1.0]
+    assert [log["event"] for log in logs].count("query.verify_retry") == 1
+
+
+def test_a_second_failure_gives_up_and_returns_no_verification() -> None:
+    verifier = FakeVerifier(fail=True)
+    with capture_logs() as logs:
+        result = service(verifier).verify("Threshold is 1000 pages [1].", [source()])
+    assert result is None and len(verifier.calls) == 2
+    assert "query.verify_failed" in [log["event"] for log in logs]

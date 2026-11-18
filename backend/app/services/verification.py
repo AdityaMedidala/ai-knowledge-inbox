@@ -6,11 +6,12 @@ the escalation backend (Groq).
 """
 
 import re
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 
 import structlog
 
-from app.domain.errors import ProviderError
+from app.domain.errors import ProviderError, ProviderErrorKind
 from app.domain.models import RetrievedChunk
 from app.domain.verification import (
     NO_CITATION,
@@ -19,6 +20,7 @@ from app.domain.verification import (
     SentenceVerdict,
     Verdict,
     VerificationResult,
+    VerifierRun,
 )
 from app.providers.base import Verifier
 from app.services.citations import MARKER, parse_refs
@@ -97,13 +99,43 @@ def build_claims(answer: str, sources: Sequence[RetrievedChunk]) -> list[Claim]:
     return claims
 
 
+RETRY_BACKOFF_S = 1.0
+
+
+def _worth_retrying(exc: Exception) -> bool:
+    """Transient provider errors, and replies we couldn't use (a second sample often parses)."""
+    return isinstance(exc, ProviderError) and (
+        exc.retryable or exc.kind is ProviderErrorKind.INVALID_RESPONSE
+    )
+
+
 class VerificationService:
     def __init__(
-        self, verifier: Verifier, escalation: Verifier | None, *, escalate_below: float
+        self,
+        verifier: Verifier,
+        escalation: Verifier | None,
+        *,
+        escalate_below: float,
+        retry_backoff_s: float = RETRY_BACKOFF_S,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self._verifier = verifier
         self._escalation = escalation
         self._escalate_below = escalate_below
+        self._retry_backoff_s = retry_backoff_s
+        self._sleep = sleep
+
+    def _run(self, verifier: Verifier, claims: list[Claim]) -> VerifierRun:
+        """One backend call, retried once after a backoff when the failure looks transient."""
+        try:
+            return _checked(verifier.verify(claims), claims, verifier.name)
+        except Exception as exc:
+            if not _worth_retrying(exc):
+                raise
+            reason = exc.message if isinstance(exc, ProviderError) else str(exc)
+            logger.warning("query.verify_retry", backend=verifier.name, reason=reason)
+            self._sleep(self._retry_backoff_s)
+            return _checked(verifier.verify(claims), claims, verifier.name)
 
     def verify(self, answer: str, sources: Sequence[RetrievedChunk]) -> VerificationResult | None:
         """None when the verifier failed (logged); the caller returns the answer unverified."""
@@ -137,16 +169,14 @@ class VerificationService:
     def _judge(self, cited: list[Claim]) -> tuple[dict[int, Judgement], float | None, int]:
         if not cited:
             return {}, None, 0
-        run = self._verifier.verify(cited)
-        if len(run.judgements) != len(cited):
-            raise ValueError(f"{len(run.judgements)} judgements for {len(cited)} claims")
+        run = self._run(self._verifier, cited)
         judgements = {c.index: j for c, j in zip(cited, run.judgements, strict=True)}
         cost = run.cost_usd
         low = [c for c in cited if judgements[c.index].confidence < self._escalate_below]
         if self._escalation is None or self._verifier.name != ESCALATING_BACKEND or not low:
             return judgements, cost, 0
         try:
-            second = self._escalation.verify(low)
+            second = self._run(self._escalation, low)
             judgements.update({c.index: j for c, j in zip(low, second.judgements, strict=True)})
         except Exception as exc:  # keep the first backend's verdicts
             self._log_failure("query.verify_escalation_failed", exc)
@@ -160,6 +190,13 @@ class VerificationService:
             logger.warning(event, provider=exc.provider, kind=exc.kind, reason=exc.message)
         else:
             logger.exception(event)
+
+
+def _checked(run: VerifierRun, claims: list[Claim], backend: str) -> VerifierRun:
+    if len(run.judgements) != len(claims):
+        message = f"{len(run.judgements)} judgements for {len(claims)} claims"
+        raise ProviderError(ProviderErrorKind.INVALID_RESPONSE, backend, message)
+    return run
 
 
 def _assemble(claims: Sequence[Claim], judgements: dict[int, Judgement]) -> list[SentenceVerdict]:

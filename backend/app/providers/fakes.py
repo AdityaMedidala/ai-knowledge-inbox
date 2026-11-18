@@ -101,15 +101,24 @@ class FakeVerifier:
     `confidence` is fixed so tests can push claims above or below the escalation threshold.
     """
 
-    def __init__(self, name: str = PROVIDER, *, confidence: float = 0.9, fail: bool = False):
+    def __init__(
+        self,
+        name: str = PROVIDER,
+        *,
+        confidence: float = 0.9,
+        fail: bool = False,
+        fail_first: int = 0,
+    ):
+        """`fail` fails every call; `fail_first` fails only that many calls, then answers."""
         self.name = name
         self.confidence = confidence
         self.fail = fail
+        self.fail_first = fail_first
         self.calls: list[list[Claim]] = []
 
     def verify(self, claims: Sequence[Claim]) -> VerifierRun:
         self.calls.append(list(claims))
-        if self.fail:
+        if self.fail or len(self.calls) <= self.fail_first:
             raise ProviderError(ProviderErrorKind.UNAVAILABLE, self.name, "scripted outage")
         return VerifierRun([self._judge(claim) for claim in claims], cost_usd=0.0)
 
