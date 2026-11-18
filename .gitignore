@@ -13,3 +13,4 @@ PROMPTS.md
 .ruff_cache/
 frontend/dist/
 .cache/
+.DS_Store
