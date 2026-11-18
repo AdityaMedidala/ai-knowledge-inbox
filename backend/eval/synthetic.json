@@ -1,0 +1,421 @@
+{
+ "_about": "Synthetic sentences appended to cached answers (proposed by Claude). {item} resolves to that answer's first source from the item. tag: blatant (v1 injections: contradicted, invented or added detail) | subtle (wrong_number, wrong_unit, wrong_source, overgeneralisation, merged_facts). label is judged against the cited source text only.",
+ "sentences": [
+  {
+   "answer": "a02",
+   "text": "A checkpoint also permanently deletes the old pages from the database file {wal}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a03",
+   "text": "WAL mode works reliably over NFS as long as file locking is enabled {wal}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a05",
+   "text": "WAL mode was introduced in SQLite 3.5.0 in 2007 {wal}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a06",
+   "text": "Use twice as much flour as water at each feeding {sourdough}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a07",
+   "text": "A ripe starter should smell strongly of vinegar {sourdough}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a09",
+   "text": "Oil the chain every 100 kilometres {bike}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a12",
+   "text": "Estimated tax payments are due on the last day of each quarter {tax}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a13",
+   "text": "Half of every invoice should go into the tax savings account {tax}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a16",
+   "text": "The Tuesday standup takes place in the Harbour room {standup}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a18",
+   "text": "Retrospectives happen every second Thursday at 14:00 {standup}.",
+   "tag": "blatant",
+   "error": "added_detail",
+   "label": "partial",
+   "by": "claude"
+  },
+  {
+   "answer": "a19",
+   "text": "The flight leaves from terminal 1 {lisbon}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a21",
+   "text": "Dinner is booked at 20:30 at a seafood restaurant near Miradouro de Santa Luzia {lisbon}.",
+   "tag": "blatant",
+   "error": "added_detail",
+   "label": "partial",
+   "by": "claude"
+  },
+  {
+   "answer": "a22",
+   "text": "Use a 1:16 ratio of coffee to water and filtered water {coffee}.",
+   "tag": "blatant",
+   "error": "added_detail",
+   "label": "partial",
+   "by": "claude"
+  },
+  {
+   "answer": "a23",
+   "text": "The water should be boiling, at 100 degrees Celsius {coffee}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "c04",
+   "text": "For 25 mm road tyres, aim for about 60 psi {bike}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "c03",
+   "text": "A chain usually lasts about 5000 kilometres {bike}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "n04",
+   "text": "The starter should be fed with whole-wheat flour {sourdough}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "n05",
+   "text": "Mountain bike tyres should be run at 25 to 30 psi {bike}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "n06",
+   "text": "Replace the cassette every second chain {bike}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "n09",
+   "text": "The return flight leaves Lisbon at 18:05 on 15 March {lisbon}.",
+   "tag": "blatant",
+   "error": "invented",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "c01",
+   "text": "By default the automatic checkpoint runs at 500 pages {sqlite_tip}.",
+   "tag": "blatant",
+   "error": "planted_fact",
+   "label": "supported",
+   "by": "claude"
+  },
+  {
+   "answer": "c01",
+   "text": "By default the automatic checkpoint runs at 500 pages {wal}.",
+   "tag": "blatant",
+   "error": "contradiction",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u01",
+   "text": "When the automatic checkpoint runs, the WAL file is about 8MB in size {sqlite_wal_doc}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u17",
+   "text": "By default, sqlite3.connect() waits ten seconds before raising OperationalError on a locked table {sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a15",
+   "text": "Maria needs the quarterly summary two weeks before each deadline {tax}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u12",
+   "text": "PEP 8 limits docstrings and comments to 79 characters per line {pep8_doc}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a21",
+   "text": "Dinner on the first night is booked for 20:00 near Miradouro de Santa Luzia {lisbon}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u03",
+   "text": "Read-only WAL databases can be read since SQLite 3.22.0, released in 2016 {sqlite_wal_doc}.",
+   "tag": "subtle",
+   "error": "wrong_number",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a09",
+   "text": "Oil the chain every 300 miles, or after any ride in the rain {bike}.",
+   "tag": "subtle",
+   "error": "wrong_unit",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a23",
+   "text": "Heat the water to 93 degrees Fahrenheit {coffee}.",
+   "tag": "subtle",
+   "error": "wrong_unit",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u17",
+   "text": "The default sqlite3 connection timeout is five milliseconds {sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "wrong_unit",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a07",
+   "text": "The starter is ready when it has doubled, which usually takes 4 to 8 minutes at room temperature {sourdough}.",
+   "tag": "subtle",
+   "error": "wrong_unit",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u11",
+   "text": "PEP 8 recommends 4 tabs per indentation level {pep8_doc}.",
+   "tag": "subtle",
+   "error": "wrong_unit",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m01",
+   "text": "Use a 1:16 ratio of coffee to water {sourdough}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m02",
+   "text": "The flight leaves at 07:40 on 12 March {standup}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m05",
+   "text": "WAL mode is enabled with PRAGMA journal_mode=WAL {sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m04",
+   "text": "Lines should be limited to a maximum of 79 characters {sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "c05",
+   "text": "asyncio.Queue is thread-safe, so worker threads can call put() on it directly {asyncio_queue_doc}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m08",
+   "text": "Exception names should use the suffix \"Error\" {asyncio_queue_doc}.",
+   "tag": "subtle",
+   "error": "wrong_source",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a07",
+   "text": "The starter always doubles within 4 to 8 hours at room temperature {sourdough}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u07",
+   "text": "Every asyncio.Queue blocks put() once it holds too many items {asyncio_queue_doc}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u05",
+   "text": "A checkpoint never truncates the WAL file {sqlite_wal_doc}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u16",
+   "text": "PEP 8 requires double quotes for all strings {pep8_doc}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u13",
+   "text": "PEP 8 says every import must always be on its own line {pep8_doc}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u18",
+   "text": "A sqlite3 connection can never be used from more than one thread {sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a22",
+   "text": "A pour-over brew always takes exactly 3 minutes 30 seconds {coffee}.",
+   "tag": "subtle",
+   "error": "overgeneralisation",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a16",
+   "text": "The standup is at 10:30 every weekday in the Lighthouse room {standup}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a19",
+   "text": "Flight TP1351 leaves from terminal 2 at 15:00 {lisbon}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a12",
+   "text": "Maria needs the quarterly summary on 15 January, 15 April, 15 June and 15 September {tax}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "a13",
+   "text": "Set aside 30% of every invoice for equipment over 500 EUR {tax}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "m07",
+   "text": "Because WAL mode is persistent, closing a sqlite3 connection commits pending changes {sqlite_wal_doc}{sqlite3_doc}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  },
+  {
+   "answer": "u09",
+   "text": "task_done() raises QueueFull when it is called more times than items were put in the queue {asyncio_queue_doc}.",
+   "tag": "subtle",
+   "error": "merged_facts",
+   "label": "unsupported",
+   "by": "claude"
+  }
+ ]
+}

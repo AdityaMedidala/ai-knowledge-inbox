@@ -1,0 +1,1190 @@
+[
+  {
+    "id": "a01",
+    "kind": "answerable",
+    "question": "How do readers and writers interact in SQLite WAL mode?",
+    "answer": "In WAL mode the writer appends changes to a separate ‑wal file while readers continue to read the unchanged pages of the main database file. Consequently, readers do **not** block writers and a writer does **not** block readers; however, only one writer can be active at any moment【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "a02",
+    "kind": "answerable",
+    "question": "What does a WAL checkpoint do?",
+    "answer": "A WAL checkpoint copies the pages recorded in the write‑ahead log (WAL) back into the main database file【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 5,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      }
+    ]
+  },
+  {
+    "id": "a03",
+    "kind": "answerable",
+    "question": "Does WAL mode work on a network file system?",
+    "answer": "No. WAL mode requires shared memory between processes and therefore does not work on a network file system【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "a04",
+    "kind": "answerable",
+    "question": "How do I turn on WAL mode and does it stay on?",
+    "answer": "Enable WAL mode with the command:\n\n```sql\nPRAGMA journal_mode = WAL;\n```\n\nThe setting is persistent—it remains enabled for that database file even after the connection that set it closes【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "a05",
+    "kind": "answerable",
+    "question": "Since which SQLite version is WAL available?",
+    "answer": "SQLite’s write‑ahead logging (WAL) mode has been available since SQLite 3.7.0, released in 2010. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      }
+    ]
+  },
+  {
+    "id": "a06",
+    "kind": "answerable",
+    "question": "How often should I feed my sourdough starter?",
+    "answer": "Feed your starter **twice a day** [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 2,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "a07",
+    "kind": "answerable",
+    "question": "How do I know the starter is ready to bake with?",
+    "answer": "The starter is ready to bake with when it has doubled in size, which typically occurs 4–8 hours after feeding at room temperature【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 2,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      }
+    ]
+  },
+  {
+    "id": "a08",
+    "kind": "answerable",
+    "question": "How should I store the starter when I'm not baking?",
+    "answer": "Keep the starter in the refrigerator when you’re not baking, and feed it about once a week. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 2,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 3,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "a09",
+    "kind": "answerable",
+    "question": "When should I oil my bike chain?",
+    "answer": "Oil the chain **every 300 km**, and **any time you’ve ridden in the rain**. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 2,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 3,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      }
+    ]
+  },
+  {
+    "id": "a10",
+    "kind": "answerable",
+    "question": "What tyre pressure should I use for 25 mm road tyres?",
+    "answer": "For 25 mm road tyres, aim for a pressure of **80 – 90 psi**【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 2,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 3,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "a11",
+    "kind": "answerable",
+    "question": "When do I need to replace the chain?",
+    "answer": "Replace the chain when a chain‑checker shows it has stretched by 0.5 % [1].",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 2,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 3,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 4,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "a12",
+    "kind": "answerable",
+    "question": "When are the estimated tax payments due?",
+    "answer": "Estimated tax payments are due on **15 January, 15 April, 15 June, and 15 September** each year. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 2,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 3,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "a13",
+    "kind": "answerable",
+    "question": "How much of each invoice should go into tax savings?",
+    "answer": "Set aside **30 % of every invoice** in the tax‑savings account. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 2,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 3,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      }
+    ]
+  },
+  {
+    "id": "a14",
+    "kind": "answerable",
+    "question": "How long do I have to keep equipment receipts?",
+    "answer": "Equipment receipts (for items over 500 EUR) must be retained for **seven years**【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "a15",
+    "kind": "answerable",
+    "question": "When does Maria need the quarterly summary?",
+    "answer": "Maria must receive the quarterly summary **one week before each estimated‑tax deadline** (i.e., roughly around 8 January, 8 April, 8 June, and 8 September)【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 2,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 3,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 4,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 5,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      }
+    ]
+  },
+  {
+    "id": "a16",
+    "kind": "answerable",
+    "question": "What time is the standup on Tuesdays?",
+    "answer": "The standup on Tuesdays is at **10:30**. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 2,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 3,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      }
+    ]
+  },
+  {
+    "id": "a17",
+    "kind": "answerable",
+    "question": "When is the Friday demo and is it recorded?",
+    "answer": "The Friday demo starts at **16:00** and it **is recorded** for people in other time zones. 【1】",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 2,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 3,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "a18",
+    "kind": "answerable",
+    "question": "How often are retrospectives?",
+    "answer": "Retrospectives are held **every second Thursday** (i.e., bi‑weekly)【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "a19",
+    "kind": "answerable",
+    "question": "What time does my flight to Lisbon leave?",
+    "answer": "Your outbound flight TP1351 departs at **07:40** on 12 March. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 2,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      }
+    ]
+  },
+  {
+    "id": "a20",
+    "kind": "answerable",
+    "question": "When can I check in at the Lisbon hotel and for how long is it booked?",
+    "answer": "Check‑in is from **15:00**, and the reservation is for **three nights**【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 5,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      }
+    ]
+  },
+  {
+    "id": "a21",
+    "kind": "answerable",
+    "question": "Where is dinner booked on the first night in Lisbon?",
+    "answer": "Dinner on the first night is booked at a restaurant near **Miradouro de Santa Luzia**. [1]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 2,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 3,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 4,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 5,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      }
+    ]
+  },
+  {
+    "id": "a22",
+    "kind": "answerable",
+    "question": "What coffee to water ratio should I use for pour-over?",
+    "answer": "Use a 1 : 16 coffee‑to‑water ratio (e.g., 20 g coffee to 320 g water)【1】",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 2,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "a23",
+    "kind": "answerable",
+    "question": "How hot should the water be for pour-over coffee?",
+    "answer": "The water should be heated to **93 °C**【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 2,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      }
+    ]
+  },
+  {
+    "id": "a24",
+    "kind": "answerable",
+    "question": "How long should the bloom and total brew take?",
+    "answer": "The bloom should last **about 40 seconds**, and the whole brew should take **roughly 3 minutes 30 seconds** total【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 4,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "p01",
+    "kind": "planted",
+    "question": "At how many pages does SQLite run an automatic WAL checkpoint by default?",
+    "answer": "SQLite runs an automatic WAL checkpoint when a commit makes the WAL reach **1000 pages** by default【1】. (An informal chat note mentions a 500‑page default, but the documented default is 1000 pages【2】).",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "p02",
+    "kind": "planted",
+    "question": "Should I raise the WAL checkpoint limit for bulk imports?",
+    "answer": "Yes. SQLite’s automatic WAL checkpoint runs when the WAL reaches a modest size (500 pages in the team’s chat note, 1000 pages by default according to the documentation) — so long write bursts can cause many checkpoints. Raising the checkpoint limit (via `PRAGMA wal_autocheckpoint`) is therefore recommended for bulk‑import workloads to avoid frequent checkpointing. [1][2]",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 2,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      }
+    ]
+  },
+  {
+    "id": "n01",
+    "kind": "near_miss",
+    "question": "What is the default page size of an SQLite database?",
+    "answer": "The provided sources do not contain information about the default page size of an SQLite database.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "n02",
+    "kind": "near_miss",
+    "question": "How many writers can SQLite have at once in rollback journal mode?",
+    "answer": "The provided sources do not contain information about how many writers SQLite can have at once in rollback journal mode.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 4,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 5,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      }
+    ]
+  },
+  {
+    "id": "n03",
+    "kind": "near_miss",
+    "question": "How long should sourdough dough bulk ferment?",
+    "answer": "The provided sources do not contain information about the recommended bulk fermentation time for sourdough dough.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      }
+    ]
+  },
+  {
+    "id": "n04",
+    "kind": "near_miss",
+    "question": "What flour should I use for the sourdough starter?",
+    "answer": "The notes only say to feed the starter with “flour” (equal weight to the water) but do not specify a particular type of flour to use【1】.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 2,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 5,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      }
+    ]
+  },
+  {
+    "id": "n05",
+    "kind": "near_miss",
+    "question": "What tyre pressure should I run on my mountain bike?",
+    "answer": "The provided sources only give tyre‑pressure recommendations for 25 mm road tyres (80–90 psi) and do not contain information about mountain‑bike tyre pressures.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 2,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 3,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 4,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 5,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      }
+    ]
+  },
+  {
+    "id": "n06",
+    "kind": "near_miss",
+    "question": "How often should I replace the cassette?",
+    "answer": "The sources do not give a specific interval for cassette replacement; they only note that a worn chain (0.5 % stretch) will eventually wear out the cassette [1].",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 5,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      }
+    ]
+  },
+  {
+    "id": "n07",
+    "kind": "near_miss",
+    "question": "What is the penalty for paying estimated taxes late?",
+    "answer": "The provided sources do not specify any penalty for paying estimated taxes late.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 2,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 3,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 4,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 5,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      }
+    ]
+  },
+  {
+    "id": "n08",
+    "kind": "near_miss",
+    "question": "What time is the standup on Mondays in winter time?",
+    "answer": "The standup is at **9:45** on Mondays (and other weekdays besides Tuesday)【1】",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 2,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 3,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 4,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      },
+      {
+        "ref": 5,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      }
+    ]
+  },
+  {
+    "id": "n09",
+    "kind": "near_miss",
+    "question": "What time is my return flight from Lisbon?",
+    "answer": "The provided sources do not contain information about your return flight from Lisbon.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "lisbon",
+        "text": "Lisbon trip\n\nOutbound flight TP1351 leaves at 07:40 on 12 March from terminal 2. The hotel is in Alfama; check-in is from 15:00 and the booking is for three nights. The tram 28 stop is two minutes from the hotel. Dinner on the first night is booked at 20:30 at a restaurant near Miradouro de Santa Luzia."
+      },
+      {
+        "ref": 2,
+        "item": "standup",
+        "text": "Team rituals\n\nThe daily standup moves to 10:30 on Tuesdays starting next week, and stays at 9:45 on the other weekdays. It takes place in the Lighthouse room. The Friday demo starts at 16:00 and is recorded for people in other time zones. Retrospectives happen every second Thursday."
+      },
+      {
+        "ref": 3,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      },
+      {
+        "ref": 4,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 5,
+        "item": "wal",
+        "text": "SQLite write-ahead logging\n\nIn WAL mode, changes are appended to a separate -wal file instead of being written into the database file directly. Readers keep reading the original database pages while a writer appends, so readers do not block writers and a writer does not block readers. Only one writer can be active at a time.\n\nA checkpoint copies the pages recorded in the WAL back into the main database file. By default SQLite runs an automatic checkpoint when a commit makes the WAL reach 1000 pages. The threshold can be changed with PRAGMA wal_autocheckpoint.\n\nWAL mode is enabled with PRAGMA journal_mode=WAL, and the setting is persistent: it stays on for the database file after the connection closes. WAL needs shared memory between processes, so it does not work on a network file system. WAL mode has been available since SQLite 3.7.0, released in 2010."
+      }
+    ]
+  },
+  {
+    "id": "n10",
+    "kind": "near_miss",
+    "question": "What ratio should I use for French press coffee?",
+    "answer": "The provided sources do not contain information about the coffee‑to‑water ratio for French press brewing.",
+    "sources": [
+      {
+        "ref": 1,
+        "item": "coffee",
+        "text": "Pour-over coffee recipe\n\nUse a 1:16 ratio of coffee to water, for example 20 g of coffee to 320 g of water. Grind medium-fine, similar to table salt. Heat the water to 93 degrees Celsius. Bloom with 50 g of water for 40 seconds, then pour the rest in slow circles. Total brew time should be about 3 minutes 30 seconds."
+      },
+      {
+        "ref": 2,
+        "item": "sourdough",
+        "text": "Sourdough starter care\n\nFeed the starter twice a day with equal weights of flour and water, for example 50 g of each. Discard all but 50 g of starter before each feeding. The starter is ready to bake with when it has doubled in size, which usually takes 4 to 8 hours at room temperature. When not baking, keep it in the fridge and feed it once a week."
+      },
+      {
+        "ref": 3,
+        "item": "bike",
+        "text": "Road bike maintenance\n\nOil the chain every 300 kilometres, or after any ride in the rain. Check tyre pressure weekly; for 25 mm road tyres the target is 80 to 90 psi. Replace the chain when a chain checker shows 0.5% stretch, otherwise it wears out the cassette. Brake pads should be replaced when the groove pattern is no longer visible."
+      },
+      {
+        "ref": 4,
+        "item": "sqlite_tip",
+        "text": "Quick SQLite tip from the team chat\n\nSomeone mentioned that SQLite's automatic WAL checkpoint kicks in at 500 pages by default, so long write bursts will trigger lots of checkpoints. They suggested raising the limit for bulk imports."
+      },
+      {
+        "ref": 5,
+        "item": "tax",
+        "text": "Freelance tax notes\n\nEstimated tax payments are due four times a year: 15 January, 15 April, 15 June and 15 September. Set aside 30% of every invoice in the separate tax savings account. Receipts for equipment over 500 EUR must be kept for seven years. The accountant, Maria, needs the quarterly summary one week before each deadline."
+      }
+    ]
+  }
+]

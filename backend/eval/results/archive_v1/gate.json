@@ -1,0 +1,686 @@
+[
+  {
+    "id": "a01",
+    "kind": "answerable",
+    "question": "How do readers and writers interact in SQLite WAL mode?",
+    "top_similarity": 0.8137,
+    "top_item": "wal",
+    "source_items": [
+      "bike",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a02",
+    "kind": "answerable",
+    "question": "What does a WAL checkpoint do?",
+    "top_similarity": 0.7401,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a03",
+    "kind": "answerable",
+    "question": "Does WAL mode work on a network file system?",
+    "top_similarity": 0.7068,
+    "top_item": "wal",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a04",
+    "kind": "answerable",
+    "question": "How do I turn on WAL mode and does it stay on?",
+    "top_similarity": 0.6526,
+    "top_item": "wal",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "standup",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a05",
+    "kind": "answerable",
+    "question": "Since which SQLite version is WAL available?",
+    "top_similarity": 0.7513,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a06",
+    "kind": "answerable",
+    "question": "How often should I feed my sourdough starter?",
+    "top_similarity": 0.891,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": [
+      "sourdough"
+    ]
+  },
+  {
+    "id": "a07",
+    "kind": "answerable",
+    "question": "How do I know the starter is ready to bake with?",
+    "top_similarity": 0.7494,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "standup",
+      "wal"
+    ],
+    "expected_items": [
+      "sourdough"
+    ]
+  },
+  {
+    "id": "a08",
+    "kind": "answerable",
+    "question": "How should I store the starter when I'm not baking?",
+    "top_similarity": 0.7764,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "wal"
+    ],
+    "expected_items": [
+      "sourdough"
+    ]
+  },
+  {
+    "id": "a09",
+    "kind": "answerable",
+    "question": "When should I oil my bike chain?",
+    "top_similarity": 0.8355,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": [
+      "bike"
+    ]
+  },
+  {
+    "id": "a10",
+    "kind": "answerable",
+    "question": "What tyre pressure should I use for 25 mm road tyres?",
+    "top_similarity": 0.7445,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "wal"
+    ],
+    "expected_items": [
+      "bike"
+    ]
+  },
+  {
+    "id": "a11",
+    "kind": "answerable",
+    "question": "When do I need to replace the chain?",
+    "top_similarity": 0.7683,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "bike"
+    ]
+  },
+  {
+    "id": "a12",
+    "kind": "answerable",
+    "question": "When are the estimated tax payments due?",
+    "top_similarity": 0.7839,
+    "top_item": "tax",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "standup",
+      "tax"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a13",
+    "kind": "answerable",
+    "question": "How much of each invoice should go into tax savings?",
+    "top_similarity": 0.7419,
+    "top_item": "tax",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a14",
+    "kind": "answerable",
+    "question": "How long do I have to keep equipment receipts?",
+    "top_similarity": 0.7644,
+    "top_item": "tax",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a15",
+    "kind": "answerable",
+    "question": "When does Maria need the quarterly summary?",
+    "top_similarity": 0.6709,
+    "top_item": "tax",
+    "source_items": [
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a16",
+    "kind": "answerable",
+    "question": "What time is the standup on Tuesdays?",
+    "top_similarity": 0.7555,
+    "top_item": "standup",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "a17",
+    "kind": "answerable",
+    "question": "When is the Friday demo and is it recorded?",
+    "top_similarity": 0.6695,
+    "top_item": "standup",
+    "source_items": [
+      "lisbon",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "a18",
+    "kind": "answerable",
+    "question": "How often are retrospectives?",
+    "top_similarity": 0.5879,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "a19",
+    "kind": "answerable",
+    "question": "What time does my flight to Lisbon leave?",
+    "top_similarity": 0.8046,
+    "top_item": "lisbon",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "lisbon"
+    ]
+  },
+  {
+    "id": "a20",
+    "kind": "answerable",
+    "question": "When can I check in at the Lisbon hotel and for how long is it booked?",
+    "top_similarity": 0.7845,
+    "top_item": "lisbon",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "standup",
+      "tax"
+    ],
+    "expected_items": [
+      "lisbon"
+    ]
+  },
+  {
+    "id": "a21",
+    "kind": "answerable",
+    "question": "Where is dinner booked on the first night in Lisbon?",
+    "top_similarity": 0.682,
+    "top_item": "lisbon",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "sourdough",
+      "standup",
+      "wal"
+    ],
+    "expected_items": [
+      "lisbon"
+    ]
+  },
+  {
+    "id": "a22",
+    "kind": "answerable",
+    "question": "What coffee to water ratio should I use for pour-over?",
+    "top_similarity": 0.8717,
+    "top_item": "coffee",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "a23",
+    "kind": "answerable",
+    "question": "How hot should the water be for pour-over coffee?",
+    "top_similarity": 0.8426,
+    "top_item": "coffee",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "standup",
+      "tax"
+    ],
+    "expected_items": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "a24",
+    "kind": "answerable",
+    "question": "How long should the bloom and total brew take?",
+    "top_similarity": 0.7586,
+    "top_item": "coffee",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "standup"
+    ],
+    "expected_items": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "p01",
+    "kind": "planted",
+    "question": "At how many pages does SQLite run an automatic WAL checkpoint by default?",
+    "top_similarity": 0.9028,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "wal",
+      "sqlite_tip"
+    ]
+  },
+  {
+    "id": "p02",
+    "kind": "planted",
+    "question": "Should I raise the WAL checkpoint limit for bulk imports?",
+    "top_similarity": 0.783,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_tip",
+      "wal"
+    ]
+  },
+  {
+    "id": "n01",
+    "kind": "near_miss",
+    "question": "What is the default page size of an SQLite database?",
+    "top_similarity": 0.7443,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n02",
+    "kind": "near_miss",
+    "question": "How many writers can SQLite have at once in rollback journal mode?",
+    "top_similarity": 0.7671,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "sourdough",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n03",
+    "kind": "near_miss",
+    "question": "How long should sourdough dough bulk ferment?",
+    "top_similarity": 0.7783,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n04",
+    "kind": "near_miss",
+    "question": "What flour should I use for the sourdough starter?",
+    "top_similarity": 0.7727,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n05",
+    "kind": "near_miss",
+    "question": "What tyre pressure should I run on my mountain bike?",
+    "top_similarity": 0.7182,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n06",
+    "kind": "near_miss",
+    "question": "How often should I replace the cassette?",
+    "top_similarity": 0.7124,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "sourdough",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n07",
+    "kind": "near_miss",
+    "question": "What is the penalty for paying estimated taxes late?",
+    "top_similarity": 0.7137,
+    "top_item": "tax",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n08",
+    "kind": "near_miss",
+    "question": "What time is the standup on Mondays in winter time?",
+    "top_similarity": 0.7355,
+    "top_item": "standup",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n09",
+    "kind": "near_miss",
+    "question": "What time is my return flight from Lisbon?",
+    "top_similarity": 0.795,
+    "top_item": "lisbon",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n10",
+    "kind": "near_miss",
+    "question": "What ratio should I use for French press coffee?",
+    "top_similarity": 0.7435,
+    "top_item": "coffee",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o01",
+    "kind": "out_of_scope",
+    "question": "What is the capital of Peru?",
+    "top_similarity": 0.4518,
+    "top_item": "lisbon",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o02",
+    "kind": "out_of_scope",
+    "question": "What is the best recipe for banana bread?",
+    "top_similarity": 0.5898,
+    "top_item": "sourdough",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sourdough",
+      "sqlite_tip",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o03",
+    "kind": "out_of_scope",
+    "question": "How does Python's global interpreter lock work?",
+    "top_similarity": 0.6053,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "bike",
+      "sqlite_tip",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o04",
+    "kind": "out_of_scope",
+    "question": "Who won the 2018 football World Cup?",
+    "top_similarity": 0.4567,
+    "top_item": "standup",
+    "source_items": [
+      "coffee",
+      "lisbon",
+      "standup",
+      "tax",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o05",
+    "kind": "out_of_scope",
+    "question": "How do I renew my passport?",
+    "top_similarity": 0.5151,
+    "top_item": "tax",
+    "source_items": [
+      "bike",
+      "lisbon",
+      "sqlite_tip",
+      "standup",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o06",
+    "kind": "out_of_scope",
+    "question": "What's a good stretching routine for runners?",
+    "top_similarity": 0.5193,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "coffee",
+      "sqlite_tip",
+      "standup",
+      "wal"
+    ],
+    "expected_items": []
+  }
+]
