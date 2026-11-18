@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils'
 interface CitationCardProps {
   citation: Citation
   active: boolean
-  onSelect: (ref: number) => void
 }
 
 function citationCardId(ref: number): string {
@@ -26,7 +25,7 @@ function ScoreBadge({ score }: { score: number | null }) {
   return <Badge variant="outline">score {score.toFixed(2)}</Badge>
 }
 
-export function CitationCard({ citation, active, onSelect }: CitationCardProps) {
+export function CitationCard({ citation, active }: CitationCardProps) {
   const ref = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
@@ -38,21 +37,21 @@ export function CitationCard({ citation, active, onSelect }: CitationCardProps) 
     <li
       ref={ref}
       id={citationCardId(citation.ref)}
-      onClick={() => onSelect(citation.ref)}
       className={cn(
-        'cursor-pointer space-y-1.5 rounded-lg border p-3 text-sm transition-colors',
-        active ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted/50',
+        'space-y-1.5 rounded-lg border bg-background p-3 text-sm transition-colors',
+        active && 'border-primary bg-primary/5 ring-1 ring-primary',
       )}
     >
       <div className="flex items-start gap-2">
-        <span className="font-semibold text-muted-foreground">[{citation.ref}]</span>
+        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full border bg-muted px-1.5 text-xs font-semibold">
+          {citation.ref}
+        </span>
         <div className="min-w-0 flex-1">
           {citation.item_type === 'url' && citation.source_url ? (
             <a
               href={citation.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 font-medium hover:underline"
             >
               {title} <ExternalLink className="size-3" aria-hidden />
@@ -68,7 +67,7 @@ export function CitationCard({ citation, active, onSelect }: CitationCardProps) 
         </div>
         <ScoreBadge score={citation.score} />
       </div>
-      <p className="text-muted-foreground">{citation.snippet}</p>
+      <p className="leading-relaxed text-muted-foreground">{citation.snippet}</p>
     </li>
   )
 }

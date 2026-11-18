@@ -4,27 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { FieldError } from '@/components/inbox/FieldError'
 import { duplicateItemId, useIngest } from '@/hooks/useIngest'
 import type { ApiError, IngestRequest } from '@/lib/api'
-import { NOTE_MAX_CHARS, TITLE_MAX_CHARS, URL_MAX_CHARS } from '@/lib/limits'
-
-type Kind = 'note' | 'url'
+import { validateIngest, type Field, type Kind, type Problem } from '@/lib/ingest-validation'
 
 interface IngestFormProps {
   onShowItem: (id: string) => void
-}
-
-function validate(kind: Kind, content: string, title: string, url: string): string | null {
-  if (kind === 'note') {
-    if (!content.trim()) return 'Write something to save.'
-    if (content.length > NOTE_MAX_CHARS) return `Notes are limited to ${NOTE_MAX_CHARS} characters.`
-    if (title.length > TITLE_MAX_CHARS) return `Titles are limited to ${TITLE_MAX_CHARS} characters.`
-    return null
-  }
-  const trimmed = url.trim()
-  if (!/^https?:\/\/\S+$/i.test(trimmed)) return 'Enter an http:// or https:// URL.'
-  if (trimmed.length > URL_MAX_CHARS) return `URLs are limited to ${URL_MAX_CHARS} characters.`
-  return null
 }
 
 function serverMessage(error: ApiError): string {
@@ -42,16 +28,17 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
   const [content, setContent] = useState('')
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
-  const [clientError, setClientError] = useState<string | null>(null)
+  const [problem, setProblem] = useState<Problem | null>(null)
 
   const existingId = duplicateItemId(ingest.error)
   const serverError = ingest.error && !ingest.error.isNetworkError ? ingest.error : null
+  const invalid = (field: Field) => problem?.field === field
 
   function submit(event: FormEvent) {
     event.preventDefault()
-    const problem = validate(kind, content, title, url)
-    setClientError(problem)
-    if (problem) return
+    const found = validateIngest(kind, content, title, url)
+    setProblem(found)
+    if (found) return
     const body: IngestRequest =
       kind === 'note'
         ? { type: 'note', content, title: title.trim() || null }
@@ -65,55 +52,74 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
     })
   }
 
+  function edit(setter: (value: string) => void, value: string) {
+    setter(value)
+    setProblem(null)
+  }
+
   function switchKind(next: string) {
     setKind(next as Kind)
-    setClientError(null)
+    setProblem(null)
     ingest.reset()
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3">
+    <form onSubmit={submit} className="space-y-3" noValidate>
       <Tabs value={kind} onValueChange={switchKind}>
-        <TabsList>
+        <TabsList aria-label="What to save">
           <TabsTrigger value="note">Note</TabsTrigger>
           <TabsTrigger value="url">URL</TabsTrigger>
         </TabsList>
         <TabsContent value="note" className="space-y-2">
           <Input
+            aria-label="Title (optional)"
             placeholder="Title (optional)"
             value={title}
-            maxLength={TITLE_MAX_CHARS}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => edit(setTitle, e.target.value)}
+            aria-invalid={invalid('title')}
+            aria-describedby="title-error"
             disabled={ingest.isPending}
           />
+          <FieldError id="title-error" problem={problem} field="title" />
           <Textarea
+            aria-label="Note"
             placeholder="Paste or write a note…"
             value={content}
             rows={5}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => edit(setContent, e.target.value)}
+            aria-invalid={invalid('content')}
+            aria-describedby="content-error"
             disabled={ingest.isPending}
           />
+          <FieldError id="content-error" problem={problem} field="content" />
         </TabsContent>
-        <TabsContent value="url">
+        <TabsContent value="url" className="space-y-2">
           <Input
             type="url"
+            aria-label="URL"
             placeholder="https://example.com/article"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => edit(setUrl, e.target.value)}
+            aria-invalid={invalid('url')}
+            aria-describedby="url-error"
             disabled={ingest.isPending}
           />
+          <FieldError id="url-error" problem={problem} field="url" />
         </TabsContent>
       </Tabs>
-      {clientError && <p className="text-sm text-destructive">{clientError}</p>}
       {existingId ? (
-        <p className="text-sm text-amber-700 dark:text-amber-400">
-          Already saved.{' '}
-          <button type="button" className="underline" onClick={() => onShowItem(existingId)}>
+        <p className="text-sm text-amber-800 dark:text-amber-400" role="status">
+          Already saved ·{' '}
+          <button type="button" className="font-medium underline" onClick={() => onShowItem(existingId)}>
             Show it
           </button>
         </p>
       ) : (
-        serverError && <p className="text-sm text-destructive">{serverMessage(serverError)}</p>
+        serverError && (
+          <p className="text-sm text-destructive" role="alert">
+            {serverMessage(serverError)}
+          </p>
+        )
       )}
       <Button type="submit" disabled={ingest.isPending}>
         {ingest.isPending ? 'Saving…' : 'Save'}

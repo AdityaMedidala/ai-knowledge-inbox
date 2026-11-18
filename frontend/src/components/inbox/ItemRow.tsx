@@ -13,36 +13,51 @@ interface ItemRowProps {
   highlighted: boolean
 }
 
+function domainOf(url: string | null): string | null {
+  if (!url) return null
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+/** Title, else the note's first line, else the URL without its scheme. */
+function headingOf(item: ItemSummary): string {
+  const firstLine = item.preview?.split('\n').find((line) => line.trim())
+  const bareUrl = item.source_url?.replace(/^https?:\/\/(www\.)?/, '')
+  return item.title ?? (item.type === 'note' ? firstLine : bareUrl) ?? firstLine ?? 'Untitled'
+}
+
 export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
   const remove = useDeleteItem()
-  const TypeIcon = item.type === 'url' ? Link2 : FileText
-  const heading = item.title ?? item.preview ?? item.source_url ?? 'Untitled'
+  const isUrl = item.type === 'url'
+  const TypeIcon = isUrl ? Link2 : FileText
+  const heading = headingOf(item)
+  const domain = isUrl ? domainOf(item.source_url) : null
 
   return (
     <li
       id={elementId}
       className={cn(
-        'flex items-start gap-3 rounded-lg border p-3 transition-colors',
-        highlighted && 'border-primary bg-primary/5',
+        'flex items-start gap-3 rounded-lg border bg-background p-3 transition-colors',
+        highlighted && 'border-primary ring-1 ring-primary',
+        item.status === 'failed' && 'border-destructive/40',
       )}
     >
-      <TypeIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-label={item.type} />
-      <div className="min-w-0 flex-1 space-y-1">
-        <p className="truncate font-medium" title={heading}>
+      <TypeIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <p className="truncate text-sm font-medium" title={heading}>
+          <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
           {heading}
         </p>
-        {item.type === 'url' && item.source_url && (
-          <a
-            href={item.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block truncate text-xs text-muted-foreground hover:underline"
-          >
-            {item.source_url}
-          </a>
-        )}
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          <StatusBadge status={item.status} error={item.error} />
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <StatusBadge status={item.status} />
+          {domain && item.source_url && (
+            <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              {domain}
+            </a>
+          )}
           <span>{relativeTime(item.created_at)}</span>
           {item.status === 'ready' && (
             <span>
@@ -50,6 +65,12 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
             </span>
           )}
         </div>
+        {item.status === 'failed' && (
+          <p className="text-xs text-destructive">
+            {item.error?.message ?? 'Processing failed.'}
+            {item.error?.code && <span className="ml-1 font-mono opacity-80">({item.error.code})</span>}
+          </p>
+        )}
       </div>
       <Button
         variant="ghost"

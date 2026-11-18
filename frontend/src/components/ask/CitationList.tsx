@@ -5,10 +5,9 @@ interface CitationListProps {
   heading: string
   citations: Citation[]
   activeRef: number | null
-  onSelect: (ref: number) => void
 }
 
-export function CitationList({ heading, citations, activeRef, onSelect }: CitationListProps) {
+export function CitationList({ heading, citations, activeRef }: CitationListProps) {
   if (citations.length === 0) return null
   return (
     <section className="space-y-2" aria-label={heading}>
@@ -19,7 +18,6 @@ export function CitationList({ heading, citations, activeRef, onSelect }: Citati
             key={citation.ref}
             citation={citation}
             active={citation.ref === activeRef}
-            onSelect={onSelect}
           />
         ))}
       </ol>

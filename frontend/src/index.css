@@ -127,4 +127,12 @@
   html {
     @apply font-sans;
     }
+  /* Every interactive element shows where keyboard focus is (buttons, links, pills, tabs),
+     in high contrast; overrides components that set outline-none. */
+  :focus-visible {
+    outline-style: solid !important;
+    outline-width: 2px !important;
+    outline-color: var(--foreground) !important;
+    outline-offset: 2px;
+    }
 }
