@@ -29,25 +29,58 @@ logger = structlog.get_logger(__name__)
 ESCALATING_BACKEND = "jev"
 _SENTENCE = re.compile(rf".+?(?:[.!?]+(?:\s*{MARKER.pattern})*(?=\s|$)|$)")
 _FENCE = "```"
-_SKIP_LINE = re.compile(r"^(#|\|?\s*:?-{3,}|\*\*[^*]+\*\*:?$)")
+_SKIP_LINE = re.compile(r"^(#|\|?\s*:?-{3,})")
+_BOLD_LABEL = re.compile(r"^\*\*[^*]+\*\*:?$")
 _LIST_MARK = re.compile(r"^(?:[-*+]|\d+[.)])\s+")
 _MARKER_WITH_SPACE = re.compile(rf"\s*{MARKER.pattern}")
+# "Sources: [1][2]", "**Sources**: [1]", "[1][3]" alone: refs for the sentence above, not a claim.
+_REFS_ONLY = re.compile(
+    rf"^(?:\**\s*sources?\s*\**\s*:?\s*\**)?(?:\s*{MARKER.pattern}[\s.,;]*)*$", re.I
+)
+# Dots of these abbreviations never end a sentence; a.m./p.m./etc./vs. only when the text
+# continues in lower case or with a digit ("10:30 a.m. on Tuesdays").
+_ABBREVIATION = re.compile(
+    r"\b(?:[eE]\.g|[iI]\.e|cf)\.|\b(?:a\.m|p\.m|A\.M|P\.M|etc|vs|approx)\.(?=\s+[a-z0-9(])"
+)
+_HIDDEN_DOT = "\x00"
+_MIN_CLAIM_WORDS = 3
+
+
+def _protect_abbreviations(line: str) -> str:
+    return _ABBREVIATION.sub(lambda m: m.group(0).replace(".", _HIDDEN_DOT), line)
+
+
+def _is_bold_claim(line: str, is_list_item: bool) -> bool:
+    """A bold-only list item of 3+ words is a claim ("1. **Standard library imports**");
+    short ones and those ending in ':' are sub-headings ("- **`asyncio.Queue`**")."""
+    is_label = line.rstrip("*").endswith(":")
+    return is_list_item and not is_label and len(line.split()) >= _MIN_CLAIM_WORDS
 
 
 def split_sentences(answer: str) -> list[tuple[str, list[int]]]:
-    """(display text, refs) per sentence. Headings, fenced code, table rules and bold-only lines
-    (section labels like **Overview**) are not claims and are skipped."""
-    sentences = []
+    """(display text, refs) per sentence. Headings, fenced code, table rules and bold-only
+    label lines (**Overview**, short bold list items) are not claims and are skipped. A line
+    holding only citations ("[1][3]", "Sources: [1]") adds its refs to the sentence before it."""
+    sentences: list[tuple[str, list[int]]] = []
     in_fence = False
     for raw_line in answer.splitlines():
-        line = _LIST_MARK.sub("", raw_line.strip())
+        stripped = raw_line.strip()
+        line = _LIST_MARK.sub("", stripped)
+        is_list_item = line != stripped
         if line.startswith(_FENCE):
             in_fence = not in_fence
             continue
         if in_fence or not line or _SKIP_LINE.match(line):
             continue
-        for match in _SENTENCE.finditer(line):
-            piece = match.group(0).strip()
+        if _REFS_ONLY.match(line):
+            if sentences:
+                text, refs = sentences[-1]
+                sentences[-1] = (text, list(dict.fromkeys([*refs, *parse_refs(line)])))
+            continue
+        if _BOLD_LABEL.match(line) and not _is_bold_claim(line, is_list_item):
+            continue
+        for match in _SENTENCE.finditer(_protect_abbreviations(line)):
+            piece = match.group(0).strip().replace(_HIDDEN_DOT, ".")
             text = " ".join(_MARKER_WITH_SPACE.sub("", piece).replace("**", "").split())
             if text:
                 sentences.append((text, parse_refs(piece)))

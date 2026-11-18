@@ -47,6 +47,61 @@ def test_split_sentences_keeps_refs_and_skips_headings_and_labels() -> None:
     ]
 
 
+def test_split_sentences_checks_bold_only_list_items() -> None:
+    answer = (
+        "Imports are grouped:\n\n1. **Standard library imports**  \n"
+        "2. **Related third-party imports**"
+    )
+    assert split_sentences(answer) == [
+        ("Imports are grouped:", []),
+        ("Standard library imports", []),
+        ("Related third-party imports", []),
+    ]
+
+
+def test_split_sentences_still_skips_bold_list_labels() -> None:
+    answer = (
+        "- **Overview**:\n- **`asyncio.Queue`**\n- **Readers and writers:**\n"
+        "- Readers never block [1]."
+    )
+    assert split_sentences(answer) == [("Readers never block.", [1])]
+
+
+def test_split_sentences_attaches_a_citation_only_line_to_the_sentence_before() -> None:
+    answer = "Readers never block writers [2].\n\n[1][3]"
+    assert split_sentences(answer) == [("Readers never block writers.", [2, 1, 3])]
+
+
+def test_split_sentences_treats_a_sources_line_as_citations_not_a_sentence() -> None:
+    for line in ("**Sources**: [1][2]", "Sources: [1], [2]", "Source: 【1】【2】"):
+        assert split_sentences(f"Pending changes are rolled back.\n\n{line}") == [
+            ("Pending changes are rolled back.", [1, 2])
+        ]
+
+
+def test_split_sentences_drops_a_leading_citation_only_line() -> None:
+    assert split_sentences("[1]\nThe WAL is reset.") == [("The WAL is reset.", [])]
+
+
+def test_split_sentences_does_not_split_on_abbreviations() -> None:
+    answer = (
+        "The standup moves to 10:30 a.m. on Tuesdays [1]. "
+        "Use a ratio, e.g. 20 g to 320 g, i.e. 1:16 [2]. It ends at 11 a.m. Then lunch."
+    )
+    assert split_sentences(answer) == [
+        ("The standup moves to 10:30 a.m. on Tuesdays.", [1]),
+        ("Use a ratio, e.g. 20 g to 320 g, i.e. 1:16.", [2]),
+        ("It ends at 11 a.m.", []),
+        ("Then lunch.", []),
+    ]
+
+
+def test_split_sentences_strips_suffixed_markers_and_keeps_their_refs() -> None:
+    assert split_sentences("The default is 1000 pages【2†section 6】【4†section 2.3】.") == [
+        ("The default is 1000 pages.", [2, 4])
+    ]
+
+
 # --- service --------------------------------------------------------------------------------
 
 
