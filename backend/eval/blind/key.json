@@ -1,0 +1,1311 @@
+{
+ "s-59f9ad8a": {
+  "row": "n12.0",
+  "type": "sentence"
+ },
+ "s-28c5ab16": {
+  "row": "m05.3",
+  "type": "sentence"
+ },
+ "s-a8ea2297": {
+  "row": "m05.1",
+  "type": "sentence"
+ },
+ "s-c66c232b": {
+  "row": "m05.4",
+  "type": "sentence"
+ },
+ "s-ca3ac8ce": {
+  "row": "m05.0",
+  "type": "sentence"
+ },
+ "s-f97fcf56": {
+  "row": "m05.2",
+  "type": "sentence"
+ },
+ "s-3832cdd2": {
+  "row": "a06.2",
+  "type": "sentence"
+ },
+ "s-d4dc616c": {
+  "row": "a06.1",
+  "type": "sentence"
+ },
+ "s-050fb08c": {
+  "row": "a06.0",
+  "type": "sentence"
+ },
+ "s-c8ddbf34": {
+  "row": "u22.1",
+  "type": "sentence"
+ },
+ "s-111cf3eb": {
+  "row": "u22.0",
+  "type": "sentence"
+ },
+ "s-a9f499a0": {
+  "row": "n04.2",
+  "type": "sentence"
+ },
+ "s-dc06278a": {
+  "row": "n04.0",
+  "type": "sentence"
+ },
+ "s-3d18e5c9": {
+  "row": "n04.1",
+  "type": "sentence"
+ },
+ "s-e9e94fdd": {
+  "row": "u03.0",
+  "type": "sentence"
+ },
+ "s-6cf9da79": {
+  "row": "u03.1",
+  "type": "sentence"
+ },
+ "s-509008df": {
+  "row": "u14.0",
+  "type": "sentence"
+ },
+ "s-76f3cb53": {
+  "row": "c07.0",
+  "type": "sentence"
+ },
+ "s-5f05267e": {
+  "row": "c07.2",
+  "type": "sentence"
+ },
+ "s-35f9064f": {
+  "row": "c07.1",
+  "type": "sentence"
+ },
+ "s-f3e9c951": {
+  "row": "c07.3",
+  "type": "sentence"
+ },
+ "s-ce7e2319": {
+  "row": "c07.4",
+  "type": "sentence"
+ },
+ "s-ad8f4ee7": {
+  "row": "u10.0",
+  "type": "sentence"
+ },
+ "s-1d197aad": {
+  "row": "u10.1",
+  "type": "sentence"
+ },
+ "s-19270824": {
+  "row": "u10.2",
+  "type": "sentence"
+ },
+ "s-44b83a6e": {
+  "row": "u10.4",
+  "type": "sentence"
+ },
+ "s-09eb8bd3": {
+  "row": "u10.3",
+  "type": "sentence"
+ },
+ "s-385522f0": {
+  "row": "u11.0",
+  "type": "sentence"
+ },
+ "s-73cd3282": {
+  "row": "u11.1",
+  "type": "sentence"
+ },
+ "s-c22de387": {
+  "row": "m07.0",
+  "type": "sentence"
+ },
+ "s-8e99f723": {
+  "row": "m07.3",
+  "type": "sentence"
+ },
+ "s-d9e10213": {
+  "row": "m07.1",
+  "type": "sentence"
+ },
+ "s-22e24c24": {
+  "row": "m07.2",
+  "type": "sentence"
+ },
+ "s-0931ce55": {
+  "row": "n05.1",
+  "type": "sentence"
+ },
+ "s-5b593260": {
+  "row": "n05.0",
+  "type": "sentence"
+ },
+ "s-15853791": {
+  "row": "u07.2",
+  "type": "sentence"
+ },
+ "s-e31c228b": {
+  "row": "u07.1",
+  "type": "sentence"
+ },
+ "s-be81561a": {
+  "row": "u07.0",
+  "type": "sentence"
+ },
+ "s-07c70aea": {
+  "row": "a15.0",
+  "type": "sentence"
+ },
+ "s-87bdc1dc": {
+  "row": "a15.1",
+  "type": "sentence"
+ },
+ "s-a9c0b35e": {
+  "row": "u02.0",
+  "type": "sentence"
+ },
+ "s-7c501adb": {
+  "row": "u02.1",
+  "type": "sentence"
+ },
+ "s-135712de": {
+  "row": "u02.2",
+  "type": "sentence"
+ },
+ "s-ae061ce6": {
+  "row": "n06.1",
+  "type": "sentence"
+ },
+ "s-1293ed55": {
+  "row": "n06.2",
+  "type": "sentence"
+ },
+ "s-53b42984": {
+  "row": "n06.0",
+  "type": "sentence"
+ },
+ "s-bb803e86": {
+  "row": "a23.0",
+  "type": "sentence"
+ },
+ "s-0c6ad649": {
+  "row": "a23.2",
+  "type": "sentence"
+ },
+ "s-f53664f6": {
+  "row": "a23.1",
+  "type": "sentence"
+ },
+ "s-95d72c92": {
+  "row": "a02.1",
+  "type": "sentence"
+ },
+ "s-35716714": {
+  "row": "a02.3",
+  "type": "sentence"
+ },
+ "s-dddfe359": {
+  "row": "a02.4",
+  "type": "sentence"
+ },
+ "s-4e22ee53": {
+  "row": "a02.0",
+  "type": "sentence"
+ },
+ "s-bb534e11": {
+  "row": "a02.5",
+  "type": "sentence"
+ },
+ "s-87808899": {
+  "row": "a02.2",
+  "type": "sentence"
+ },
+ "s-395fa456": {
+  "row": "a19.2",
+  "type": "sentence"
+ },
+ "s-20c6c14c": {
+  "row": "a19.1",
+  "type": "sentence"
+ },
+ "s-73600892": {
+  "row": "a19.0",
+  "type": "sentence"
+ },
+ "s-b00c1053": {
+  "row": "n02.1",
+  "type": "sentence"
+ },
+ "s-ca77baa0": {
+  "row": "n02.0",
+  "type": "sentence"
+ },
+ "s-a6a307ce": {
+  "row": "n01.0",
+  "type": "sentence"
+ },
+ "s-34a839ce": {
+  "row": "u18.2",
+  "type": "sentence"
+ },
+ "s-c59da344": {
+  "row": "u18.1",
+  "type": "sentence"
+ },
+ "s-bde2d4e4": {
+  "row": "u18.0",
+  "type": "sentence"
+ },
+ "s-51809913": {
+  "row": "n08.0",
+  "type": "sentence"
+ },
+ "s-d3a8e880": {
+  "row": "u16.1",
+  "type": "sentence"
+ },
+ "s-c0c02ef8": {
+  "row": "u16.0",
+  "type": "sentence"
+ },
+ "s-b8459553": {
+  "row": "u16.2",
+  "type": "sentence"
+ },
+ "s-9cab8cde": {
+  "row": "i02.0",
+  "type": "sentence"
+ },
+ "s-2a33d50a": {
+  "row": "a18.2",
+  "type": "sentence"
+ },
+ "s-7f41e37b": {
+  "row": "a18.1",
+  "type": "sentence"
+ },
+ "s-f3db637a": {
+  "row": "a18.0",
+  "type": "sentence"
+ },
+ "s-9cfd9237": {
+  "row": "i01.0",
+  "type": "sentence"
+ },
+ "s-310f1d33": {
+  "row": "n10.0",
+  "type": "sentence"
+ },
+ "s-f5fc668a": {
+  "row": "c03.1",
+  "type": "sentence"
+ },
+ "s-39e62b2b": {
+  "row": "c03.4",
+  "type": "sentence"
+ },
+ "s-c078b899": {
+  "row": "c03.0",
+  "type": "sentence"
+ },
+ "s-b9bf2674": {
+  "row": "c03.3",
+  "type": "sentence"
+ },
+ "s-066498d8": {
+  "row": "c03.2",
+  "type": "sentence"
+ },
+ "s-aec48b63": {
+  "row": "i08.0",
+  "type": "sentence"
+ },
+ "s-0201fe69": {
+  "row": "i07.0",
+  "type": "sentence"
+ },
+ "s-f58f9c00": {
+  "row": "i05.1",
+  "type": "sentence"
+ },
+ "s-7e86b698": {
+  "row": "i05.0",
+  "type": "sentence"
+ },
+ "s-8858c296": {
+  "row": "m08.2",
+  "type": "sentence"
+ },
+ "s-7cdbe395": {
+  "row": "m08.1",
+  "type": "sentence"
+ },
+ "s-8d856f11": {
+  "row": "m08.0",
+  "type": "sentence"
+ },
+ "s-6d7f11ca": {
+  "row": "n15.1",
+  "type": "sentence"
+ },
+ "s-2d01b02c": {
+  "row": "n15.0",
+  "type": "sentence"
+ },
+ "s-e89fe4fb": {
+  "row": "u13.1",
+  "type": "sentence"
+ },
+ "s-d8f2635f": {
+  "row": "u13.0",
+  "type": "sentence"
+ },
+ "s-8088ab70": {
+  "row": "u13.2",
+  "type": "sentence"
+ },
+ "s-acf2c1eb": {
+  "row": "u13.3",
+  "type": "sentence"
+ },
+ "s-9645c504": {
+  "row": "u13.4",
+  "type": "sentence"
+ },
+ "s-ebc7b552": {
+  "row": "i06.0",
+  "type": "sentence"
+ },
+ "s-bd589659": {
+  "row": "i06.1",
+  "type": "sentence"
+ },
+ "s-63a28a52": {
+  "row": "a07.0",
+  "type": "sentence"
+ },
+ "s-3c25fe4b": {
+  "row": "a07.1",
+  "type": "sentence"
+ },
+ "s-4087bb11": {
+  "row": "a07.2",
+  "type": "sentence"
+ },
+ "s-3dbb0a6c": {
+  "row": "a07.3",
+  "type": "sentence"
+ },
+ "s-0318019b": {
+  "row": "u01.1",
+  "type": "sentence"
+ },
+ "s-641327db": {
+  "row": "u01.2",
+  "type": "sentence"
+ },
+ "s-b8bc0e56": {
+  "row": "u01.0",
+  "type": "sentence"
+ },
+ "s-80fda381": {
+  "row": "c05.1",
+  "type": "sentence"
+ },
+ "s-95ec6806": {
+  "row": "c05.2",
+  "type": "sentence"
+ },
+ "s-47343c6c": {
+  "row": "c05.0",
+  "type": "sentence"
+ },
+ "s-c79063fb": {
+  "row": "c05.3",
+  "type": "sentence"
+ },
+ "s-5f31c793": {
+  "row": "n03.0",
+  "type": "sentence"
+ },
+ "s-16746011": {
+  "row": "i03.2",
+  "type": "sentence"
+ },
+ "s-ab0cbd7d": {
+  "row": "i03.3",
+  "type": "sentence"
+ },
+ "s-f22c8d76": {
+  "row": "i03.0",
+  "type": "sentence"
+ },
+ "s-26aa34f6": {
+  "row": "i03.1",
+  "type": "sentence"
+ },
+ "s-2ea45576": {
+  "row": "n11.0",
+  "type": "sentence"
+ },
+ "s-8c7e7b77": {
+  "row": "u19.2",
+  "type": "sentence"
+ },
+ "s-d68ea2fc": {
+  "row": "u19.0",
+  "type": "sentence"
+ },
+ "s-231e1e29": {
+  "row": "u19.1",
+  "type": "sentence"
+ },
+ "s-01dff5bb": {
+  "row": "u19.3",
+  "type": "sentence"
+ },
+ "s-c17d8b01": {
+  "row": "a13.1",
+  "type": "sentence"
+ },
+ "s-fd0185bd": {
+  "row": "a13.0",
+  "type": "sentence"
+ },
+ "s-aa860cf4": {
+  "row": "a13.2",
+  "type": "sentence"
+ },
+ "s-60a7992e": {
+  "row": "n13.0",
+  "type": "sentence"
+ },
+ "s-809d70d7": {
+  "row": "n13.1",
+  "type": "sentence"
+ },
+ "s-9eede719": {
+  "row": "n07.0",
+  "type": "sentence"
+ },
+ "s-13fe3389": {
+  "row": "m02.3",
+  "type": "sentence"
+ },
+ "s-10238b9e": {
+  "row": "m02.0",
+  "type": "sentence"
+ },
+ "s-c02ab08f": {
+  "row": "m02.2",
+  "type": "sentence"
+ },
+ "s-a2043374": {
+  "row": "m02.1",
+  "type": "sentence"
+ },
+ "s-18b0bacc": {
+  "row": "u09.0",
+  "type": "sentence"
+ },
+ "s-c7d650f2": {
+  "row": "u09.1",
+  "type": "sentence"
+ },
+ "s-9b75bb70": {
+  "row": "u05.2",
+  "type": "sentence"
+ },
+ "s-1352ad09": {
+  "row": "u05.3",
+  "type": "sentence"
+ },
+ "s-9b4eef1c": {
+  "row": "u05.0",
+  "type": "sentence"
+ },
+ "s-ab41c1f8": {
+  "row": "u05.1",
+  "type": "sentence"
+ },
+ "s-88c004ad": {
+  "row": "a16.1",
+  "type": "sentence"
+ },
+ "s-40a6e3c0": {
+  "row": "a16.3",
+  "type": "sentence"
+ },
+ "s-6ffb5067": {
+  "row": "a16.4",
+  "type": "sentence"
+ },
+ "s-754e18b1": {
+  "row": "a16.5",
+  "type": "sentence"
+ },
+ "s-ce726194": {
+  "row": "a16.2",
+  "type": "sentence"
+ },
+ "s-ca30f77c": {
+  "row": "a16.0",
+  "type": "sentence"
+ },
+ "s-c979acb1": {
+  "row": "m03.4",
+  "type": "sentence"
+ },
+ "s-4b705eff": {
+  "row": "m03.3",
+  "type": "sentence"
+ },
+ "s-6570b7a4": {
+  "row": "m03.1",
+  "type": "sentence"
+ },
+ "s-6a6ead7e": {
+  "row": "m03.5",
+  "type": "sentence"
+ },
+ "s-25901acb": {
+  "row": "m03.0",
+  "type": "sentence"
+ },
+ "s-f2342450": {
+  "row": "m03.6",
+  "type": "sentence"
+ },
+ "s-375c95ea": {
+  "row": "m03.2",
+  "type": "sentence"
+ },
+ "s-4c26da5b": {
+  "row": "m03.7",
+  "type": "sentence"
+ },
+ "s-6c9d6696": {
+  "row": "u15.0",
+  "type": "sentence"
+ },
+ "s-d6397fe5": {
+  "row": "m01.0",
+  "type": "sentence"
+ },
+ "s-0e6b21d0": {
+  "row": "m01.2",
+  "type": "sentence"
+ },
+ "s-9a92cfec": {
+  "row": "m01.1",
+  "type": "sentence"
+ },
+ "s-d1a7a17b": {
+  "row": "a22.1",
+  "type": "sentence"
+ },
+ "s-27529383": {
+  "row": "a22.2",
+  "type": "sentence"
+ },
+ "s-b964de9b": {
+  "row": "a22.0",
+  "type": "sentence"
+ },
+ "s-2f57c34b": {
+  "row": "a01.2",
+  "type": "sentence"
+ },
+ "s-dec3b499": {
+  "row": "a01.4",
+  "type": "sentence"
+ },
+ "s-cd84c356": {
+  "row": "a01.5",
+  "type": "sentence"
+ },
+ "s-b3c7a3c8": {
+  "row": "a01.9",
+  "type": "sentence"
+ },
+ "s-c93c6e38": {
+  "row": "a01.0",
+  "type": "sentence"
+ },
+ "s-9c965716": {
+  "row": "a01.10",
+  "type": "sentence"
+ },
+ "s-95353891": {
+  "row": "a01.1",
+  "type": "sentence"
+ },
+ "s-ee282e71": {
+  "row": "a01.6",
+  "type": "sentence"
+ },
+ "s-c61cd66e": {
+  "row": "a01.7",
+  "type": "sentence"
+ },
+ "s-935ebc49": {
+  "row": "a01.8",
+  "type": "sentence"
+ },
+ "s-0ba216a8": {
+  "row": "a01.3",
+  "type": "sentence"
+ },
+ "s-dcdc5964": {
+  "row": "c04.1",
+  "type": "sentence"
+ },
+ "s-82b73cf3": {
+  "row": "c04.0",
+  "type": "sentence"
+ },
+ "s-cc05704f": {
+  "row": "c04.3",
+  "type": "sentence"
+ },
+ "s-cce2d735": {
+  "row": "c04.2",
+  "type": "sentence"
+ },
+ "s-5d895c83": {
+  "row": "c04.4",
+  "type": "sentence"
+ },
+ "s-9a194342": {
+  "row": "a21.1",
+  "type": "sentence"
+ },
+ "s-6b77d70b": {
+  "row": "a21.0",
+  "type": "sentence"
+ },
+ "s-5193770a": {
+  "row": "a21.2",
+  "type": "sentence"
+ },
+ "s-bcb4bde1": {
+  "row": "m06.0",
+  "type": "sentence"
+ },
+ "s-16cfab0e": {
+  "row": "m06.1",
+  "type": "sentence"
+ },
+ "s-fd1bcedb": {
+  "row": "c08.4",
+  "type": "sentence"
+ },
+ "s-93d6e88c": {
+  "row": "c08.0",
+  "type": "sentence"
+ },
+ "s-39b7161f": {
+  "row": "c08.2",
+  "type": "sentence"
+ },
+ "s-9b8abd8d": {
+  "row": "c08.3",
+  "type": "sentence"
+ },
+ "s-a724ff2c": {
+  "row": "c08.1",
+  "type": "sentence"
+ },
+ "s-bc52291c": {
+  "row": "n14.0",
+  "type": "sentence"
+ },
+ "s-9a97a135": {
+  "row": "u04.0",
+  "type": "sentence"
+ },
+ "s-e0990c9a": {
+  "row": "u04.3",
+  "type": "sentence"
+ },
+ "s-3d1f5211": {
+  "row": "u04.1",
+  "type": "sentence"
+ },
+ "s-b2f72fc9": {
+  "row": "u04.2",
+  "type": "sentence"
+ },
+ "s-cf5a466b": {
+  "row": "u06.6",
+  "type": "sentence"
+ },
+ "s-d6d83146": {
+  "row": "u06.5",
+  "type": "sentence"
+ },
+ "s-31dce94e": {
+  "row": "u06.2",
+  "type": "sentence"
+ },
+ "s-41fdd5f6": {
+  "row": "u06.3",
+  "type": "sentence"
+ },
+ "s-21ba6b55": {
+  "row": "u06.0",
+  "type": "sentence"
+ },
+ "s-d505f704": {
+  "row": "u06.4",
+  "type": "sentence"
+ },
+ "s-261a772e": {
+  "row": "u06.1",
+  "type": "sentence"
+ },
+ "s-c1b8ab3e": {
+  "row": "i04.0",
+  "type": "sentence"
+ },
+ "s-280a84f7": {
+  "row": "c02.2",
+  "type": "sentence"
+ },
+ "s-fd4af8ae": {
+  "row": "c02.0",
+  "type": "sentence"
+ },
+ "s-5f0dad0f": {
+  "row": "c02.4",
+  "type": "sentence"
+ },
+ "s-1c579aa3": {
+  "row": "c02.3",
+  "type": "sentence"
+ },
+ "s-811ef78b": {
+  "row": "c02.1",
+  "type": "sentence"
+ },
+ "s-e0153d49": {
+  "row": "a05.1",
+  "type": "sentence"
+ },
+ "s-a3b97cd1": {
+  "row": "a05.0",
+  "type": "sentence"
+ },
+ "s-3fa814ea": {
+  "row": "u21.0",
+  "type": "sentence"
+ },
+ "s-7d534ec1": {
+  "row": "u08.0",
+  "type": "sentence"
+ },
+ "s-fd606e61": {
+  "row": "u08.1",
+  "type": "sentence"
+ },
+ "s-ffea936c": {
+  "row": "a09.1",
+  "type": "sentence"
+ },
+ "s-2c424b81": {
+  "row": "a09.0",
+  "type": "sentence"
+ },
+ "s-ef253952": {
+  "row": "a09.2",
+  "type": "sentence"
+ },
+ "s-b91927c6": {
+  "row": "u20.1",
+  "type": "sentence"
+ },
+ "s-c042d0d3": {
+  "row": "u20.2",
+  "type": "sentence"
+ },
+ "s-090bf2cc": {
+  "row": "u20.0",
+  "type": "sentence"
+ },
+ "s-8fc67acf": {
+  "row": "a12.0",
+  "type": "sentence"
+ },
+ "s-5f325dd1": {
+  "row": "a12.2",
+  "type": "sentence"
+ },
+ "s-b2f86602": {
+  "row": "a12.1",
+  "type": "sentence"
+ },
+ "s-b7fc5124": {
+  "row": "n09.1",
+  "type": "sentence"
+ },
+ "s-8032e79a": {
+  "row": "n09.0",
+  "type": "sentence"
+ },
+ "s-d17f8fd2": {
+  "row": "m04.0",
+  "type": "sentence"
+ },
+ "s-007e5fdf": {
+  "row": "m04.1",
+  "type": "sentence"
+ },
+ "s-e9c31c08": {
+  "row": "m04.2",
+  "type": "sentence"
+ },
+ "s-fc4fa486": {
+  "row": "m04.3",
+  "type": "sentence"
+ },
+ "s-e1555dca": {
+  "row": "u17.2",
+  "type": "sentence"
+ },
+ "s-71626d3d": {
+  "row": "u17.0",
+  "type": "sentence"
+ },
+ "s-b9d7f1ef": {
+  "row": "u17.1",
+  "type": "sentence"
+ },
+ "s-d597ef50": {
+  "row": "a03.2",
+  "type": "sentence"
+ },
+ "s-303b0715": {
+  "row": "a03.1",
+  "type": "sentence"
+ },
+ "s-eb2c0cb1": {
+  "row": "a03.0",
+  "type": "sentence"
+ },
+ "s-cfc56085": {
+  "row": "u12.0",
+  "type": "sentence"
+ },
+ "s-4fb6824f": {
+  "row": "u12.1",
+  "type": "sentence"
+ },
+ "s-873b6909": {
+  "row": "c06.1",
+  "type": "sentence"
+ },
+ "s-7b2714f1": {
+  "row": "c06.0",
+  "type": "sentence"
+ },
+ "s-cae2724d": {
+  "row": "c01.2",
+  "type": "sentence"
+ },
+ "s-c1f01b19": {
+  "row": "c01.0",
+  "type": "sentence"
+ },
+ "s-3c2f3ab5": {
+  "row": "c01.1",
+  "type": "sentence"
+ },
+ "s-de9a072e": {
+  "row": "c01.3",
+  "type": "sentence"
+ },
+ "q-30537068": {
+  "row": "a13",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-f4f50ded": {
+  "row": "n13",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-991afbce": {
+  "row": "n04",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-5f95a7d2": {
+  "row": "a16",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-9c63708e": {
+  "row": "i01",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-488805f3": {
+  "row": "n09",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-18f8e6ed": {
+  "row": "n08",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-d238f8b2": {
+  "row": "u18",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-3b6f803f": {
+  "row": "m01",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-6fd1b3e0": {
+  "row": "u15",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-cc2aa1d6": {
+  "row": "u20",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-4c4f6233": {
+  "row": "u06",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-8a663667": {
+  "row": "u22",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-38e8289d": {
+  "row": "n12",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-75af0789": {
+  "row": "u04",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-97ce842e": {
+  "row": "u03",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-9607720f": {
+  "row": "u13",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-b78a23ff": {
+  "row": "n06",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-404fe4b0": {
+  "row": "a09",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-284db43c": {
+  "row": "a18",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-196564cb": {
+  "row": "c07",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-6258b2d7": {
+  "row": "a05",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-e3a844ab": {
+  "row": "a02",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-eb184992": {
+  "row": "i07",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-aa159b16": {
+  "row": "a03",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-e85e462d": {
+  "row": "m06",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-121f8bd5": {
+  "row": "c01",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-95b6504a": {
+  "row": "u02",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-edf596cc": {
+  "row": "u21",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-f1a8d12f": {
+  "row": "a01",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-eda1ae17": {
+  "row": "n02",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-46fd45e4": {
+  "row": "m04",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-e7570e64": {
+  "row": "i04",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-b8c95735": {
+  "row": "u14",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-1632c29e": {
+  "row": "u07",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-cb288910": {
+  "row": "i06",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-4d2bebb2": {
+  "row": "i02",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-796690d3": {
+  "row": "n10",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-2f015d97": {
+  "row": "u08",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-ee1303ac": {
+  "row": "u19",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-8d2b302a": {
+  "row": "m03",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-5ddcb043": {
+  "row": "m07",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-ff62523e": {
+  "row": "c04",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-75c47b1e": {
+  "row": "a15",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-52aa0986": {
+  "row": "i08",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-ba6fe795": {
+  "row": "c03",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-4ef7d80d": {
+  "row": "u17",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-9ef87905": {
+  "row": "a23",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-6c78136a": {
+  "row": "i05",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-8bd9cbbe": {
+  "row": "m08",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-92ec86fa": {
+  "row": "u11",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-2055254e": {
+  "row": "u01",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-553a4296": {
+  "row": "a07",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-1f20ae51": {
+  "row": "n01",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-4d14d5d4": {
+  "row": "u09",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-7971b48c": {
+  "row": "n05",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-a50656c6": {
+  "row": "u12",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-f8290af8": {
+  "row": "n03",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-bb0ec63b": {
+  "row": "n15",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-ce5dfbf4": {
+  "row": "n14",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-6b8e7d2b": {
+  "row": "i03",
+  "type": "question",
+  "kind": "injection"
+ },
+ "q-4ba80bdc": {
+  "row": "m05",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-e2a8db59": {
+  "row": "a22",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-31b1608f": {
+  "row": "c02",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-207d517b": {
+  "row": "m02",
+  "type": "question",
+  "kind": "multi_source"
+ },
+ "q-64f6ec68": {
+  "row": "u05",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-ea00d1a0": {
+  "row": "a21",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-93c6cdd3": {
+  "row": "n11",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-59d7f60d": {
+  "row": "c06",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-aa1477c4": {
+  "row": "a19",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-8b363444": {
+  "row": "a06",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-29881aad": {
+  "row": "u16",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-105a9cef": {
+  "row": "u10",
+  "type": "question",
+  "kind": "answerable"
+ },
+ "q-1e246abe": {
+  "row": "n07",
+  "type": "question",
+  "kind": "near_miss"
+ },
+ "q-e51c453a": {
+  "row": "c05",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-0a8dc0ca": {
+  "row": "c08",
+  "type": "question",
+  "kind": "conflicting"
+ },
+ "q-f37508d2": {
+  "row": "a12",
+  "type": "question",
+  "kind": "answerable"
+ }
+}

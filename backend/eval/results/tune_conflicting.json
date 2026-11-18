@@ -1,0 +1,22 @@
+[
+  {
+    "id": "c03",
+    "question": "At what chain stretch should I replace my road bike chain?",
+    "answer": "The recommended replacement stretch varies between the two sources:\n\n- One source advises replacing the chain when the checker shows **0.5 % stretch**【1】.  \n- Another source (specifically for an 11‑speed chain) suggests waiting until **0.75 % stretch**, calling 0.5 % “too cautious”【2】.\n\nSo the suggested threshold is either 0.5 % or 0.75 % stretch, depending on which recommendation you follow."
+  },
+  {
+    "id": "c05",
+    "question": "Is asyncio.Queue thread-safe?",
+    "answer": "The official Python documentation states that **`asyncio.Queue` is not thread‑safe**【1】【4】.  \n\nA separate informal note claims the opposite, saying “`asyncio.Queue` is thread‑safe”【2】.  \n\nBecause the official docs are the authoritative source, the reliable answer is that `asyncio.Queue` is **not** thread‑safe."
+  },
+  {
+    "id": "c06",
+    "question": "Can worker threads call put() on an asyncio.Queue directly?",
+    "answer": "Yes. `asyncio.Queue` is thread‑safe, so worker threads may call `put()` on it directly. [1]"
+  },
+  {
+    "id": "c08",
+    "question": "Is replacing a chain at 0.5% stretch too cautious?",
+    "answer": "The sources give conflicting advice:\n\n- One mechanic recommends waiting until the chain is **0.75 % stretched**, saying that replacing it at **0.5 % stretch is “too cautious.”**【1】  \n- Another source advises replacing the chain **as soon as a chain‑checker shows 0.5 % stretch**, warning that waiting longer can wear out the cassette【2】.  \n\nSo, according to the available information, some experts consider 0.5 % stretch overly cautious, while others consider it the appropriate replacement point. The answer depends on which recommendation you follow."
+  }
+]

@@ -705,12 +705,16 @@
   },
   {
    "id": "n13",
-   "kind": "near_miss",
+   "kind": "answerable",
    "question": "How does asyncio.PriorityQueue order its entries?",
-   "expected_items": [],
-   "evidence": {},
-   "expected_answer": "REFUSE (extraction gap): the live page documents it, but trafilatura dropped that section, so the indexed text has only the heading.",
-   "note": "extraction gap",
+   "expected_items": [
+    "asyncio_queue_doc"
+   ],
+   "evidence": {
+    "asyncio_queue_doc": "retrieves entries in priority order (lowest first)"
+   },
+   "expected_answer": "Priority order, lowest first; entries are typically (priority_number, data) tuples.",
+   "note": "Was near_miss in Phase A: trafilatura dropped this section; the fallback extractor restores it. Split kept (test) to avoid reshuffling.",
    "split": "test"
   },
   {

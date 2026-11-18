@@ -38,6 +38,7 @@ python-preference = "only-managed"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["eval"]  # eval data: generated markdown quotes model answers verbatim
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "N", "S", "RUF"]

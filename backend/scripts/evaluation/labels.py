@@ -1,11 +1,17 @@
-"""Sentence and question labels: synthetic error sentences, proposed labels, reviewer overrides.
+"""Sentence and question labels: synthetic error sentences and the three labellers.
+
+Labeller ids (provenance is recorded, names are not):
+  A      labels proposed by an LLM            eval/labels.json
+  B      independent second model (Gemini),   eval/labels_B.json   (blind: never saw A or tags)
+  final  adjudicated by the project owner     "final" column of DISAGREEMENTS.md / REVIEW.md
 
 Each cached answer is verified as `answer + synthetic sentences`. Synthetic sentences name the
 item they cite as `{item_key}`; that resolves to the answer's first source from that item, so
 the citation is a real [n] the verifier can follow. Labels are judged against the CITED source
 text only (faithfulness, not world truth).
 
-Precedence: REVIEW.md "my label" (the human) > labels.json (proposed by Claude).
+A row's gold label is `final` when given, else A's label when A and B agree; rows where A and
+B disagree with no `final` are unresolved and excluded from scoring (and counted).
 """
 
 import json
@@ -18,6 +24,8 @@ from scripts.evaluation.corpus import EVAL_DIR
 
 SYNTHETIC = EVAL_DIR / "synthetic.json"
 PROPOSED = EVAL_DIR / "labels.json"
+SECOND = EVAL_DIR / "labels_B.json"
+LABELLERS = {"A": "LLM-proposed", "B": "second model (Gemini), blind", "final": "adjudicated"}
 SENTENCE_LABELS = ("supported", "partial", "unsupported", "skip")  # skip = not a claim
 _PLACEHOLDER = re.compile(r"\{([a-z0-9_]+)\}")
 
@@ -46,7 +54,16 @@ def load_synthetic() -> dict[str, list[dict[str, str]]]:
 
 
 def load_proposed() -> dict[str, Any]:
-    data = _load(PROPOSED)
+    """Labeller A."""
+    return _labels(_load(PROPOSED))
+
+
+def load_second() -> dict[str, Any]:
+    """Labeller B (empty until `import-labels` has run)."""
+    return _labels(_load(SECOND))
+
+
+def _labels(data: dict[str, Any]) -> dict[str, Any]:
     return {"questions": data.get("questions", {}), "sentences": data.get("sentences", {})}
 
 
@@ -97,5 +114,16 @@ def sentence_rows(
     return rows
 
 
-def final_labels(proposed: dict[str, str], overrides: dict[str, str]) -> dict[str, str]:
-    return {**proposed, **{row: label for row, label in overrides.items() if label}}
+def gold_labels(
+    a: dict[str, str], b: dict[str, str], final: dict[str, str]
+) -> tuple[dict[str, str], list[str]]:
+    """(gold label per row, unresolved rows). See the module docstring for the rule."""
+    gold, unresolved = {}, []
+    for row in sorted(set(a) | set(final)):
+        if final.get(row):
+            gold[row] = final[row]
+        elif row in b and b[row] != a.get(row):
+            unresolved.append(row)
+        elif row in a:
+            gold[row] = a[row]
+    return gold, unresolved

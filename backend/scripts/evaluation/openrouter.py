@@ -1,8 +1,8 @@
 """Eval-only LLM route: the app's chat model (same model id) called through OpenRouter.
 
-Used when Groq's free-tier daily cap blocks a run. OpenRouter is asked to prefer its Groq
-provider and may fall back to another one; the provider that actually served each call is
-recorded, because latency and behaviour can differ between providers. The app never uses this.
+Used when Groq's free-tier daily cap blocks a run. OpenRouter is pinned to its Groq provider
+with fallbacks disabled, so a call fails rather than silently running on another provider; the
+provider that served each call is still recorded and checked. The app never uses this.
 """
 
 from collections.abc import Sequence
@@ -18,7 +18,7 @@ from app.providers.openai_compatible import OpenAICompatibleChatModel
 from app.providers.openai_provider import build_client
 from app.utils.timing import Timer
 
-PREFERRED_PROVIDER = "groq"
+PINNED_PROVIDER = "groq"
 # Third-party price listings for openai/gpt-oss-120b on Groq, USD per 1M tokens (not verified).
 GROQ_IN, GROQ_OUT = 0.15, 0.60
 BUDGET_USD = 2.0
@@ -40,6 +40,8 @@ class OpenRouterChat(OpenAICompatibleChatModel):
                 raise map_openai_error(exc, "openrouter") from exc
         extra = response.model_extra or {}
         self.last_provider = extra.get("provider")
+        if (self.last_provider or "").lower() != PINNED_PROVIDER:
+            raise SystemExit(f"OpenRouter served {self.last_provider!r}, not {PINNED_PROVIDER}")
         usage = response.usage
         self.last_usage = (usage.prompt_tokens, usage.completion_tokens) if usage else None
         self.last_ms = timer.ms
@@ -50,7 +52,11 @@ class OpenRouterChat(OpenAICompatibleChatModel):
     def _request(self, messages: Sequence[ChatMessage]) -> dict[str, Any]:
         request = super()._request(messages)
         request["extra_body"] = {
-            "provider": {"order": [PREFERRED_PROVIDER], "allow_fallbacks": True}
+            "provider": {
+                "order": [PINNED_PROVIDER],
+                "only": [PINNED_PROVIDER],
+                "allow_fallbacks": False,
+            }
         }
         return request
 
