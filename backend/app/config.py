@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     openrouter_base_url: str = "https://openrouter.ai"
     jev_model: str = "typesafe/jev-1.14"
     # Jev verdicts whose top probability is below this are re-checked by Groq (when configured).
-    verify_escalate_below: float = Field(default=0.8, ge=0, le=1)
+    verify_escalate_below: float = Field(default=0.55, ge=0, le=1)  # chosen on dev (EVAL.md)
     verify_timeout_s: float = Field(default=30, gt=0)
 
     openai_max_retries: int = Field(default=2, ge=0)  # SDK retries 429/5xx/timeouts w/ backoff

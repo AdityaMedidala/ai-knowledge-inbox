@@ -14,3 +14,4 @@ PROMPTS.md
 frontend/dist/
 .cache/
 .DS_Store
+HANDOFF.md
