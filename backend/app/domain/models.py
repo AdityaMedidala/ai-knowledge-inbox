@@ -142,3 +142,28 @@ class KeywordHit:
     chunk_id: int
     position: int  # 1-based rank within the keyword arm
     bm25: float  # raw FTS5 bm25; lower (more negative) is better
+
+
+class RetrievalMode(StrEnum):
+    """How well the saved items cover a question; `none` means the LLM is never called."""
+
+    FULL = "full"
+    PARTIAL = "partial"
+    NONE = "none"
+
+
+@dataclass(frozen=True, slots=True)
+class RetrievedChunk:
+    """A fused candidate with its full score breakdown (ranks are 1-based, None = not in arm)."""
+
+    chunk: ChunkRecord
+    vec_rank: int | None
+    fts_rank: int | None
+    rrf: float
+    similarity: float | None  # None when only the keyword arm found it
+    rerank: float | None = None
+
+    @property
+    def score(self) -> float | None:
+        """The relevance score shown to users and used by the gate: rerank if present."""
+        return self.rerank if self.rerank is not None else self.similarity

@@ -9,7 +9,7 @@ from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health, ingest, items
+from app.api import health, ingest, items, query
 from app.config import Settings
 from app.errors import register_exception_handlers
 from app.ingest_jobs import build_worker
@@ -104,4 +104,5 @@ def create_app(settings: Settings | None = None, *, fetcher: PageFetcher | None 
     app.include_router(health.router)
     app.include_router(ingest.router)
     app.include_router(items.router)
+    app.include_router(query.router)
     return app

@@ -8,7 +8,7 @@ chunks only within a section, and merges tiny fragments into a neighbour.
 import re
 from dataclasses import dataclass
 
-from app.domain.models import NewChunk
+from app.domain.models import ChunkRecord, NewChunk
 from app.services.markdown_blocks import Block, BlockKind, Section, parse_sections
 from app.utils.tokens import count_tokens, split_by_tokens, truncate_to_tokens
 
@@ -52,7 +52,7 @@ def build_context_header(title: str | None, section: str | None) -> str:
     return truncate_to_tokens("\n".join(lines), CONTEXT_HEADER_MAX_TOKENS)
 
 
-def build_embed_text(chunk: NewChunk) -> str:
+def build_embed_text(chunk: NewChunk | ChunkRecord) -> str:
     """What gets embedded (and FTS-indexed): the context header is a retrieval-only prefix."""
     if not chunk.context_header:
         return chunk.text

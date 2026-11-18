@@ -38,6 +38,7 @@ _CODE_BY_HTTP_STATUS: dict[int, ErrorCode] = {
 }
 
 INTERNAL_ERROR_MESSAGE = "An unexpected error occurred. Quote the request_id when reporting it."
+UPSTREAM_UNAVAILABLE_MESSAGE = "The AI provider is unavailable right now. Please try again shortly."
 
 
 def error_response(
@@ -103,7 +104,7 @@ async def _handle_provider_error(_: Request, exc: ProviderError) -> JSONResponse
     )
     return error_response(
         ErrorCode.UPSTREAM_UNAVAILABLE,
-        "The AI provider is unavailable right now. Please try again shortly.",
+        UPSTREAM_UNAVAILABLE_MESSAGE,
         {"provider": exc.provider, "kind": exc.kind, "retryable": exc.retryable},
     )
 

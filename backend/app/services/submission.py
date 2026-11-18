@@ -1,6 +1,6 @@
 """Synchronous submit-time checks for POST /ingest. No network: fetching happens in the worker."""
 
-from app.domain.errors import AppError, DuplicateItemError, ErrorCode
+from app.domain.errors import AppError, DuplicateItemError, ErrorCode, field_validation_error
 from app.domain.models import Item, ItemType, NewItem
 from app.services.url_guard import UrlRejectedError, check_url
 from app.store.repository import Repository
@@ -18,7 +18,7 @@ class SubmissionService:
 
     def submit_note(self, content: str, title: str | None) -> Item:
         if len(content) > self._note_max_chars:
-            raise _field_error(
+            raise field_validation_error(
                 "body.content",
                 f"Note is too long ({len(content)} characters; the limit is "
                 f"{self._note_max_chars}).",
@@ -61,11 +61,3 @@ class SubmissionService:
             raise DuplicateItemError(
                 exc.existing_id, exc.existing_status, duplicate_message
             ) from exc
-
-
-def _field_error(loc: str, message: str, error_type: str) -> AppError:
-    return AppError(
-        ErrorCode.VALIDATION_ERROR,
-        "Request validation failed. See details.fields.",
-        {"fields": [{"loc": loc, "message": message, "type": error_type}]},
-    )

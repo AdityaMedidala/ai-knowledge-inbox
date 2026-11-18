@@ -8,6 +8,8 @@ from fastapi import Depends, Request
 from app.config import Settings
 from app.providers.base import ChatModel, Embedder, Reranker
 from app.providers.factory import Providers
+from app.services.answering import AnsweringService
+from app.services.retrieval import RetrievalConfig, RetrievalService
 from app.services.submission import SubmissionService
 from app.store.repository import Repository
 from app.store.session import repository_session
@@ -51,6 +53,24 @@ def get_submission(
     return SubmissionService(repo, note_max_chars=get_settings(request).note_max_chars)
 
 
+def get_answering(
+    request: Request, repo: Annotated[Repository, Depends(get_repository)]
+) -> AnsweringService:
+    settings = get_settings(request)
+    providers = get_providers(request)
+    config = RetrievalConfig(
+        candidates=settings.retrieval_candidates,
+        rrf_k=settings.rrf_k,
+        max_chunks_per_item=settings.max_chunks_per_item,
+        min_full=settings.relevance_min_full,
+        min_partial=settings.relevance_min_partial,
+    )
+    retrieval = RetrievalService(repo, providers.embedder, providers.reranker, config)
+    return AnsweringService(
+        retrieval, providers.chat, question_max_chars=settings.question_max_chars
+    )
+
+
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 RepositoryDep = Annotated[Repository, Depends(get_repository)]
 WorkerDep = Annotated[IngestionWorker, Depends(get_worker)]
@@ -58,3 +78,4 @@ SubmissionDep = Annotated[SubmissionService, Depends(get_submission)]
 EmbedderDep = Annotated[Embedder, Depends(get_embedder)]
 ChatModelDep = Annotated[ChatModel, Depends(get_chat_model)]
 RerankerDep = Annotated[Reranker | None, Depends(get_reranker)]
+AnsweringDep = Annotated[AnsweringService, Depends(get_answering)]

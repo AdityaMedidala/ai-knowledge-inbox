@@ -29,6 +29,15 @@ class AppError(Exception):
         self.details = details
 
 
+def field_validation_error(loc: str, message: str, error_type: str) -> AppError:
+    """A one-field VALIDATION_ERROR shaped like the reshaped pydantic errors."""
+    return AppError(
+        ErrorCode.VALIDATION_ERROR,
+        "Request validation failed. See details.fields.",
+        {"fields": [{"loc": loc, "message": message, "type": error_type}]},
+    )
+
+
 class DuplicateItemError(AppError):
     def __init__(
         self,
