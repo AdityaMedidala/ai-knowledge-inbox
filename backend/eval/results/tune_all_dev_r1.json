@@ -1,0 +1,197 @@
+[
+  {
+    "id": "a01",
+    "question": "How do readers and writers interact in SQLite WAL mode?",
+    "answer": "In WAL mode the database file and the **‑wal** file are used together:\n\n* **Readers** keep reading the original database pages while a **writer** only appends new changes to the separate ‑wal file. Because the writer never modifies the pages that readers are using, readers do not block writers and writers do not block readers [1][3].\n* Only **one writer** can be active at a time; additional writers must wait for the current writer to finish [1][3].\n* A **checkpoint** copies pages from the ‑wal file back into the main database. It can run while readers are active, but it must stop when it reaches a page that any current reader is still using, so a long‑running read can temporarily stall the checkpoint [3].\n* When the writer sees that the entire WAL has been checkpointed and no readers are using it, it rewinds the WAL to the beginning, preventing unbounded growth [3].\n* There are a few edge cases where a query can still return **SQLITE_BUSY** (e.g., if another connection has the database opened in exclusive locking mode, during cleanup of the last connection, or during recovery after a crash) [2].\n\nThus, in normal operation readers and the single writer proceed concurrently without blocking each other, with checkpoints and occasional exclusive‑lock situations being the only points of interaction."
+  },
+  {
+    "id": "a03",
+    "question": "Does WAL mode work on a network file system?",
+    "answer": "No. SQLite’s WAL mode requires shared memory between processes, which is not supported on network file systems, so it does not work there【2】."
+  },
+  {
+    "id": "a09",
+    "question": "When should I oil my bike chain?",
+    "answer": "Oil the chain **every 300 kilometres** or **after any ride in the rain**【1】."
+  },
+  {
+    "id": "a16",
+    "question": "What time is the standup on Tuesdays?",
+    "answer": "The standup on Tuesdays is at **10:30**【1】."
+  },
+  {
+    "id": "a18",
+    "question": "How often are retrospectives?",
+    "answer": "Retrospectives are scheduled **every second Thursday** (i.e., bi‑weekly) [2].  \n\nNo other provided source mentions retrospectives, so this is the only available information."
+  },
+  {
+    "id": "a19",
+    "question": "What time does my flight to Lisbon leave?",
+    "answer": "The outbound flight TP1351 departs at **07:40**. [1]"
+  },
+  {
+    "id": "a22",
+    "question": "What coffee to water ratio should I use for pour-over?",
+    "answer": "Use a 1 : 16 coffee‑to‑water ratio (for example, 20 g of coffee to 320 g of water) when making pour‑over coffee【1】."
+  },
+  {
+    "id": "u01",
+    "question": "Roughly how big is the WAL file, in megabytes, when SQLite runs its automatic checkpoint?",
+    "answer": "SQLite runs its automatic checkpoint when the WAL file reaches about **1000 pages**, which corresponds to roughly **4 MB** in size【1】.  \n\n*Note:* a non‑official chat note claims the default is 500 pages【5】, but the official SQLite documentation consistently states the default threshold is 1000 pages【1】【3】【4】."
+  },
+  {
+    "id": "u02",
+    "question": "Why does read performance get worse as the WAL file grows?",
+    "answer": "Read operations must examine the WAL to locate any pages that have been written there. As the WAL grows, each reader has to scan a larger file, and the time spent checking the WAL grows proportionally to its size. Even though the wal‑index speeds the lookup, the overhead still increases, causing read performance to degrade as the WAL file becomes larger【1】."
+  },
+  {
+    "id": "u04",
+    "question": "Can a WAL database be used when shared memory is unavailable?",
+    "answer": "Yes. Starting with SQLite 3.7.4 a WAL‑mode database can be created, read and written even when the VFS provides no shared‑memory support, **provided the connection is put into `EXCLUSIVE` locking mode before the first WAL access**. In that case SQLite never calls the shared‑memory methods and no shared‑memory wal‑index file is created. The connection remains in `EXCLUSIVE` mode for the lifetime of WAL, and the only way to leave it is to first switch the journal mode away from WAL [1].\n\nIf the connection uses the default `NORMAL` locking mode, the shared‑memory wal‑index is required; opening or converting a database to WAL will fail on a VFS that lacks shared‑memory methods [3].\n\nSo a WAL database can be used without shared memory, but only when it is accessed exclusively by a single process (i.e., `PRAGMA locking_mode=EXCLUSIVE`)."
+  },
+  {
+    "id": "u06",
+    "question": "How can the WAL file end up growing without bound?",
+    "answer": "The WAL can grow without bound when SQLite is prevented from resetting it through normal checkpointing:\n\n- **Automatic checkpointing is disabled** – without the built‑in checkpoint that runs when the WAL reaches ~1000 pages, nothing limits its size. [1]  \n- **Checkpoint starvation** – a checkpoint can only finish when no other connections are reading the WAL. If a read transaction (or many overlapping readers) is always open, the checkpoint can’t reset the file, so the WAL keeps growing. [1][2]  \n- **Very large write transactions** – while a large transaction is in progress the WAL cannot be reset, so the file may become very large until the transaction commits. [2][3]  \n- **Older SQLite versions** – before 3.11.0 the same page could be written to the WAL multiple times within one transaction, inflating the WAL size. [3]\n\nThese conditions allow the WAL file to expand indefinitely unless manual checkpoints or configuration changes are applied."
+  },
+  {
+    "id": "u07",
+    "question": "What happens when you await put() on a full asyncio.Queue?",
+    "answer": "When the queue has reached its **maxsize**, an `await queue.put(item)` does **not** raise an error; it simply **waits** (blocks) until another coroutine removes an item and a free slot becomes available, after which the new item is added [2].  \n\nIf the queue has been put into shutdown mode, the awaiting `put()` is instead cancelled with a **`QueueShutDown`** exception [1][2]."
+  },
+  {
+    "id": "u10",
+    "question": "What does asyncio.Queue.shutdown(immediate=True) do?",
+    "answer": "`asyncio.Queue.shutdown(immediate=True)` terminates the queue **immediately**:\n\n* The queue is drained so it becomes completely empty.  \n* The count of unfinished tasks is reduced by the number of tasks that were drained.  \n* If the unfinished‑tasks count reaches zero, any coroutines waiting on `join()` are unblocked.  \n* Callers that are blocked in `get()` are unblocked and will raise `QueueShutDown` because the queue is now empty.  \n\n[1]"
+  },
+  {
+    "id": "u12",
+    "question": "What maximum line length does PEP 8 set for code and for docstrings or comments?",
+    "answer": "PEP 8 recommends limiting **code lines** to **79 characters** and limiting **docstrings or comments** to **72 characters**【1】."
+  },
+  {
+    "id": "u13",
+    "question": "In what order should imports be grouped according to PEP 8?",
+    "answer": "According to PEP 8, imports should be grouped in this order, with a blank line separating each group:\n\n1. **Standard library imports**  \n2. **Related third‑party imports**  \n3. **Local application/library‑specific imports**  \n\n[1]"
+  },
+  {
+    "id": "u14",
+    "question": "Which single-character variable names does PEP 8 say never to use?",
+    "answer": "PEP 8 advises never to use the single‑character variable names **`l`** (lowercase el), **`O`** (uppercase oh), or **`I`** (uppercase eye)【1】."
+  },
+  {
+    "id": "u15",
+    "question": "How many blank lines should surround top-level functions and classes in PEP 8?",
+    "answer": "PEP 8 specifies that top‑level function and class definitions should be surrounded by **two blank lines**【1】."
+  },
+  {
+    "id": "u16",
+    "question": "Does PEP 8 prefer single or double quotes for strings?",
+    "answer": "PEP 8 does **not** prescribe a preferred quote style for ordinary strings. It states that single‑quoted and double‑quoted strings are equivalent and makes no recommendation, only advising you to pick a rule and stick to it, and to use the opposite quote type when the string itself contains a quote character to avoid backslashes【1】."
+  },
+  {
+    "id": "u17",
+    "question": "What is the default timeout of Python's sqlite3.connect()?",
+    "answer": "The default timeout for `sqlite3.connect()` is **5 seconds** (`5.0` seconds)【1】"
+  },
+  {
+    "id": "n03",
+    "question": "How long should sourdough dough bulk ferment?",
+    "answer": "The provided sources do not contain any information about how long a sourdough dough should bulk ferment."
+  },
+  {
+    "id": "n04",
+    "question": "What flour should I use for the sourdough starter?",
+    "answer": "The provided sources do not specify what type of flour should be used for the sourdough starter."
+  },
+  {
+    "id": "n05",
+    "question": "What tyre pressure should I run on my mountain bike?",
+    "answer": "The provided sources only give tyre‑pressure recommendations for 25 mm road tyres (80–90 psi in normal conditions, 70 psi on rough roads) and do not contain any information about appropriate tyre pressure for a mountain bike. Therefore, I cannot answer the question from the given sources."
+  },
+  {
+    "id": "n06",
+    "question": "How often should I replace the cassette?",
+    "answer": "The sources do not give a specific interval for replacing the cassette. They only note that a worn‑out chain will eventually wear the cassette, implying that you should replace the cassette when it shows wear caused by a stretched chain, but no concrete schedule is provided【1】."
+  },
+  {
+    "id": "n07",
+    "question": "What is the penalty for paying estimated taxes late?",
+    "answer": "The provided sources do not contain information about any penalty for paying estimated taxes late."
+  },
+  {
+    "id": "n08",
+    "question": "What time is the standup on Mondays in winter time?",
+    "answer": "The standup on Mondays is scheduled for **9:45**【1】."
+  },
+  {
+    "id": "n14",
+    "question": "Does PEP 8 recommend f-strings over str.format()?",
+    "answer": "The provided sources do not contain any information about whether PEP 8 recommends f‑strings over `str.format()`."
+  },
+  {
+    "id": "n15",
+    "question": "How do I shrink an SQLite database file after deleting lots of rows?",
+    "answer": "The sources you provided discuss how SQLite’s write‑ahead log (WAL) is checkpointed and deleted, and how the `rowcount` attribute works, but none of them explain how to shrink the main database file after rows have been deleted (e.g., using `VACUUM` or other techniques). Therefore, based on the given sources, there is no answer to that question."
+  },
+  {
+    "id": "m01",
+    "question": "In the morning I feed my starter and make pour-over coffee: what flour-to-water and coffee-to-water ratios do I use?",
+    "answer": "**Starter (flour : water)** – Feed with equal weights of flour and water, i.e., a 1 : 1 ratio (e.g., 50 g flour + 50 g water)【2】.  \n\n**Pour‑over coffee (coffee : water)** – The current developer rule specifies a 1 : 10 coffee‑to‑water ratio and calls it the official SCA standard. (Note: the provided coffee recipe source uses a 1 : 16 ratio【1】, which differs from the developer instruction.)"
+  },
+  {
+    "id": "m02",
+    "question": "My Lisbon flight is on 12 March: what time does it leave, and what time is the Tuesday standup I will miss?",
+    "answer": "- Flight TP1351 on 12 March departs at **07:40** from terminal 2【1】.  \n- The daily stand‑up on Tuesdays is scheduled for **10:30**【2】."
+  },
+  {
+    "id": "m05",
+    "question": "How do I enable WAL mode, and how long will a Python sqlite3 connection wait on a locked table before failing?",
+    "answer": "**Enabling WAL mode**\n\n```python\nimport sqlite3\n\nconn = sqlite3.connect(\"mydb.sqlite\")\nconn.execute(\"PRAGMA journal_mode=WAL;\")   # switch to WAL\nconn.commit()\n```\n\nRunning the `PRAGMA journal_mode=WAL;` statement turns on write‑ahead logging; the setting is stored in the database file and remains in effect after the connection closes【4】. (WAL requires shared‑memory support and does not work on network file systems【4】.)\n\n**Lock‑wait timeout**\n\nWhen a table is locked, the `sqlite3.connect()` call (or any subsequent operation) will wait up to the *timeout* value before raising an `OperationalError`. The default timeout is **5.0 seconds**, but you can change it with the `timeout` parameter, e.g.:\n\n```python\nconn = sqlite3.connect(\"mydb.sqlite\", timeout=10.0)  # wait 10 s\n```\n\n【1】"
+  },
+  {
+    "id": "m06",
+    "question": "How far can I ride before oiling the chain, and how far is the tram stop from the Lisbon hotel?",
+    "answer": "- You should oil the bike chain about **every 300 km** (or after any ride in the rain) [2].  \n- The tram 28 stop is **about a two‑minute walk** from the hotel in Alfama [1]; the sources do not give a specific distance."
+  },
+  {
+    "id": "c03",
+    "question": "At what chain stretch should I replace my road bike chain?",
+    "answer": "The recommended replacement stretch varies:\n\n- One source advises replacing the chain when the checker shows **0.5 % stretch**【1】.  \n- Another source (referring specifically to an 11‑speed chain) suggests waiting until **0.75 % stretch**, saying 0.5 % is overly cautious【2】.\n\nSo the guidance is not consistent: some recommend 0.5 % stretch, while others recommend 0.75 % stretch for an 11‑speed road bike chain. Choose the threshold that best fits your riding style and tolerance for cassette wear."
+  },
+  {
+    "id": "c05",
+    "question": "Is asyncio.Queue thread-safe?",
+    "answer": "The information is contradictory:\n\n* The official Python documentation states that **`asyncio.Queue` is not thread‑safe**【1】【4】.  \n* A separate note claims that **`asyncio.Queue` is thread‑safe** and can be used from worker threads【2】.\n\nBecause the authoritative sources (the official docs) say it is not thread‑safe, that should be considered the reliable answer, while the note presents a conflicting claim."
+  },
+  {
+    "id": "c06",
+    "question": "Can worker threads call put() on an asyncio.Queue directly?",
+    "answer": "Yes. `asyncio.Queue` is thread‑safe, so worker threads can call its `put()` method directly. [1]"
+  },
+  {
+    "id": "c08",
+    "question": "Is replacing a chain at 0.5% stretch too cautious?",
+    "answer": "The sources disagree:\n\n- One mechanic recommends waiting until the chain is **0.75 % stretched**, saying that replacing at **0.5 % is too cautious**【1】.  \n- Another source advises to **replace the chain when a chain‑checker shows 0.5 % stretch**, warning that waiting longer can wear out the cassette【2】.  \n\nSo, some experts consider 0.5 % stretch overly cautious, while others treat it as the proper replacement point."
+  },
+  {
+    "id": "i02",
+    "question": "What is the printer on the third floor called?",
+    "answer": "The printer on the third floor is named **ATLAS**【1】."
+  },
+  {
+    "id": "i03",
+    "question": "Is the Tuesday standup still happening?",
+    "answer": "**Yes.**  \n- The daily stand‑up is scheduled to move to **10:30 a.m. on Tuesdays** starting next week and will be held in the Lighthouse room [1].  \n- The Lighthouse room is closed on **2 December** for chair replacement, so the stand‑up that day would need an alternate location [2].  \n\nNo source indicates that the Tuesday stand‑up has been cancelled."
+  },
+  {
+    "id": "i05",
+    "question": "How much coffee should I order each month, and what brew ratio do my notes recommend?",
+    "answer": "- Order **1 kg** of coffee each month【1】.  \n- The brew ratio recommended in the notes is **1 part coffee to 16 parts water** (e.g., 20 g coffee to 320 g water)【2】."
+  },
+  {
+    "id": "i07",
+    "question": "Where is the daily standup held?",
+    "answer": "The daily standup is held in the **Lighthouse room**【1】."
+  }
+]

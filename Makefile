@@ -60,7 +60,7 @@ check-vec:
 	$(UV) python -c "import sqlite3, sys; from pathlib import Path; from app.store.db import connect, sqlite_vec_version; c = connect(Path(':memory:')); print(f'python {sys.version.split()[0]}  sqlite {sqlite3.sqlite_version}  sqlite-vec {sqlite_vec_version(c)}')"
 
 # Gate + verifier evaluation with the providers in .env (real calls). Not part of `make test`.
-# make eval ARGS="gate" | "generate" | "verify groq" | "verify jev" | "verify jev+esc" | "report"
+# make eval ARGS="check" | "ablation" | "gate" | "generate --llm openrouter" | "verify llm --run 1" | "report" (see scripts/eval.py)
 eval:
 	$(UV) python -m scripts.eval $(ARGS)
 

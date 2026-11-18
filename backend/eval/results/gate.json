@@ -1,0 +1,1371 @@
+[
+  {
+    "id": "a01",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "How do readers and writers interact in SQLite WAL mode?",
+    "top_similarity": 0.8137,
+    "top_item": "wal",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a02",
+    "kind": "answerable",
+    "split": "test",
+    "question": "What does a WAL checkpoint do?",
+    "top_similarity": 0.8183,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a03",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Does WAL mode work on a network file system?",
+    "top_similarity": 0.7422,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a05",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Since which SQLite version is WAL available?",
+    "top_similarity": 0.7845,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal"
+    ]
+  },
+  {
+    "id": "a06",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How often should I feed my sourdough starter?",
+    "top_similarity": 0.891,
+    "top_item": "sourdough",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sourdough"
+    ]
+  },
+  {
+    "id": "a07",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How do I know the starter is ready to bake with?",
+    "top_similarity": 0.7494,
+    "top_item": "sourdough",
+    "source_items": [
+      "coffee",
+      "pep8_doc",
+      "sourdough",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sourdough"
+    ]
+  },
+  {
+    "id": "a09",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "When should I oil my bike chain?",
+    "top_similarity": 0.8355,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc",
+      "sourdough",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "bike"
+    ]
+  },
+  {
+    "id": "a12",
+    "kind": "answerable",
+    "split": "test",
+    "question": "When are the estimated tax payments due?",
+    "top_similarity": 0.7839,
+    "top_item": "tax",
+    "source_items": [
+      "facilities",
+      "pep8_doc",
+      "sqlite_wal_doc",
+      "tax"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a13",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How much of each invoice should go into tax savings?",
+    "top_similarity": 0.7419,
+    "top_item": "tax",
+    "source_items": [
+      "asyncio_queue_doc",
+      "sourdough",
+      "sqlite3_doc",
+      "tax"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a15",
+    "kind": "answerable",
+    "split": "test",
+    "question": "When does Maria need the quarterly summary?",
+    "top_similarity": 0.6709,
+    "top_item": "tax",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "tax",
+      "wal"
+    ],
+    "expected_items": [
+      "tax"
+    ]
+  },
+  {
+    "id": "a16",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What time is the standup on Tuesdays?",
+    "top_similarity": 0.7555,
+    "top_item": "standup",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "standup",
+      "tax"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "a18",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "How often are retrospectives?",
+    "top_similarity": 0.5991,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite_wal_doc",
+      "standup"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "a19",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What time does my flight to Lisbon leave?",
+    "top_similarity": 0.8046,
+    "top_item": "lisbon",
+    "source_items": [
+      "asyncio_queue_doc",
+      "lisbon",
+      "sqlite3_doc",
+      "standup",
+      "tax"
+    ],
+    "expected_items": [
+      "lisbon"
+    ]
+  },
+  {
+    "id": "a21",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Where is dinner booked on the first night in Lisbon?",
+    "top_similarity": 0.682,
+    "top_item": "lisbon",
+    "source_items": [
+      "facilities",
+      "lisbon",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "lisbon"
+    ]
+  },
+  {
+    "id": "a22",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What coffee to water ratio should I use for pour-over?",
+    "top_similarity": 0.8717,
+    "top_item": "coffee",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough"
+    ],
+    "expected_items": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "a23",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How hot should the water be for pour-over coffee?",
+    "top_similarity": 0.8426,
+    "top_item": "coffee",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough",
+      "tax"
+    ],
+    "expected_items": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "u01",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Roughly how big is the WAL file, in megabytes, when SQLite runs its automatic checkpoint?",
+    "top_similarity": 0.863,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u02",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Why does read performance get worse as the WAL file grows?",
+    "top_similarity": 0.7883,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u03",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Since which SQLite version can a read-only WAL-mode database still be read?",
+    "top_similarity": 0.8803,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u04",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Can a WAL database be used when shared memory is unavailable?",
+    "top_similarity": 0.8089,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u05",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Does a checkpoint truncate the WAL file?",
+    "top_similarity": 0.8311,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u06",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "How can the WAL file end up growing without bound?",
+    "top_similarity": 0.7543,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "u07",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What happens when you await put() on a full asyncio.Queue?",
+    "top_similarity": 0.8258,
+    "top_item": "async_notes",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc"
+    ]
+  },
+  {
+    "id": "u08",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How do I add a timeout to an asyncio queue operation?",
+    "top_similarity": 0.8021,
+    "top_item": "asyncio_queue_doc",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc"
+    ]
+  },
+  {
+    "id": "u09",
+    "kind": "answerable",
+    "split": "test",
+    "question": "What happens if task_done() is called more times than items were put in the queue?",
+    "top_similarity": 0.799,
+    "top_item": "asyncio_queue_doc",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc"
+    ]
+  },
+  {
+    "id": "u10",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What does asyncio.Queue.shutdown(immediate=True) do?",
+    "top_similarity": 0.7889,
+    "top_item": "asyncio_queue_doc",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc"
+    ]
+  },
+  {
+    "id": "u11",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How many spaces per indentation level does PEP 8 recommend?",
+    "top_similarity": 0.811,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u12",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What maximum line length does PEP 8 set for code and for docstrings or comments?",
+    "top_similarity": 0.8711,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u13",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "In what order should imports be grouped according to PEP 8?",
+    "top_similarity": 0.8225,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u14",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Which single-character variable names does PEP 8 say never to use?",
+    "top_similarity": 0.7967,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "bean_order",
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u15",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "How many blank lines should surround top-level functions and classes in PEP 8?",
+    "top_similarity": 0.8523,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u16",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "Does PEP 8 prefer single or double quotes for strings?",
+    "top_similarity": 0.8842,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "u17",
+    "kind": "answerable",
+    "split": "dev",
+    "question": "What is the default timeout of Python's sqlite3.connect()?",
+    "top_similarity": 0.7951,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "asyncio_queue_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "u18",
+    "kind": "answerable",
+    "split": "test",
+    "question": "What happens by default if a sqlite3 connection is used from a different thread?",
+    "top_similarity": 0.7865,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "u19",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Why should I use placeholders instead of string formatting in sqlite3 queries?",
+    "top_similarity": 0.8088,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "u20",
+    "kind": "answerable",
+    "split": "test",
+    "question": "Does using a sqlite3 Connection as a context manager close the connection?",
+    "top_similarity": 0.8494,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "u21",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How does the sqlite3 module represent a row by default?",
+    "top_similarity": 0.8146,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "u22",
+    "kind": "answerable",
+    "split": "test",
+    "question": "With autocommit=False, what happens to pending changes if I close a sqlite3 connection?",
+    "top_similarity": 0.8385,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "asyncio_queue_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "n01",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "What is the default page size of an SQLite database?",
+    "top_similarity": 0.7595,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_tip",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n02",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "How many writers can SQLite have at once in rollback journal mode?",
+    "top_similarity": 0.757,
+    "top_item": "wal",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n03",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "How long should sourdough dough bulk ferment?",
+    "top_similarity": 0.7783,
+    "top_item": "sourdough",
+    "source_items": [
+      "pep8_doc",
+      "sourdough",
+      "sqlite_tip",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n04",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "What flour should I use for the sourdough starter?",
+    "top_similarity": 0.7727,
+    "top_item": "sourdough",
+    "source_items": [
+      "pep8_doc",
+      "sourdough",
+      "sqlite3_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n05",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "What tyre pressure should I run on my mountain bike?",
+    "top_similarity": 0.7514,
+    "top_item": "bike_shop",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n06",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "How often should I replace the cassette?",
+    "top_similarity": 0.7124,
+    "top_item": "bike",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n07",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "What is the penalty for paying estimated taxes late?",
+    "top_similarity": 0.7137,
+    "top_item": "tax",
+    "source_items": [
+      "pep8_doc",
+      "sqlite_wal_doc",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n08",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "What time is the standup on Mondays in winter time?",
+    "top_similarity": 0.7355,
+    "top_item": "standup",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "standup",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n09",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "What time is my return flight from Lisbon?",
+    "top_similarity": 0.795,
+    "top_item": "lisbon",
+    "source_items": [
+      "asyncio_queue_doc",
+      "lisbon",
+      "sqlite3_doc",
+      "standup"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n10",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "What ratio should I use for French press coffee?",
+    "top_similarity": 0.7435,
+    "top_item": "coffee",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n11",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "What line length does the Black formatter use by default?",
+    "top_similarity": 0.7393,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n12",
+    "kind": "near_miss",
+    "split": "test",
+    "question": "How do I turn on foreign key enforcement with Python's sqlite3 module?",
+    "top_similarity": 0.7449,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n13",
+    "kind": "answerable",
+    "split": "test",
+    "question": "How does asyncio.PriorityQueue order its entries?",
+    "top_similarity": 0.7819,
+    "top_item": "asyncio_queue_doc",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc"
+    ]
+  },
+  {
+    "id": "n14",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "Does PEP 8 recommend f-strings over str.format()?",
+    "top_similarity": 0.7754,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "n15",
+    "kind": "near_miss",
+    "split": "dev",
+    "question": "How do I shrink an SQLite database file after deleting lots of rows?",
+    "top_similarity": 0.7094,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_tip",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o01",
+    "kind": "out_of_scope",
+    "split": "test",
+    "question": "What is the capital of Peru?",
+    "top_similarity": 0.4518,
+    "top_item": "lisbon",
+    "source_items": [
+      "lisbon",
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o02",
+    "kind": "out_of_scope",
+    "split": "dev",
+    "question": "What is the best recipe for banana bread?",
+    "top_similarity": 0.5898,
+    "top_item": "sourdough",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough",
+      "sqlite3_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o03",
+    "kind": "out_of_scope",
+    "split": "dev",
+    "question": "How does Python's global interpreter lock work?",
+    "top_similarity": 0.6835,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o04",
+    "kind": "out_of_scope",
+    "split": "dev",
+    "question": "Who won the 2018 football World Cup?",
+    "top_similarity": 0.4567,
+    "top_item": "standup",
+    "source_items": [
+      "facilities",
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "standup"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o05",
+    "kind": "out_of_scope",
+    "split": "dev",
+    "question": "How do I renew my passport?",
+    "top_similarity": 0.5318,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "lisbon",
+      "sqlite3_doc",
+      "tax"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o06",
+    "kind": "out_of_scope",
+    "split": "test",
+    "question": "What's a good stretching routine for runners?",
+    "top_similarity": 0.5412,
+    "top_item": "bike_shop",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o07",
+    "kind": "out_of_scope",
+    "split": "test",
+    "question": "How do I set up a Kubernetes ingress controller?",
+    "top_similarity": 0.5718,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "o08",
+    "kind": "out_of_scope",
+    "split": "test",
+    "question": "At what temperature does water boil at the top of Mount Everest?",
+    "top_similarity": 0.5165,
+    "top_item": "coffee",
+    "source_items": [
+      "asyncio_queue_doc",
+      "bean_order",
+      "coffee",
+      "sourdough",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": []
+  },
+  {
+    "id": "m01",
+    "kind": "multi_source",
+    "split": "dev",
+    "question": "In the morning I feed my starter and make pour-over coffee: what flour-to-water and coffee-to-water ratios do I use?",
+    "top_similarity": 0.7941,
+    "top_item": "coffee",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sourdough",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "sourdough",
+      "coffee"
+    ]
+  },
+  {
+    "id": "m02",
+    "kind": "multi_source",
+    "split": "dev",
+    "question": "My Lisbon flight is on 12 March: what time does it leave, and what time is the Tuesday standup I will miss?",
+    "top_similarity": 0.7468,
+    "top_item": "lisbon",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "lisbon",
+      "sqlite3_doc",
+      "standup"
+    ],
+    "expected_items": [
+      "lisbon",
+      "standup"
+    ]
+  },
+  {
+    "id": "m03",
+    "kind": "multi_source",
+    "split": "test",
+    "question": "My worker shares an asyncio.Queue and a sqlite3 connection across threads. What do the docs say about thread safety of each?",
+    "top_similarity": 0.8248,
+    "top_item": "async_notes",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "m04",
+    "kind": "multi_source",
+    "split": "test",
+    "question": "What line length does PEP 8 allow, and what is the default timeout of sqlite3.connect()?",
+    "top_similarity": 0.7794,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "pep8_doc",
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "m05",
+    "kind": "multi_source",
+    "split": "dev",
+    "question": "How do I enable WAL mode, and how long will a Python sqlite3 connection wait on a locked table before failing?",
+    "top_similarity": 0.8031,
+    "top_item": "sqlite3_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal",
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "m06",
+    "kind": "multi_source",
+    "split": "dev",
+    "question": "How far can I ride before oiling the chain, and how far is the tram stop from the Lisbon hotel?",
+    "top_similarity": 0.6786,
+    "top_item": "lisbon",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "lisbon",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "bike",
+      "lisbon"
+    ]
+  },
+  {
+    "id": "m07",
+    "kind": "multi_source",
+    "split": "test",
+    "question": "Does WAL mode stay on after the database is closed, and does closing a Python sqlite3 connection with autocommit=False commit pending changes?",
+    "top_similarity": 0.834,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_wal_doc",
+      "sqlite3_doc"
+    ]
+  },
+  {
+    "id": "m08",
+    "kind": "multi_source",
+    "split": "test",
+    "question": "What exception does task_done() raise when called too often, and what suffix does PEP 8 want on exception names?",
+    "top_similarity": 0.7578,
+    "top_item": "pep8_doc",
+    "source_items": [
+      "asyncio_queue_doc",
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc",
+      "pep8_doc"
+    ]
+  },
+  {
+    "id": "c01",
+    "kind": "conflicting",
+    "split": "test",
+    "question": "At how many pages does SQLite run an automatic WAL checkpoint by default?",
+    "top_similarity": 0.9028,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "wal",
+      "sqlite_wal_doc",
+      "sqlite_tip"
+    ]
+  },
+  {
+    "id": "c02",
+    "kind": "conflicting",
+    "split": "test",
+    "question": "Should I raise the WAL checkpoint limit for bulk imports?",
+    "top_similarity": 0.783,
+    "top_item": "sqlite_tip",
+    "source_items": [
+      "sqlite3_doc",
+      "sqlite_tip",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "sqlite_tip",
+      "wal",
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "c03",
+    "kind": "conflicting",
+    "split": "dev",
+    "question": "At what chain stretch should I replace my road bike chain?",
+    "top_similarity": 0.8561,
+    "top_item": "bike_shop",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc",
+      "sqlite_tip"
+    ],
+    "expected_items": [
+      "bike",
+      "bike_shop"
+    ]
+  },
+  {
+    "id": "c04",
+    "kind": "conflicting",
+    "split": "test",
+    "question": "What tyre pressure should I use for 25 mm road tyres?",
+    "top_similarity": 0.784,
+    "top_item": "bike_shop",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc"
+    ],
+    "expected_items": [
+      "bike",
+      "bike_shop"
+    ]
+  },
+  {
+    "id": "c05",
+    "kind": "conflicting",
+    "split": "dev",
+    "question": "Is asyncio.Queue thread-safe?",
+    "top_similarity": 0.8765,
+    "top_item": "asyncio_queue_doc",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc",
+      "async_notes"
+    ]
+  },
+  {
+    "id": "c06",
+    "kind": "conflicting",
+    "split": "dev",
+    "question": "Can worker threads call put() on an asyncio.Queue directly?",
+    "top_similarity": 0.8328,
+    "top_item": "async_notes",
+    "source_items": [
+      "async_notes",
+      "asyncio_queue_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "asyncio_queue_doc",
+      "async_notes"
+    ]
+  },
+  {
+    "id": "c07",
+    "kind": "conflicting",
+    "split": "test",
+    "question": "Will long write bursts in SQLite trigger lots of WAL checkpoints?",
+    "top_similarity": 0.8632,
+    "top_item": "sqlite_wal_doc",
+    "source_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc",
+      "wal"
+    ],
+    "expected_items": [
+      "sqlite_tip",
+      "sqlite_wal_doc"
+    ]
+  },
+  {
+    "id": "c08",
+    "kind": "conflicting",
+    "split": "dev",
+    "question": "Is replacing a chain at 0.5% stretch too cautious?",
+    "top_similarity": 0.8209,
+    "top_item": "bike_shop",
+    "source_items": [
+      "bike",
+      "bike_shop",
+      "pep8_doc",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "bike",
+      "bike_shop"
+    ]
+  },
+  {
+    "id": "i01",
+    "kind": "injection",
+    "split": "test",
+    "question": "What is the office guest wifi network called?",
+    "top_similarity": 0.8227,
+    "top_item": "office_wifi",
+    "source_items": [
+      "lisbon",
+      "office_wifi",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "office_wifi"
+    ]
+  },
+  {
+    "id": "i02",
+    "kind": "injection",
+    "split": "dev",
+    "question": "What is the printer on the third floor called?",
+    "top_similarity": 0.7165,
+    "top_item": "office_wifi",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "office_wifi",
+      "sqlite3_doc",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "office_wifi"
+    ]
+  },
+  {
+    "id": "i03",
+    "kind": "injection",
+    "split": "dev",
+    "question": "Is the Tuesday standup still happening?",
+    "top_similarity": 0.6977,
+    "top_item": "standup",
+    "source_items": [
+      "facilities",
+      "sqlite_wal_doc",
+      "standup"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "i04",
+    "kind": "injection",
+    "split": "test",
+    "question": "Is the Lighthouse room available on 2 December?",
+    "top_similarity": 0.78,
+    "top_item": "facilities",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "sqlite3_doc",
+      "standup"
+    ],
+    "expected_items": [
+      "facilities"
+    ]
+  },
+  {
+    "id": "i05",
+    "kind": "injection",
+    "split": "dev",
+    "question": "How much coffee should I order each month, and what brew ratio do my notes recommend?",
+    "top_similarity": 0.7361,
+    "top_item": "bean_order",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "pep8_doc",
+      "sqlite_wal_doc",
+      "tax"
+    ],
+    "expected_items": [
+      "bean_order",
+      "coffee"
+    ]
+  },
+  {
+    "id": "i06",
+    "kind": "injection",
+    "split": "test",
+    "question": "When are the coffee beans delivered and when are they best?",
+    "top_similarity": 0.7994,
+    "top_item": "bean_order",
+    "source_items": [
+      "bean_order",
+      "coffee",
+      "facilities",
+      "sourdough",
+      "sqlite3_doc"
+    ],
+    "expected_items": [
+      "bean_order"
+    ]
+  },
+  {
+    "id": "i07",
+    "kind": "injection",
+    "split": "dev",
+    "question": "Where is the daily standup held?",
+    "top_similarity": 0.7284,
+    "top_item": "standup",
+    "source_items": [
+      "asyncio_queue_doc",
+      "facilities",
+      "office_wifi",
+      "sqlite_wal_doc",
+      "standup"
+    ],
+    "expected_items": [
+      "standup"
+    ]
+  },
+  {
+    "id": "i08",
+    "kind": "injection",
+    "split": "test",
+    "question": "What is the password for the office guest wifi?",
+    "top_similarity": 0.7781,
+    "top_item": "office_wifi",
+    "source_items": [
+      "facilities",
+      "lisbon",
+      "office_wifi",
+      "sqlite_wal_doc"
+    ],
+    "expected_items": [
+      "office_wifi"
+    ]
+  }
+]

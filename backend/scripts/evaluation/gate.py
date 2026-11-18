@@ -12,7 +12,7 @@ from app.services.retrieval import RetrievalConfig, RetrievalService
 from app.store.repository import Repository
 from scripts.evaluation.store import Question
 
-THRESHOLDS = [round(0.50 + 0.025 * i, 3) for i in range(15)]  # 0.50 .. 0.85
+THRESHOLDS = [round(0.50 + 0.01 * i, 3) for i in range(36)]  # 0.50 .. 0.85
 
 
 def retrieval_without_gate(
@@ -41,6 +41,7 @@ def collect(
             {
                 "id": question.id,
                 "kind": question.kind,
+                "split": question.split,
                 "question": question.question,
                 "top_similarity": round(similarity, 4),
                 "top_item": item,
@@ -51,36 +52,54 @@ def collect(
     return rows
 
 
-def sweep(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """wrong-answer rate = questions answered wrongly (should refuse, or no expected item among
-    the top-5 sources the LLM sees) / all questions.
-    refusal rate = answerable questions refused / answerable questions."""
+def sweep(rows: list[dict[str, Any]], thresholds: list[float] = THRESHOLDS) -> list[dict[str, Any]]:
+    """Per threshold (answer when best similarity >= threshold):
+    out-of-scope answered = out-of-scope questions let through / out-of-scope questions;
+    refusal rate = questions with expected items refused / those questions;
+    near-misses answered is reported, not optimised: they score inside the answerable range,
+    so refusing them is the LLM's job (see the near-miss behaviour table);
+    wrong source = answered, but no expected item among the top-5 sources."""
+    oos = [r for r in rows if r["kind"] == "out_of_scope"]
     answerable = [r for r in rows if r["expected_items"]]
     table = []
-    for threshold in THRESHOLDS:
-        wrong = refused = 0
-        for row in rows:
-            answered = row["top_similarity"] >= threshold
-            if not row["expected_items"]:
-                wrong += answered
-            elif not answered:
-                refused += 1
-            elif not set(row["expected_items"]) & set(row["source_items"]):
-                wrong += 1
-        near_miss = sum(
-            1 for r in rows if r["kind"] == "near_miss" and r["top_similarity"] >= threshold
-        )
+    for threshold in thresholds:
+        passed = [r for r in rows if r["top_similarity"] >= threshold]
+        oos_answered = sum(r["kind"] == "out_of_scope" for r in passed)
+        refused = len(answerable) - sum(bool(r["expected_items"]) for r in passed)
         table.append(
             {
                 "threshold": threshold,
-                "wrong_answer_rate": wrong / len(rows),
+                "oos_answered_n": oos_answered,
+                "refused_n": refused,
+                "oos_answered": oos_answered / len(oos),
                 "refusal_rate": refused / len(answerable),
-                "near_miss_answered": near_miss,
+                "near_miss_answered": sum(r["kind"] == "near_miss" for r in passed),
+                "wrong_source": sum(
+                    bool(r["expected_items"])
+                    and not set(r["expected_items"]) & set(r["source_items"])
+                    for r in passed
+                ),
             }
         )
     return table
 
 
 def recommend(table: list[dict[str, Any]]) -> dict[str, Any]:
-    """Lowest wrong + refusal (equal cost); ties go to the stricter threshold."""
-    return min(table, key=lambda r: (r["wrong_answer_rate"] + r["refusal_rate"], -r["threshold"]))
+    """Fewest wrong gate decisions, each question costing the same: out-of-scope questions let
+    through + answerable questions refused. Ties take the middle of the tied range."""
+    cost = [r["oos_answered_n"] + r["refused_n"] for r in table]
+    best = min(cost)
+    tied = [r for r, c in zip(table, cost, strict=True) if abs(c - best) < 1e-9]
+    return tied[len(tied) // 2]
+
+
+def choose_on_dev(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Pick the threshold on dev only; report dev and test at that value."""
+    dev = [r for r in rows if r["split"] == "dev"]
+    test = [r for r in rows if r["split"] == "test"]
+    best = recommend(sweep(dev))
+    return {
+        "threshold": best["threshold"],
+        "dev": best,
+        "test": sweep(test, [best["threshold"]])[0],
+    }

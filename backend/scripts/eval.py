@@ -3,8 +3,11 @@
     make eval ARGS=snapshot      # fetch the URL items once into eval/corpus/ (network, free)
     make eval ARGS=split         # assign the stratified dev/test split (offline)
     make eval ARGS=check         # ingest the corpus, check every evidence string (offline)
+    make eval ARGS=ablation      # vector vs BM25 vs RRF hybrid, chunk-level (free)
     make eval ARGS=gate          # cosine gate sweep (embeddings only, free)
     make eval ARGS=generate      # cache answers at temperature 0 (LLM calls)
+    make eval ARGS="verify llm --run 1"   # or jev, jev+esc; paid: prints cost estimate first
+    make eval ARGS=report        # detailed tables: eval/results/TABLES.md (offline)
     make eval ARGS=review        # write eval/REVIEW.md from cached answers + labels (offline)
     make eval ARGS=blind         # blind parts for labeller B in eval/blind/ (offline)
     make eval ARGS="import-labels --model gemini-…"   # read eval/blind/returned/*.md (offline)
@@ -26,13 +29,34 @@ from app.config import Settings
 from app.logging import configure_logging
 from app.providers.factory import build_providers
 from app.services.chunker import ChunkLimits
-from scripts.evaluation import adjudication, answers, blind, dataset, gate, labels, review, tuning
+from scripts.evaluation import (
+    ablation,
+    adjudication,
+    answers,
+    blind,
+    dataset,
+    gate,
+    labels,
+    report,
+    review,
+    tuning,
+    verify_runs,
+)
 from scripts.evaluation.corpus import snapshot
 from scripts.evaluation.openrouter import build_openrouter_chat, estimate_and_gate
 from scripts.evaluation.store import RESULTS_DIR, build_store, load_eval_set
 
-OFFLINE = ("snapshot", "split", "review", "blind", "import-labels", "disagreements", "adjudicate")
-COMMANDS = (*OFFLINE, "check", "gate", "generate", "tune", "plan")
+OFFLINE = (
+    "report",
+    "snapshot",
+    "split",
+    "review",
+    "blind",
+    "import-labels",
+    "disagreements",
+    "adjudicate",
+)
+COMMANDS = (*OFFLINE, "check", "ablation", "gate", "generate", "tune", "plan", "verify")
 PLAN = RESULTS_DIR / "regen_plan.json"
 
 
@@ -54,6 +78,8 @@ def _offline(command: str, settings: Settings, model: str, extra: list[str], rea
     elif command == "split":
         for (kind, split), n in sorted(dataset.assign_splits().items()):
             print(f"{kind:13} {split:4} {n}")
+    elif command == "report":
+        print(f"wrote {report.write_tables().name}")
     elif command == "blind":
         print(blind.write_parts())
     elif command == "import-labels":
@@ -100,6 +126,12 @@ def main() -> None:
     parser.add_argument("pairs", nargs="*", help="adjudicate: row=label ...")
     parser.add_argument("--reason", default="adjudicated", help="adjudicate: reason column")
     parser.add_argument("--pause", type=float, default=2.0, help="seconds between LLM calls")
+    parser.add_argument("--split", default="dev", help="tune: dev or test")
+    parser.add_argument("--tag", default="", help="tune: suffix for the output file name")
+    parser.add_argument("--run", type=int, default=1, help="verify: run number (1..3)")
+    parser.add_argument(
+        "--oos", action="store_true", help="generate: out-of-scope answers, gate off (backstop)"
+    )
     parser.add_argument(
         "--stale", action="store_true", help="generate: redo the answers in regen_plan.json"
     )
@@ -120,6 +152,12 @@ def main() -> None:
             db_path=Path(tmp) / "eval.db", verifier="off", log_level="WARNING", llm_temperature=0
         )
         configure_logging(settings.log_level, settings.log_json)
+        if args.command == "verify":
+            backend = args.pairs[0] if args.pairs else ""
+            if backend not in verify_runs.BACKENDS:
+                raise SystemExit(f"verify needs a backend: {', '.join(verify_runs.BACKENDS)}")
+            print(verify_runs.run(backend, args.run, settings, args.pause))
+            return
         if args.command in OFFLINE:
             _offline(args.command, settings, args.model, args.pairs, args.reason)
             return
@@ -131,6 +169,18 @@ def main() -> None:
             if args.command == "check":
                 problems = dataset.check_evidence(repo, keys, questions, _limits(settings))
                 print("\n".join(problems) or f"evidence ok for {len(questions)} questions")
+            elif args.command == "ablation":
+                rows = ablation.collect(repo, providers.embedder, settings, keys, questions)
+                table = ablation.summarize(rows)
+                _save("ablation.json", {"questions": rows, "summary": table})
+                print("set           n  arm     hit@1 hit@5  MRR   (95% CI)       all@5")
+                for t in table:
+                    low, high = t["mrr_ci"]
+                    print(
+                        f"{t['set']:12} {t['n']:2}  {t['arm']:7} {t['hit@1']:.2f}  "
+                        f"{t['hit@5']:.2f}  {t['mrr']:.2f} ({low:.2f}-{high:.2f})  {t['all@5']:.2f}"
+                    )
+                print("hybrid misses @5:", " ".join(ablation.misses(rows)) or "none")
             elif args.command == "gate":
                 retrieval = gate.retrieval_without_gate(repo, providers.embedder, settings)
                 _save("gate.json", gate.collect(retrieval, keys, questions))
@@ -144,9 +194,15 @@ def main() -> None:
                     _plan(retrieval, questions)
                     return
                 if args.command == "tune":
-                    _save(
-                        f"tune_{args.kind}.json", tuning.tune(retrieval, chat, questions, args.kind)
+                    tuned = tuning.tune(retrieval, chat, questions, args.kind, args.split)
+                    _save(f"tune_{args.kind}_{args.split}{args.tag}.json", tuned)
+                    return
+                if args.oos:
+                    oos = [q for q in questions if q.kind == "out_of_scope"]
+                    n = answers.generate(
+                        retrieval, chat, keys, oos, args.pause, args.llm, path=answers.OOS_ANSWERS
                     )
+                    print(f"generated {n} out-of-scope answers: eval/results/oos_answers.json")
                     return
                 to_answer = [q for q in questions if q.kind != "out_of_scope"]
                 redo = (

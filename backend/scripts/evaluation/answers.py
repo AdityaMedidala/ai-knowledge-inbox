@@ -9,6 +9,7 @@ partial-mode hint reaches the prompt exactly as in production.
 import hashlib
 import json
 import time
+from pathlib import Path
 from typing import Any
 
 from app.config import Settings
@@ -23,6 +24,9 @@ from scripts.evaluation.openrouter import estimate_and_gate
 from scripts.evaluation.store import RESULTS_DIR, Question
 
 ANSWERS = RESULTS_DIR / "answers.json"
+# Out-of-scope questions answered with the gate off: shows whether the LLM is a backstop when
+# the gate lets one through. Kept out of answers.json, so they are not part of the label set.
+OOS_ANSWERS = RESULTS_DIR / "oos_answers.json"
 TOP_K = 5
 ASSUMED_OUTPUT_TOKENS = 1000  # reasoning model: generous, so the estimate errs high
 RATE_LIMIT_WAIT_S = 30.0
@@ -107,12 +111,13 @@ def generate(
     pause_s: float,
     route: str,
     redo: frozenset[str] = frozenset(),
+    path: Path = ANSWERS,
 ) -> int:
     """Answers questions not yet in answers.json, saving after each one (safe to resume).
     Prints a cost estimate first and stops if it is over budget. Returns how many were
     generated in this run."""
     answering = AnsweringService(retrieval, chat, question_max_chars=10_000)
-    done = {a["id"]: a for a in load_answers()} if ANSWERS.exists() else {}
+    done = {a["id"]: a for a in load_answers(path)} if path.exists() else {}
     done = {qid: a for qid, a in done.items() if qid not in redo}
     order = [q.id for q in questions]
     todo = [q for q in questions if q.id not in done]
@@ -126,18 +131,18 @@ def generate(
         prepared = prepared_all[question.id]
         text = _complete(chat, prepared.messages) if prepared.messages else NOT_FOUND_ANSWER
         done[question.id] = _record(question, prepared, text, keys, _llm_info(chat, route))
-        ANSWERS.parent.mkdir(parents=True, exist_ok=True)
+        path.parent.mkdir(parents=True, exist_ok=True)
         rows = [done[qid] for qid in order if qid in done]
-        ANSWERS.write_text(json.dumps(rows, indent=2, ensure_ascii=False), "utf-8")
+        path.write_text(json.dumps(rows, indent=2, ensure_ascii=False), "utf-8")
         generated += 1
         time.sleep(pause_s)
     return generated
 
 
-def load_answers() -> list[dict[str, Any]]:
-    if not ANSWERS.exists():
+def load_answers(path: Path = ANSWERS) -> list[dict[str, Any]]:
+    if not path.exists():
         raise SystemExit("no cached answers; run: make eval ARGS=generate")
-    return json.loads(ANSWERS.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def plan_regeneration(
