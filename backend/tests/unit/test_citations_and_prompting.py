@@ -35,6 +35,17 @@ def test_parse_refs_accepts_fullwidth_brackets() -> None:
     assert parse_refs("Threshold is 1000 pages【1】【3】 and more [2].") == [1, 3, 2]
 
 
+def test_parse_refs_accepts_locator_suffixes() -> None:
+    text = (
+        "Docs say 1000 pages【2†section 6】【4†section 2.3】, see 【5:0†source】 and [3†L10-L20]."
+    )
+    assert parse_refs(text) == [2, 4, 5, 3]
+
+
+def test_parse_refs_ignores_brackets_that_are_not_citations() -> None:
+    assert parse_refs("A list [a] or [x†1], a link [docs](http://x) and [1 2].") == []
+
+
 def test_parse_refs_ignores_non_numeric_brackets() -> None:
     assert parse_refs("See [docs] and [a1] and [].") == []
 
