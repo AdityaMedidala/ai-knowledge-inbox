@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     max_chunks_per_item: int = Field(default=3, gt=0)
     # Provisional values for bge-small cosine similarity; calibrated against the eval set in M6.
     relevance_min_full: float = Field(default=0.70, ge=0, le=1)
-    relevance_min_partial: float = Field(default=0.60, ge=0, le=1)
+    relevance_min_partial: float = Field(default=0.59, ge=0, le=1)  # chosen on dev (EVAL.md)
 
     fetch_timeout_s: float = Field(default=10, gt=0)
     fetch_max_bytes: int = Field(default=5_000_000, gt=0)
