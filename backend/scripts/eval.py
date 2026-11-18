@@ -9,6 +9,7 @@
     make eval ARGS=blind         # blind parts for labeller B in eval/blind/ (offline)
     make eval ARGS="import-labels --model gemini-…"   # read eval/blind/returned/*.md (offline)
     make eval ARGS=disagreements # A vs B: eval/DISAGREEMENTS.md + agreement table (offline)
+    make eval ARGS="adjudicate a16.2=unsupported --reason adjudicated"   # set finals (offline)
     make eval ARGS="tune --kind conflicting"   # dev-only prompt check (LLM calls)
 
 Items are ingested into a fresh temp DB on every run, through the app's real ingestion path.
@@ -30,7 +31,7 @@ from scripts.evaluation.corpus import snapshot
 from scripts.evaluation.openrouter import build_openrouter_chat, estimate_and_gate
 from scripts.evaluation.store import RESULTS_DIR, build_store, load_eval_set
 
-OFFLINE = ("snapshot", "split", "review", "blind", "import-labels", "disagreements")
+OFFLINE = ("snapshot", "split", "review", "blind", "import-labels", "disagreements", "adjudicate")
 COMMANDS = (*OFFLINE, "check", "gate", "generate", "tune", "plan")
 PLAN = RESULTS_DIR / "regen_plan.json"
 
@@ -41,7 +42,7 @@ def _save(name: str, data: Any) -> None:
     print(f"wrote eval/results/{name}")
 
 
-def _offline(command: str, settings: Settings, model: str) -> None:
+def _offline(command: str, settings: Settings, model: str, extra: list[str], reason: str) -> None:
     if command == "snapshot":
         items, _ = load_eval_set()
         snapshot(
@@ -59,6 +60,12 @@ def _offline(command: str, settings: Settings, model: str) -> None:
         print(blind.import_labels(model))
     elif command == "disagreements":
         print("\n".join(adjudication.write_disagreements()))
+    elif command == "adjudicate":
+        updates = {}
+        for pair in extra:
+            row, _, label = pair.partition("=")
+            updates[row] = (reason, label)
+        print("\n".join(adjudication.write_disagreements(updates)))
     else:
         print(review.write_review())
 
@@ -90,6 +97,8 @@ def _limits(settings: Settings) -> ChunkLimits:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("command", choices=COMMANDS)
+    parser.add_argument("pairs", nargs="*", help="adjudicate: row=label ...")
+    parser.add_argument("--reason", default="adjudicated", help="adjudicate: reason column")
     parser.add_argument("--pause", type=float, default=2.0, help="seconds between LLM calls")
     parser.add_argument(
         "--stale", action="store_true", help="generate: redo the answers in regen_plan.json"
@@ -112,7 +121,7 @@ def main() -> None:
         )
         configure_logging(settings.log_level, settings.log_json)
         if args.command in OFFLINE:
-            _offline(args.command, settings, args.model)
+            _offline(args.command, settings, args.model, args.pairs, args.reason)
             return
         providers = build_providers(settings)
         closers = [providers.close]

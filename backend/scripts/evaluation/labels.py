@@ -10,8 +10,8 @@ item they cite as `{item_key}`; that resolves to the answer's first source from 
 the citation is a real [n] the verifier can follow. Labels are judged against the CITED source
 text only (faithfulness, not world truth).
 
-A row's gold label is `final` when given, else A's label when A and B agree; rows where A and
-B disagree with no `final` are unresolved and excluded from scoring (and counted).
+Gold labels are built in adjudication.gold(): final > uncited rule > A where A and B agree;
+disagreements with no final are unresolved, excluded from scoring and counted.
 """
 
 import json
@@ -112,18 +112,3 @@ def sentence_rows(
             )
         )
     return rows
-
-
-def gold_labels(
-    a: dict[str, str], b: dict[str, str], final: dict[str, str]
-) -> tuple[dict[str, str], list[str]]:
-    """(gold label per row, unresolved rows). See the module docstring for the rule."""
-    gold, unresolved = {}, []
-    for row in sorted(set(a) | set(final)):
-        if final.get(row):
-            gold[row] = final[row]
-        elif row in b and b[row] != a.get(row):
-            unresolved.append(row)
-        elif row in a:
-            gold[row] = a[row]
-    return gold, unresolved

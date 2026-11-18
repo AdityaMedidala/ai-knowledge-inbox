@@ -36,7 +36,10 @@ KEY = BLIND_DIR / "key.json"
 DISAGREEMENTS = EVAL_DIR / "DISAGREEMENTS.md"
 MAX_ROWS_PER_PART = 40
 SEED = 20261119
+# Filled table rows ("| s-1a2b3c4d | ... | supported |") or bare pairs ("s-1a2b3c4d: supported"),
+# any number per line; stray escapes, backticks and asterisks around a label are ignored.
 _FILLED_ROW = re.compile(r"^\|\s*`?([qs]-[0-9a-f]{8})`?\s*\|.*\|\s*`?([a-z_]*)`?\s*\|$")
+_PAIR = re.compile(r"\b([qs]-[0-9a-f]{8})[`*\\\s]*:[`*\\\s]*([A-Za-z_]+)")
 
 SENTENCE_INSTRUCTIONS = """\
 You are checking sentences taken from answers that a question-answering system gave over a
@@ -175,20 +178,46 @@ def _allowed(entry: dict[str, Any]) -> tuple[str, ...]:
     return tuple(label.strip() for label in BEHAVIOURS[entry["kind"]].split("|"))
 
 
+def _pairs(text: str) -> list[tuple[str, str]]:
+    """(opaque id, label) in file order, from table rows and from bare `id: label` pairs."""
+    pairs = []
+    for line in text.splitlines():
+        row = _FILLED_ROW.match(line.strip())
+        if row:
+            pairs.append((row.group(1), row.group(2)))
+            continue
+        pairs += [(m.group(1), m.group(2).lower()) for m in _PAIR.finditer(line)]
+    return pairs
+
+
 def import_labels(model: str) -> str:
+    """Every file in eval/blind/returned/: one per part or one combined file. Labels must match
+    the allowed set exactly (the instructions name exact labels, so no synonyms are mapped).
+    A repeated id with a different label is a conflict and is dropped; an exact repeat is
+    ignored."""
     key = json.loads(KEY.read_text("utf-8"))
     files = sorted(RETURNED_DIR.glob("*.md"))
-    labels: dict[str, dict[str, str]] = {"questions": {}, "sentences": {}}
-    invalid = []
+    seen: dict[str, str] = {}
+    invalid: list[str] = []
+    unknown: list[str] = []
+    duplicates: list[str] = []
+    conflicts: set[str] = set()
     for path in files:
-        for line in path.read_text("utf-8").splitlines():
-            match = _FILLED_ROW.match(line.strip())
-            if not match or match.group(1) not in key:
-                continue
-            entry, label = key[match.group(1)], match.group(2)
-            if label not in _allowed(entry):
-                invalid.append(f"{match.group(1)}={label!r}")
-                continue
+        for opaque, label in _pairs(path.read_text("utf-8")):
+            if opaque not in key:
+                unknown.append(opaque)
+            elif label not in _allowed(key[opaque]):
+                invalid.append(f"{opaque}={label!r}")
+            elif opaque in seen:
+                duplicates.append(opaque)
+                if seen[opaque] != label:
+                    conflicts.add(opaque)
+            else:
+                seen[opaque] = label
+    labels: dict[str, dict[str, str]] = {"questions": {}, "sentences": {}}
+    for opaque, label in seen.items():
+        if opaque not in conflicts:
+            entry = key[opaque]
             group = "questions" if entry["type"] == "question" else "sentences"
             labels[group][entry["row"]] = label
     data = {
@@ -196,11 +225,20 @@ def import_labels(model: str) -> str:
         "by": "B",
         "model": model,
         "imported_from": [path.name for path in files],
+        "synonyms_mapped": [],
         **labels,
     }
     SECOND.write_text(json.dumps(data, indent=1, ensure_ascii=False), "utf-8")
-    found = len(labels["questions"]) + len(labels["sentences"])
-    return (
-        f"imported {found} of {len(key)} rows from {len(files)} files; "
-        f"missing {len(key) - found - len(invalid)}; invalid {len(invalid)} {invalid[:5]}"
+    imported = len(labels["questions"]) + len(labels["sentences"])
+    invalid_ids = {item.split("=")[0] for item in invalid}
+    missing = sorted(set(key) - set(seen) - invalid_ids)
+    return "\n".join(
+        [
+            f"imported {imported} of {len(key)} blind rows from {len(files)} file(s)",
+            f"missing {len(missing)} {missing[:5]}",
+            f"duplicates {len(duplicates)} (conflicting, dropped: {sorted(conflicts)})",
+            f"invalid labels {len(invalid)} {invalid[:5]}",
+            f"unknown ids {len(unknown)} {unknown[:5]}",
+            "synonyms mapped: none (labels must match the allowed set exactly)",
+        ]
     )

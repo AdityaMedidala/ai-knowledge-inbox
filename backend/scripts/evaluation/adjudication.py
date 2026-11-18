@@ -2,16 +2,28 @@
 
 `disagreements` writes eval/DISAGREEMENTS.md: the rows where A and B differ, with a blank
 "final" column for the project owner, and returns agreement and Cohen's kappa per set.
+
+Adjudication rule applied automatically: an uncited sentence is `unsupported`, because that is
+how the app treats it (by rule, never sent to a verifier). Its reason column says
+"rule: uncited". Finals already typed into DISAGREEMENTS.md survive a rewrite.
 """
 
 from collections import Counter
+from dataclasses import dataclass
 
 from scripts.evaluation.answers import load_answers
 from scripts.evaluation.corpus import EVAL_DIR
-from scripts.evaluation.labels import load_proposed, load_second, load_synthetic, sentence_rows
+from scripts.evaluation.labels import (
+    SentenceRow,
+    load_proposed,
+    load_second,
+    load_synthetic,
+    sentence_rows,
+)
 from scripts.evaluation.review import cell, read_overrides
 
 DISAGREEMENTS = EVAL_DIR / "DISAGREEMENTS.md"
+UNCITED_RULE = ("unsupported", "rule: uncited")
 
 
 def cohen_kappa(pairs: list[tuple[str, str]]) -> float:
@@ -24,7 +36,22 @@ def cohen_kappa(pairs: list[tuple[str, str]]) -> float:
     return 1.0 if expected == 1 else (observed - expected) / (1 - expected)
 
 
-def write_disagreements() -> list[str]:
+def _read_table() -> dict[str, tuple[str, str]]:
+    """{row id: (reason, final)} for rows with a final already in DISAGREEMENTS.md."""
+    if not DISAGREEMENTS.exists():
+        return {}
+    kept = {}
+    for line in DISAGREEMENTS.read_text("utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == 7 and cells[0].startswith("`") and cells[6]:
+            kept[cells[0].strip("`")] = (cells[5], cells[6])
+    return kept
+
+
+def write_disagreements(updates: dict[str, tuple[str, str]] | None = None) -> list[str]:
+    """Rewrite DISAGREEMENTS.md keeping every typed final and reason; `updates` adds or
+    replaces {row: (reason, final)}, also for rows where A and B agree (listed after the
+    disagreements). Uncited sentences always get the uncited rule."""
     a, b = load_proposed(), load_second()
     if not b["sentences"] and not b["questions"]:
         raise SystemExit('no labels_B.json yet; run: make eval ARGS="import-labels"')
@@ -35,29 +62,55 @@ def write_disagreements() -> list[str]:
         for answer in load_answers()
         for r in sentence_rows(answer, synthetic, a["sentences"])
     }
-    table = ["| row | tag | sentence or question | A | B | final |", "|---|---|---|---|---|---|"]
+    kept = {**_read_table(), **(updates or {})}
+    table = [
+        "| row | tag | sentence or question | A | B | reason | final |",
+        "|---|---|---|---|---|---|---|",
+    ]
     pairs: dict[str, list[tuple[str, str]]] = {"real": [], "blatant": [], "subtle": []}
     pairs["questions"] = []
+    listed: set[str] = set()
+
+    def add(row_id: str, tag: str, text: str, label_a: str, label_b: str) -> None:
+        reason, final = kept.get(row_id, ("", ""))
+        row = rows.get(row_id)
+        if row is not None and not row.refs:
+            final, reason = UNCITED_RULE
+        table.append(
+            f"| `{row_id}` | {tag} | {text} | {label_a} | {label_b} | {reason} | {final} |"
+        )
+        listed.add(row_id)
+
     for row_id, row in sorted(rows.items()):
         label_a, label_b = row.proposed, b["sentences"].get(row_id)
         if label_a is None or label_b is None:
             continue
         pairs[row.tag].append((label_a, label_b))
         if label_a != label_b:
-            text = f"{cell(row.text)} (refs {row.refs or 'none'})"
-            table.append(f"| `{row_id}` | {row.tag} | {text} | {label_a} | {label_b} |  |")
+            add(row_id, row.tag, f"{cell(row.text)} (refs {row.refs or 'none'})", label_a, label_b)
     for qid, label_a in sorted(a["questions"].items()):
         label_b = b["questions"].get(qid)
         if label_b is None:
             continue
         pairs["questions"].append((label_a, label_b))
         if label_a != label_b:
-            table.append(f"| `{qid}` | question | behaviour | {label_a} | {label_b} |  |")
+            add(qid, "question", "behaviour", label_a, label_b)
+    n_disagree = len(listed)
+    for row_id in sorted(set(kept) - listed):
+        row = rows.get(row_id)
+        if row is not None:
+            text = f"{cell(row.text)} (refs {row.refs or 'none'}) — A and B agreed"
+            add(row_id, row.tag, text, row.proposed or "", b["sentences"].get(row_id, ""))
+        else:
+            label_a, label_b = a["questions"].get(row_id, ""), b["questions"].get(row_id, "")
+            add(row_id, "question", "behaviour — A and B agreed", label_a, label_b)
     header = [
         "# A vs B disagreements",
         "",
-        "A = proposed by an LLM; B = second model (Gemini), labelled blind. Fill **final** for "
-        "each row; it becomes the gold label (rows left blank are excluded from scoring).",
+        "A = proposed by an LLM; B = second model (Gemini), labelled blind. **final** is the gold "
+        "label (rows left blank are excluded from scoring and counted). Uncited sentences are "
+        "`unsupported` by rule (reason `rule: uncited`); rows below the disagreements were "
+        "adjudicated although A and B agreed.",
         "",
     ]
     DISAGREEMENTS.write_text("\n".join([*header, *table]) + "\n", "utf-8")
@@ -65,10 +118,62 @@ def write_disagreements() -> list[str]:
     for name, items in pairs.items():
         agree = sum(x == y for x, y in items)
         report.append(f"| {name} | {len(items)} | {agree} | {cohen_kappa(items):.2f} |")
-    return [*report, f"wrote eval/DISAGREEMENTS.md ({len(table) - 2} disagreements)"]
+    extra = len(listed) - n_disagree
+    return [*report, f"wrote eval/DISAGREEMENTS.md ({n_disagree} disagreements, {extra} extra)"]
 
 
 def read_final() -> dict[str, str]:
     """Adjudicated labels: DISAGREEMENTS.md "final", overridden by REVIEW.md "final"."""
     final = read_overrides(DISAGREEMENTS) if DISAGREEMENTS.exists() else {}
     return {**final, **read_overrides()}
+
+
+def read_reasons() -> dict[str, str]:
+    """{row: reason} for adjudicated rows (e.g. "wrong citation" marks a real error type)."""
+    return {row: reason for row, (reason, _) in _read_table().items()}
+
+
+REASON_TO_ERROR = {"wrong citation": "wrong_citation"}
+
+
+@dataclass(frozen=True, slots=True)
+class GoldRow:
+    row: SentenceRow
+    label: str
+    error: str | None  # synthetic error type, or a real error found in adjudication
+
+
+def gold() -> tuple[dict[str, GoldRow], dict[str, str], list[str]]:
+    """(gold sentences, gold question behaviours, unresolved rows).
+
+    Sentence rule, in order: a final from adjudication; `unsupported` for any uncited sentence
+    (that is how the app treats it); A's label where A and B agree; otherwise unresolved."""
+    a, b = load_proposed(), load_second()
+    final, reasons = read_final(), read_reasons()
+    synthetic = load_synthetic()
+    sentences: dict[str, GoldRow] = {}
+    unresolved: list[str] = []
+    for answer in load_answers():
+        for row in sentence_rows(answer, synthetic, a["sentences"]):
+            error = row.error or REASON_TO_ERROR.get(reasons.get(row.row, ""))
+            label_b = b["sentences"].get(row.row)
+            if final.get(row.row):
+                label = final[row.row]
+            elif not row.refs:
+                label = UNCITED_RULE[0]
+            elif row.proposed and (label_b is None or label_b == row.proposed):
+                label = row.proposed
+            else:
+                unresolved.append(row.row)
+                continue
+            sentences[row.row] = GoldRow(row, label, error)
+    questions: dict[str, str] = {}
+    for qid, label_a in a["questions"].items():
+        label_b = b["questions"].get(qid)
+        if final.get(qid):
+            questions[qid] = final[qid]
+        elif label_b is None or label_b == label_a:
+            questions[qid] = label_a
+        else:
+            unresolved.append(qid)
+    return sentences, questions, unresolved
