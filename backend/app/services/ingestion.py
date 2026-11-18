@@ -132,7 +132,9 @@ class IngestionService:
             ms=timer.ms,
         )
         doc = extract_document(page)
-        logger.info("ingest.extracted", chars=len(doc.text), title=doc.title)
+        logger.info(
+            "ingest.extracted", chars=len(doc.text), title=doc.title, extractor=doc.extractor
+        )
         self._repo.set_content(
             item.id,
             title=doc.title,

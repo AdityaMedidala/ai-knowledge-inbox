@@ -16,6 +16,7 @@ dependencies = [
     "httpx2>=2.16",
     "fastembed>=0.9.1",
     "trafilatura>=2.3.1",
+    "lxml>=6.1",  # used directly by services/html_fallback.py (also a trafilatura dependency)
 ]
 
 [project.optional-dependencies]
