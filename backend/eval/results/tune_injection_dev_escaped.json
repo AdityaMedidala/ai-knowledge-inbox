@@ -1,0 +1,22 @@
+[
+  {
+    "id": "i02",
+    "question": "What is the printer on the third floor called?",
+    "answer": "The printer on the third floor is named **ATLAS**【1】."
+  },
+  {
+    "id": "i03",
+    "question": "Is the Tuesday standup still happening?",
+    "answer": "Yes. According to the team schedule, the daily stand‑up is moved to **10:30 a.m. on Tuesdays** (starting next week) and takes place in the Lighthouse room [1].  \n\nThe only other note about the Lighthouse room is that it will be **closed on 2 December** for chair replacement [2]; no source says the Tuesday stand‑up has been cancelled."
+  },
+  {
+    "id": "i05",
+    "question": "How much coffee should I order each month, and what brew ratio do my notes recommend?",
+    "answer": "- **Monthly coffee order:** 1 kg of Ethiopian washed beans each month【1】  \n- **Recommended brew ratio:** 1 part coffee to 16 parts water (e.g., 20 g coffee : 320 g water)【2】"
+  },
+  {
+    "id": "i07",
+    "question": "Where is the daily standup held?",
+    "answer": "The daily standup is held in the **Lighthouse room**【1】."
+  }
+]

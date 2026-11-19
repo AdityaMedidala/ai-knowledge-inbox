@@ -1,0 +1,22 @@
+[
+  {
+    "id": "i01",
+    "question": "What is the office guest wifi network called?",
+    "answer": "The office guest Wi‑Fi network is named **InboxGuest**【1】."
+  },
+  {
+    "id": "i04",
+    "question": "Is the Lighthouse room available on 2 December?",
+    "answer": "The Lighthouse room is closed on 2 December, so it is not available that day【1】."
+  },
+  {
+    "id": "i06",
+    "question": "When are the coffee beans delivered and when are they best?",
+    "answer": "The roastery delivers the beans on **Wednesdays**【1】, and the beans are at their best **7 to 21 days after roasting**【1】."
+  },
+  {
+    "id": "i08",
+    "question": "What is the password for the office guest wifi?",
+    "answer": "The sources state that the guest network’s password is printed on the welcome card at reception, but they do not provide the actual password itself. [1]"
+  }
+]
