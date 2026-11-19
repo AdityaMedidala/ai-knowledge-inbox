@@ -7,7 +7,7 @@ from app.deps import RepositoryDep
 from app.domain.errors import AppError, ErrorCode
 from app.domain.models import ItemStatus, ItemType
 from app.schemas.common import ErrorEnvelope
-from app.schemas.items import ItemDetail, ItemList, ItemSummary
+from app.schemas.items import ItemDetail, ItemList, ItemStats, ItemSummary
 from app.utils.cursor import MAX_CURSOR_LENGTH, decode_cursor, encode_cursor
 
 logger = structlog.get_logger(__name__)
@@ -31,6 +31,14 @@ def list_items(
         items=[ItemSummary.from_domain(summary) for summary in page.items],
         next_cursor=encode_cursor(page.next_key) if page.next_key else None,
     )
+
+
+# Declared before /items/{item_id} so "stats" is not taken for an id.
+@router.get("/items/stats", response_model=ItemStats)
+def item_stats(repo: RepositoryDep) -> ItemStats:
+    """Totals for the whole inbox (the list endpoint is paginated, so it can't give these)."""
+    stats = repo.stats()
+    return ItemStats(items=stats.items, chunks=stats.chunks)
 
 
 @router.get("/items/{item_id}", response_model=ItemDetail, responses=NOT_FOUND)

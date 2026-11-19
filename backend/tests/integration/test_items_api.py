@@ -100,3 +100,10 @@ def test_delete_works_while_processing(client: TestClient, settings: Settings) -
         repo.set_status(item_id, ItemStatus.PROCESSING)
     assert client.delete(f"/items/{item_id}").status_code == 204
     assert client.get(f"/items/{item_id}").status_code == 404
+
+
+def test_stats_counts_all_items_and_ready_chunks(client: TestClient) -> None:
+    assert client.get("/items/stats").json() == {"items": 0, "chunks": 0}
+    add_notes(client, 2)
+    client.portal.call(client.app.state.worker.drain, 10)  # type: ignore[union-attr]
+    assert client.get("/items/stats").json() == {"items": 2, "chunks": 2}

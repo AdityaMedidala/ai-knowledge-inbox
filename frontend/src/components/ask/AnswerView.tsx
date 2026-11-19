@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm'
 import { CitationMarker } from '@/components/ask/CitationMarker'
 import { VerdictMarker } from '@/components/ask/VerdictMarker'
 import type { SentenceVerdict } from '@/lib/api'
-import { CITE_HREF, linkCitations } from '@/lib/citations'
+import { CITE_HREF, linkCitations, markerParts } from '@/lib/citations'
 import { insertVerdictMarkers, VERDICT_HREF } from '@/lib/verdicts'
 
 interface AnswerViewProps {
@@ -20,8 +20,13 @@ export function AnswerView({ markdown, validRefs, verdicts, activeRef, onSelect 
   const components: Components = {
     a: ({ href, children }) => {
       if (href?.startsWith(CITE_HREF)) {
-        const ref = Number(href.slice(CITE_HREF.length))
-        return <CitationMarker refNumber={ref} active={ref === activeRef} onSelect={onSelect} />
+        const { ref, trailing } = markerParts(typeof children === 'string' ? children : '')
+        return (
+          <span className="whitespace-nowrap">
+            <CitationMarker refNumber={ref} active={ref === activeRef} onSelect={onSelect} />
+            {trailing}
+          </span>
+        )
       }
       if (href?.startsWith(VERDICT_HREF)) {
         const verdict = byIndex.get(Number(href.slice(VERDICT_HREF.length)))

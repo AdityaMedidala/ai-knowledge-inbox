@@ -8,6 +8,7 @@ from collections.abc import Iterable, Sequence
 
 from app.domain.models import (
     ChunkRecord,
+    InboxStats,
     Item,
     ItemErrorCode,
     ItemPage,
@@ -87,6 +88,9 @@ class Repository:
 
     def recover_interrupted(self) -> list[str]:
         return self._items.recover_interrupted()
+
+    def stats(self) -> InboxStats:
+        return self._items.stats()
 
     def delete_item(self, item_id: str) -> bool:
         return self._items.delete_item(item_id)

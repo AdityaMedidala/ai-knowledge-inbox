@@ -1,5 +1,5 @@
 import { ArrowUp } from 'lucide-react'
-import { useState, type FormEvent, type KeyboardEvent } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,14 +7,15 @@ import { QUESTION_MAX_CHARS } from '@/lib/limits'
 import { cn } from '@/lib/utils'
 
 interface AskFormProps {
+  question: string
+  onQuestionChange: (question: string) => void
   busy: boolean
   onAsk: (question: string) => void
   onCancel: () => void
 }
 
 /** A wide pill input with the Ask / Cancel button inside it on the right. */
-export function AskForm({ busy, onAsk, onCancel }: AskFormProps) {
-  const [question, setQuestion] = useState('')
+export function AskForm({ question, onQuestionChange, busy, onAsk, onCancel }: AskFormProps) {
   const trimmed = question.trim()
   const tooLong = question.length > QUESTION_MAX_CHARS
   const canSubmit = trimmed.length > 0 && !tooLong && !busy
@@ -32,7 +33,7 @@ export function AskForm({ busy, onAsk, onCancel }: AskFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="relative space-y-2">
+    <form onSubmit={submit} className="relative shrink-0 space-y-1.5">
       <label htmlFor="question" className="sr-only">
         Question
       </label>
@@ -41,7 +42,7 @@ export function AskForm({ busy, onAsk, onCancel }: AskFormProps) {
           id="question"
           placeholder="Ask anything about your saved items…"
           value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          onChange={(e) => onQuestionChange(e.target.value)}
           onKeyDown={onKeyDown}
           aria-invalid={tooLong}
           aria-describedby="question-hint"

@@ -40,25 +40,38 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
     <li
       id={elementId}
       className={cn(
-        'flex items-start gap-3 rounded-2xl border bg-background p-3 transition-colors',
+        'flex items-center gap-3 rounded-2xl border bg-background px-3 py-1.5 transition-colors',
         item.status === 'failed' && 'border-unsupported/30',
         highlighted && 'border-foreground/40 bg-muted',
       )}
     >
-      <TypeIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-      <div className="min-w-0 flex-1 space-y-1.5">
-        <p className="truncate text-sm font-medium text-foreground" title={heading}>
-          <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
-          {heading}
-        </p>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+      <TypeIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <div className="flex items-baseline gap-2">
+          <p className="min-w-0 flex-1 truncate text-sm font-medium text-foreground" title={heading}>
+            <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
+            {heading}
+          </p>
+          <time
+            dateTime={item.created_at}
+            title={new Date(item.created_at).toLocaleString()}
+            className="shrink-0 text-xs text-muted-foreground"
+          >
+            {relativeTime(item.created_at)}
+          </time>
+        </div>
+        <div className="flex min-w-0 items-center gap-2 text-xs whitespace-nowrap text-muted-foreground">
           <StatusBadge status={item.status} />
           {domain && item.source_url && (
-            <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+            <a
+              href={item.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-w-0 truncate hover:underline"
+            >
               {domain}
             </a>
           )}
-          <span>{relativeTime(item.created_at)}</span>
           {item.status === 'ready' && (
             <span>
               {item.chunk_count} {item.chunk_count === 1 ? 'chunk' : 'chunks'}
@@ -74,7 +87,7 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
       </div>
       <Button
         variant="ghost"
-        size="icon"
+        size="icon-sm"
         aria-label={`Delete ${heading}`}
         disabled={remove.isPending}
         onClick={() => remove.mutate(item.id)}

@@ -3,7 +3,7 @@ const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ['hour', 3_600],
   ['minute', 60],
 ]
-const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto', style: 'short' })
 
 export function relativeTime(iso: string, now: number = Date.now()): string {
   const seconds = Math.round((new Date(iso).getTime() - now) / 1000)

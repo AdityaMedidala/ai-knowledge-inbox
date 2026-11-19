@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from app.domain.errors import DuplicateItemError, InvalidStatusTransitionError, ItemNotFoundError
 from app.domain.models import (
+    InboxStats,
     Item,
     ItemErrorCode,
     ItemPage,
@@ -197,6 +198,13 @@ class ItemsRepository:
                 "SELECT id FROM items WHERE status = 'pending' ORDER BY created_at, id"
             ).fetchall()
         return [row["id"] for row in rows]
+
+    def stats(self) -> InboxStats:
+        """Every item in any status, and the chunks of the ready ones."""
+        row = self._conn.execute(
+            "SELECT COUNT(*) AS items, COALESCE(SUM(chunk_count), 0) AS chunks FROM items"
+        ).fetchone()
+        return InboxStats(items=row["items"], chunks=row["chunks"])
 
     def delete_item(self, item_id: str) -> bool:
         """Delete an item; FK cascade + triggers remove its chunks, FTS and vector rows."""

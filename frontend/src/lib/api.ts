@@ -3,6 +3,7 @@ import type { components } from '@/lib/api-types'
 type Schemas = components['schemas']
 export type ItemSummary = Schemas['ItemSummary']
 export type ItemList = Schemas['ItemList']
+export type ItemStats = Schemas['ItemStats']
 export type IngestRequest = Schemas['NoteIngest'] | Schemas['UrlIngest']
 export type IngestResponse = Schemas['IngestResponse']
 export type Citation = Schemas['Citation']
@@ -110,6 +111,7 @@ export const api = {
     requestJson<ItemList>(
       `/items?limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`,
     ),
+  itemStats: () => requestJson<ItemStats>('/items/stats'),
   ingest: (body: IngestRequest) =>
     requestJson<IngestResponse>('/ingest', {
       method: 'POST',

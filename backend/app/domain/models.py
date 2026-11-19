@@ -108,6 +108,12 @@ class ItemPage:
 
 
 @dataclass(frozen=True, slots=True)
+class InboxStats:
+    items: int
+    chunks: int
+
+
+@dataclass(frozen=True, slots=True)
 class NewChunk:
     ordinal: int
     section: str | None

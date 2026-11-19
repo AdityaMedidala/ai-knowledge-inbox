@@ -64,13 +64,13 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3" noValidate>
+    <form onSubmit={submit} className="shrink-0 space-y-3" noValidate>
       <Tabs value={kind} onValueChange={switchKind}>
         <TabsList aria-label="What to save">
           <TabsTrigger value="note">Note</TabsTrigger>
           <TabsTrigger value="url">URL</TabsTrigger>
         </TabsList>
-        <TabsContent value="note" className="space-y-2 pt-1">
+        <TabsContent value="note" className="space-y-3 pt-1">
           <Input
             aria-label="Title (optional)"
             placeholder="Title (optional)"
@@ -85,7 +85,8 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
             aria-label="Note"
             placeholder="Paste or write a note…"
             value={content}
-            rows={5}
+            rows={3}
+            className="max-h-48"
             onChange={(e) => edit(setContent, e.target.value)}
             aria-invalid={invalid('content')}
             aria-describedby="content-error"
@@ -93,7 +94,7 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
           />
           <FieldError id="content-error" problem={problem} field="content" />
         </TabsContent>
-        <TabsContent value="url" className="space-y-2 pt-1">
+        <TabsContent value="url" className="space-y-3 pt-1">
           <Input
             type="url"
             aria-label="URL"

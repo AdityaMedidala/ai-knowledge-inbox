@@ -56,3 +56,8 @@ class ItemDetail(ItemSummary):
 class ItemList(BaseModel):
     items: list[ItemSummary]
     next_cursor: str | None = Field(description="Pass as ?cursor= for the next page; null at end.")
+
+
+class ItemStats(BaseModel):
+    items: int = Field(description="Saved items in any status.")
+    chunks: int = Field(description="Searchable chunks across all ready items.")
