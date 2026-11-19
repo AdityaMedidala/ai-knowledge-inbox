@@ -4,7 +4,7 @@ UV := cd $(BACKEND) && uv run
 # tests run offline after `make install`.
 export TIKTOKEN_CACHE_DIR := $(abspath $(BACKEND)/.cache/tiktoken)
 
-.PHONY: install install-render dev dev-backend dev-frontend test test-backend test-frontend lint lint-backend lint-frontend fmt build-frontend types check-vec smoke eval seed
+.PHONY: install install-render docker dev dev-backend dev-frontend test test-backend test-frontend lint lint-backend lint-frontend fmt build-frontend types check-vec smoke eval seed
 
 FRONTEND := frontend
 NPM := cd $(FRONTEND) && npm
@@ -20,6 +20,10 @@ install:
 install-render:
 	cd $(BACKEND) && uv sync --extra render
 	$(UV) playwright install chromium
+
+# The single production container (API + built frontend + demo seed) on :8000.
+docker:
+	docker compose up --build
 
 # Backend on :8000 and Vite on :5173 (proxies /api to the backend).
 dev:
