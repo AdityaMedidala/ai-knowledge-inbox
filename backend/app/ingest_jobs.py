@@ -26,21 +26,25 @@ def build_worker(
 def _job_runner(
     settings: Settings, embedder: Embedder, fetcher: PageFetcher, renderer: PageRenderer | None
 ) -> RunJob:
-    ingestion = IngestionSettings(
-        limits=ChunkLimits(
-            max_tokens=settings.chunk_tokens,
-            overlap_tokens=settings.chunk_overlap_tokens,
-            max_block_tokens=settings.chunk_max_block_tokens,
-        ),
-        max_attempts=settings.ingest_max_attempts,
-        render_min_chars=settings.render_min_chars,
-    )
+    ingestion = ingestion_settings(settings)
 
     def run_job(item_id: str) -> JobResult:
         with repository_session(settings.db_path, settings.embedding_dim) as repo:
             return IngestionService(repo, embedder, fetcher, ingestion, renderer).process(item_id)
 
     return run_job
+
+
+def ingestion_settings(settings: Settings, *, max_attempts: int | None = None) -> IngestionSettings:
+    return IngestionSettings(
+        limits=ChunkLimits(
+            max_tokens=settings.chunk_tokens,
+            overlap_tokens=settings.chunk_overlap_tokens,
+            max_block_tokens=settings.chunk_max_block_tokens,
+        ),
+        max_attempts=max_attempts or settings.ingest_max_attempts,
+        render_min_chars=settings.render_min_chars,
+    )
 
 
 def _recoverer(settings: Settings) -> Recover:

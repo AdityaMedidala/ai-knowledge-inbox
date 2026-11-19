@@ -32,7 +32,7 @@ def settings(tmp_path: Path) -> Settings:
         _env_file=None,
         embedding_provider="fake",
         llm_provider="fake",
-        db_path=tmp_path / "data" / "inbox.db",
+        data_dir=tmp_path / "data",
         cors_origins=[ALLOWED_ORIGIN],
         log_json=True,
         log_level="INFO",

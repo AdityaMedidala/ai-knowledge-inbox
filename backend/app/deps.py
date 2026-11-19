@@ -38,7 +38,9 @@ def get_worker(request: Request) -> IngestionWorker:
 def get_submission(
     request: Request, repo: Annotated[Repository, Depends(get_repository)]
 ) -> SubmissionService:
-    return SubmissionService(repo, note_max_chars=get_settings(request).note_max_chars)
+    settings = get_settings(request)
+    max_items = settings.demo_max_items if settings.demo_mode == "on" else None
+    return SubmissionService(repo, note_max_chars=settings.note_max_chars, max_items=max_items)
 
 
 def get_answering(

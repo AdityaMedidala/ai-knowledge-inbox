@@ -10,11 +10,12 @@ from app.config import Settings
 from app.providers.base import Embedder
 from app.services.chunker import ChunkLimits
 from app.services.ingestion import IngestionService, IngestionSettings
+from app.services.snapshots import CorpusItem, SnapshotFetcher, load_items
 from app.services.submission import SubmissionService
 from app.store.db import connect
 from app.store.migrations import apply_migrations
 from app.store.repository import Repository
-from scripts.evaluation.corpus import EVAL_DIR, CorpusItem, SnapshotFetcher, load_items
+from scripts.evaluation.corpus import CORPUS_DIR, EVAL_DIR
 
 EVAL_SET = EVAL_DIR / "eval_set.json"
 RESULTS_DIR = EVAL_DIR / "results"
@@ -74,7 +75,10 @@ def build_store(
         max_block_tokens=settings.chunk_max_block_tokens,
     )
     ingestion = IngestionService(
-        repo, embedder, SnapshotFetcher(items), IngestionSettings(limits=limits, max_attempts=1)
+        repo,
+        embedder,
+        SnapshotFetcher(items, CORPUS_DIR),
+        IngestionSettings(limits=limits, max_attempts=1),
     )
     keys: dict[str, str] = {}
     for item in items:

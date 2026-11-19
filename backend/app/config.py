@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, HttpUrl, SecretStr, field_validator, model_validator
+from pydantic import AliasChoices, Field, HttpUrl, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         env_ignore_empty=True,  # `OPENAI_API_KEY=` in .env means "unset", not an empty key
         extra="ignore",
+        populate_by_name=True,  # Settings(llm_api_key=...) as well as the GROQ_API_KEY alias
     )
 
     openai_api_key: SecretStr | None = None
@@ -29,11 +30,12 @@ class Settings(BaseSettings):
     embedding_threads: int | None = Field(default=None, ge=1)  # fastembed ONNX threads
     fastembed_cache_dir: Path = Path("./.cache/fastembed")
     llm_provider: ChatProviderName = "openai_compatible"
-    llm_model: str | None = None
-    llm_base_url: HttpUrl | None = (
-        None  # openai_compatible only, e.g. https://api.groq.com/openai/v1
-    )
-    llm_api_key: SecretStr | None = None  # openai_compatible only
+    # Defaults target Groq's free tier, so GROQ_API_KEY alone is a working configuration.
+    llm_model: str | None = "openai/gpt-oss-120b"
+    llm_base_url: HttpUrl | None = HttpUrl("https://api.groq.com/openai/v1")  # openai_compatible
+    llm_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("llm_api_key", "groq_api_key")
+    )  # openai_compatible only
     llm_reasoning_effort: Literal["low", "medium", "high"] | None = None  # sent only when set
     llm_temperature: float | None = Field(default=None, ge=0, le=2)  # sent only when set
     reranker: Literal["none", "cohere"] = "none"
@@ -54,7 +56,7 @@ class Settings(BaseSettings):
     llm_timeout_s: float = Field(default=60, gt=0)
     rerank_timeout_s: float = Field(default=10, gt=0)
 
-    db_path: Path = Path("./data/inbox.db")
+    data_dir: Path = Path("./data")  # holds inbox.db; /data in the container (a volume)
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
     log_level: LogLevel = "INFO"
     log_json: bool = False
@@ -83,6 +85,16 @@ class Settings(BaseSettings):
     render_timeout_s: float = Field(default=15, gt=0)  # hard cap per page, network idle or not
     render_max_pages: int = Field(default=2, ge=1)  # pages rendered at once (one browser)
     note_max_chars: int = Field(default=50_000, gt=0)
+
+    # Deployment. FRONTEND_DIST: serve the built frontend from the API (one origin, no CORS).
+    frontend_dist: Path | None = None
+    seed_on_empty: Literal["off", "on"] = "off"  # load the demo items when the inbox is empty
+    seed_dir: Path = REPO_ROOT / "backend" / "eval"  # eval_set.json + corpus/ snapshots
+    # Public demo: per-IP rate limits and an item cap, and never a headless browser.
+    demo_mode: Literal["off", "on"] = "off"
+    demo_ingests_per_hour: int = Field(default=10, ge=1)
+    demo_queries_per_hour: int = Field(default=30, ge=1)
+    demo_max_items: int = Field(default=100, ge=1)
     question_max_chars: int = Field(default=1_000, gt=0)
 
     @field_validator("cors_origins", mode="before")
@@ -120,7 +132,13 @@ class Settings(BaseSettings):
             raise ValueError("CHUNK_MAX_BLOCK_TOKENS must be at least CHUNK_TOKENS.")
         if self.relevance_min_partial > self.relevance_min_full:
             raise ValueError("RELEVANCE_MIN_PARTIAL must not exceed RELEVANCE_MIN_FULL.")
+        if self.demo_mode == "on":
+            self.js_render = "off"  # a public demo never drives a browser for strangers
         return self
+
+    @property
+    def db_path(self) -> Path:
+        return self.data_dir / "inbox.db"
 
     @property
     def groq_configured(self) -> bool:

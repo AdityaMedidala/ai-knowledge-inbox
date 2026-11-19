@@ -29,6 +29,8 @@ STATUS_BY_CODE: dict[ErrorCode, int] = {
     ErrorCode.DUPLICATE_ITEM: HTTPStatus.CONFLICT,
     ErrorCode.URL_NOT_ALLOWED: HTTPStatus.UNPROCESSABLE_ENTITY,
     ErrorCode.UPSTREAM_UNAVAILABLE: HTTPStatus.SERVICE_UNAVAILABLE,
+    ErrorCode.RATE_LIMITED: HTTPStatus.TOO_MANY_REQUESTS,
+    ErrorCode.INBOX_FULL: HTTPStatus.CONFLICT,
     ErrorCode.INTERNAL_ERROR: HTTPStatus.INTERNAL_SERVER_ERROR,
 }
 
@@ -77,7 +79,9 @@ def _field_errors(errors: Sequence[Any]) -> list[dict[str, str]]:
 
 async def _handle_app_error(_: Request, exc: AppError) -> JSONResponse:
     logger.info("request.app_error", error_code=exc.code, message=exc.message)
-    return error_response(exc.code, exc.message, exc.details)
+    retry_after = (exc.details or {}).get("retry_after_s")
+    headers = {"Retry-After": str(retry_after)} if retry_after is not None else None
+    return error_response(exc.code, exc.message, exc.details, headers=headers)
 
 
 async def _handle_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:

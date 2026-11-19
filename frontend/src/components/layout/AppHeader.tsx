@@ -1,3 +1,4 @@
+import { useHealth } from '@/hooks/useHealth'
 import { useItemStats } from '@/hooks/useItemStats'
 
 function plural(count: number, word: string): string {
@@ -7,6 +8,7 @@ function plural(count: number, word: string): string {
 /** One compact row: title, subtitle beside it (below on narrow screens), inbox totals right. */
 export function AppHeader() {
   const { data: stats } = useItemStats()
+  const { data: health } = useHealth()
   return (
     <header className="shrink-0 border-b">
       <div className="mx-auto flex min-h-16 max-w-[1400px] items-center gap-4 px-6 py-3">
@@ -16,6 +18,14 @@ export function AppHeader() {
             Save notes and links, then ask questions answered from them with sources.
           </p>
         </div>
+        {health?.demo_mode && (
+          <p
+            className="shrink-0 rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground"
+            title="A shared public demo: saves and questions are rate-limited per hour, and the inbox has an item cap."
+          >
+            Demo instance
+          </p>
+        )}
         {stats && (
           <p className="shrink-0 text-sm text-muted-foreground tabular-nums">
             {plural(stats.items, 'item')} · {plural(stats.chunks, 'chunk')}

@@ -6,7 +6,6 @@ the network, so seeding works offline; everything after the fetch (extract, chun
 is the normal pipeline. Items already in the inbox come back 409 and are skipped.
 """
 
-import json
 import sys
 import time
 from typing import Any
@@ -15,16 +14,11 @@ from fastapi.testclient import TestClient
 
 from app.config import Settings
 from app.main import create_app
-from scripts.evaluation.corpus import EVAL_DIR, CorpusItem, SnapshotFetcher, load_items
+from app.seeding import demo_fetcher, demo_items
+from app.services.snapshots import CorpusItem
 
-SEED_KEYS = ("wal", "async_notes", "sourdough", "coffee", "lisbon")  # notes; all URLs are added
 TIMEOUT_S = 300
 POLL_S = 0.5
-
-
-def seed_items() -> list[CorpusItem]:
-    data = json.loads((EVAL_DIR / "eval_set.json").read_text("utf-8"))
-    return [item for item in load_items(data) if item.type == "url" or item.key in SEED_KEYS]
 
 
 def request_body(item: CorpusItem) -> dict[str, Any]:
@@ -68,9 +62,9 @@ def wait_until_settled(client: TestClient, ids: dict[str, str]) -> int:
 
 
 def main() -> None:
-    items = seed_items()
-    # Only the per-item lines above matter here; the app's own INFO logs would bury them.
-    app = create_app(Settings(log_level="WARNING"), fetcher=SnapshotFetcher(items))
+    settings = Settings(log_level="WARNING")  # the app's INFO logs would bury the lines above
+    items = demo_items(settings.seed_dir)
+    app = create_app(settings, fetcher=demo_fetcher(settings.seed_dir, items))
     with TestClient(app) as client:
         queued = {item_id: item.key for item in items if (item_id := submit(client, item))}
         failed = wait_until_settled(client, queued)

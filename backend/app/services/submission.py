@@ -12,9 +12,12 @@ DUPLICATE_NOTE_MESSAGE = "This note is already in your inbox."
 
 
 class SubmissionService:
-    def __init__(self, repo: Repository, *, note_max_chars: int) -> None:
+    def __init__(
+        self, repo: Repository, *, note_max_chars: int, max_items: int | None = None
+    ) -> None:
         self._repo = repo
         self._note_max_chars = note_max_chars
+        self._max_items = max_items  # demo mode only
 
     def submit_note(self, content: str, title: str | None) -> Item:
         if len(content) > self._note_max_chars:
@@ -55,6 +58,13 @@ class SubmissionService:
 
     def _create(self, new: NewItem, duplicate_message: str) -> Item:
         """Insert (autocommitted). A concurrent duplicate loses on the unique index."""
+        if self._max_items is not None and self._repo.stats().items >= self._max_items:
+            raise AppError(
+                ErrorCode.INBOX_FULL,
+                f"This demo inbox is full ({self._max_items} items). "
+                "Delete some items to save new ones.",
+                {"max_items": self._max_items},
+            )
         try:
             return self._repo.create_item(new)
         except DuplicateItemError as exc:

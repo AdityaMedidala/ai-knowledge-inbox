@@ -5,13 +5,14 @@ from typing import Any
 
 import structlog
 from asgi_correlation_id import correlation_id
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from starlette.concurrency import iterate_in_threadpool
 
 from app.deps import AnsweringDep
 from app.domain.errors import AppError, ErrorCode, ProviderError
 from app.errors import INTERNAL_ERROR_MESSAGE, UPSTREAM_UNAVAILABLE_MESSAGE
+from app.rate_limit import rate_limit
 from app.schemas.common import ErrorEnvelope
 from app.schemas.query import (
     Citation,
@@ -29,12 +30,14 @@ router = APIRouter(tags=["query"])
 
 ERRORS = {
     422: {"model": ErrorEnvelope, "description": "Invalid body"},
+    429: {"model": ErrorEnvelope, "description": "Demo mode: too many questions this hour"},
     503: {"model": ErrorEnvelope, "description": "Embedding or LLM provider unavailable"},
 }
+QUERY_LIMIT = [Depends(rate_limit("query", "questions"))]
 SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 
 
-@router.post("/query", response_model=QueryResponse, responses=ERRORS)
+@router.post("/query", response_model=QueryResponse, responses=ERRORS, dependencies=QUERY_LIMIT)
 def query(body: QueryRequest, answering: AnsweringDep) -> QueryResponse:
     """Answer from saved items with [n] citations. `mode: none` → not-found answer, no LLM call."""
     answer = answering.answer(body.question, body.top_k)
@@ -52,7 +55,8 @@ def query(body: QueryRequest, answering: AnsweringDep) -> QueryResponse:
 @router.post(
     "/query/stream",
     response_class=StreamingResponse,
-    responses={200: {"content": {"text/event-stream": {}}}, 422: ERRORS[422]},
+    responses={200: {"content": {"text/event-stream": {}}}, 422: ERRORS[422], 429: ERRORS[429]},
+    dependencies=QUERY_LIMIT,
 )
 async def query_stream(body: QueryRequest, answering: AnsweringDep) -> StreamingResponse:
     """SSE: meta → sources → token… → verification (if on) → done, or error (then it closes)."""

@@ -1,10 +1,11 @@
 import asyncio
 
 import structlog
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.deps import SubmissionDep, WorkerDep
 from app.domain.models import Item
+from app.rate_limit import rate_limit
 from app.schemas.common import ErrorEnvelope
 from app.schemas.ingest import IngestRequest, IngestResponse, NoteIngest
 from app.schemas.items import ItemSummary
@@ -20,9 +21,14 @@ router = APIRouter(tags=["ingest"])
     status_code=status.HTTP_202_ACCEPTED,
     response_model=IngestResponse,
     responses={
-        409: {"model": ErrorEnvelope, "description": "Already saved (details.existing_id)"},
+        409: {
+            "model": ErrorEnvelope,
+            "description": "Already saved (details.existing_id), or the demo item cap is reached",
+        },
         422: {"model": ErrorEnvelope, "description": "Invalid body or URL not allowed"},
+        429: {"model": ErrorEnvelope, "description": "Demo mode: too many saves this hour"},
     },
+    dependencies=[Depends(rate_limit("ingest", "saves"))],
 )
 async def ingest(
     body: IngestRequest, submission: SubmissionDep, worker: WorkerDep, response: Response

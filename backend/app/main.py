@@ -1,6 +1,7 @@
 """App factory. Run with: uvicorn app.main:create_app --factory"""
 
 import asyncio
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -13,11 +14,15 @@ from app.api import health, ingest, items, query
 from app.config import Settings
 from app.domain.errors import RenderSetupError
 from app.errors import register_exception_handlers
+from app.frontend import mount_frontend
 from app.ingest_jobs import build_worker
 from app.logging import configure_logging
 from app.middleware import AccessLogMiddleware, UnhandledErrorMiddleware
+from app.providers.base import Embedder
 from app.providers.factory import build_providers
+from app.rate_limit import SlidingWindowLimiter
 from app.render_setup import start_renderer
+from app.seeding import seed_if_empty
 from app.services.fetcher import Fetcher, build_fetch_client
 from app.services.ingestion import PageFetcher
 from app.store.db import connect
@@ -67,9 +72,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     worker = build_worker(settings, app.state.providers.embedder, fetcher, renderer)
     await worker.start()
     app.state.worker = worker
+    stop_seeding = threading.Event()
+    seeding = _start_seeding(settings, app.state.providers.embedder, stop_seeding)
     try:
         yield
     finally:
+        stop_seeding.set()
+        if seeding is not None:
+            await seeding  # finishes the item in progress, then stops
         await worker.stop()  # before closing what running jobs use
         if renderer is not None:
             await renderer.close()
@@ -110,10 +120,31 @@ def create_app(settings: Settings | None = None, *, fetcher: PageFetcher | None 
     app = FastAPI(title="AI Knowledge Inbox", version="0.1.0", lifespan=lifespan)
     app.state.settings = settings
     app.state.fetcher_override = fetcher
+    app.state.rate_limits = _rate_limits(settings)
     register_exception_handlers(app)
     _add_middleware(app, settings)
     app.include_router(health.router)
     app.include_router(ingest.router)
     app.include_router(items.router)
     app.include_router(query.router)
+    if settings.frontend_dist is not None:
+        mount_frontend(app, settings.frontend_dist)
     return app
+
+
+def _rate_limits(settings: Settings) -> dict[str, SlidingWindowLimiter]:
+    if settings.demo_mode == "off":
+        return {}
+    return {
+        "ingest": SlidingWindowLimiter(settings.demo_ingests_per_hour),
+        "query": SlidingWindowLimiter(settings.demo_queries_per_hour),
+    }
+
+
+def _start_seeding(
+    settings: Settings, embedder: Embedder, stop: threading.Event
+) -> asyncio.Task[int] | None:
+    """SEED_ON_EMPTY=on: index the demo items in the background, so startup is not delayed."""
+    if settings.seed_on_empty == "off":
+        return None
+    return asyncio.create_task(asyncio.to_thread(seed_if_empty, settings, embedder, stop))

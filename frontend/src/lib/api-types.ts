@@ -207,7 +207,7 @@ export interface components {
          * ErrorCode
          * @enum {string}
          */
-        ErrorCode: "VALIDATION_ERROR" | "BAD_REQUEST" | "NOT_FOUND" | "METHOD_NOT_ALLOWED" | "DUPLICATE_ITEM" | "URL_NOT_ALLOWED" | "UPSTREAM_UNAVAILABLE" | "INTERNAL_ERROR";
+        ErrorCode: "VALIDATION_ERROR" | "BAD_REQUEST" | "NOT_FOUND" | "METHOD_NOT_ALLOWED" | "DUPLICATE_ITEM" | "URL_NOT_ALLOWED" | "UPSTREAM_UNAVAILABLE" | "RATE_LIMITED" | "INBOX_FULL" | "INTERNAL_ERROR";
         /**
          * ErrorEnvelope
          * @description Shape of every non-2xx JSON response.
@@ -243,6 +243,11 @@ export interface components {
             embedding_provider: string;
             /** Llm Provider */
             llm_provider: string;
+            /**
+             * Demo Mode
+             * @description Public demo: rate limits and an item cap apply.
+             */
+            demo_mode: boolean;
         };
         /** IngestResponse */
         IngestResponse: {
@@ -571,7 +576,7 @@ export interface operations {
                     "application/json": components["schemas"]["IngestResponse"];
                 };
             };
-            /** @description Already saved (details.existing_id) */
+            /** @description Already saved (details.existing_id), or the demo item cap is reached */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -582,6 +587,15 @@ export interface operations {
             };
             /** @description Invalid body or URL not allowed */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Demo mode: too many saves this hour */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -754,6 +768,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
+            /** @description Demo mode: too many questions this hour */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
             /** @description Embedding or LLM provider unavailable */
             503: {
                 headers: {
@@ -789,6 +812,15 @@ export interface operations {
             };
             /** @description Invalid body */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Demo mode: too many questions this hour */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

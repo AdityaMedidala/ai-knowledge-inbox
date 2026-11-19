@@ -14,6 +14,8 @@ class ErrorCode(StrEnum):
     DUPLICATE_ITEM = "DUPLICATE_ITEM"
     URL_NOT_ALLOWED = "URL_NOT_ALLOWED"
     UPSTREAM_UNAVAILABLE = "UPSTREAM_UNAVAILABLE"
+    RATE_LIMITED = "RATE_LIMITED"  # demo mode: too many requests from one address
+    INBOX_FULL = "INBOX_FULL"  # demo mode: the item cap is reached
     INTERNAL_ERROR = "INTERNAL_ERROR"
 
 

@@ -149,7 +149,7 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as tmp:
         settings = Settings(
-            db_path=Path(tmp) / "eval.db", verifier="off", log_level="WARNING", llm_temperature=0
+            data_dir=Path(tmp), verifier="off", log_level="WARNING", llm_temperature=0
         )
         configure_logging(settings.log_level, settings.log_json)
         if args.command == "verify":

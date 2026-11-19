@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -29,7 +31,7 @@ def test_openai_key_required_when_a_provider_is_openai() -> None:
 
 def test_llm_model_required_for_real_chat_providers() -> None:
     with pytest.raises(ValidationError, match="LLM_MODEL is required"):
-        Settings(**BASE, llm_provider="openai", openai_api_key="sk")
+        Settings(**BASE, llm_provider="openai", openai_api_key="sk", llm_model=None)
 
 
 def test_free_defaults() -> None:
@@ -49,3 +51,22 @@ def test_verifier_is_off_by_default() -> None:
     assert (
         Settings(_env_file=None, embedding_provider="fake", llm_provider="fake").verifier == "off"
     )
+
+
+def test_a_groq_key_alone_is_a_complete_chat_configuration(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GROQ_API_KEY", "gsk-test")
+    settings = Settings(_env_file=None)
+    assert settings.llm_provider == "openai_compatible"
+    assert str(settings.llm_base_url) == "https://api.groq.com/openai/v1"
+    assert settings.llm_api_key is not None
+    assert settings.llm_api_key.get_secret_value() == "gsk-test"
+
+
+def test_database_lives_in_data_dir() -> None:
+    settings = Settings(**BASE, llm_provider="fake", data_dir=Path("/data"))
+    assert settings.db_path == Path("/data/inbox.db")
+
+
+def test_demo_mode_forces_js_rendering_off() -> None:
+    settings = Settings(**BASE, llm_provider="fake", demo_mode="on", js_render="on")
+    assert settings.js_render == "off"

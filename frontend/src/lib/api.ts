@@ -4,6 +4,7 @@ type Schemas = components['schemas']
 export type ItemSummary = Schemas['ItemSummary']
 export type ItemList = Schemas['ItemList']
 export type ItemStats = Schemas['ItemStats']
+export type Health = Schemas['HealthResponse']
 export type IngestRequest = Schemas['NoteIngest'] | Schemas['UrlIngest']
 export type IngestResponse = Schemas['IngestResponse']
 export type Citation = Schemas['Citation']
@@ -112,6 +113,7 @@ export const api = {
       `/items?limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`,
     ),
   itemStats: () => requestJson<ItemStats>('/items/stats'),
+  health: () => requestJson<Health>('/health'),
   ingest: (body: IngestRequest) =>
     requestJson<IngestResponse>('/ingest', {
       method: 'POST',

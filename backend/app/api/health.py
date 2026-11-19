@@ -36,4 +36,5 @@ def health(settings: SettingsDep, response: Response) -> HealthResponse:
         sqlite_vec_version=vec_version,
         embedding_provider=settings.embedding_provider,
         llm_provider=settings.llm_provider,
+        demo_mode=settings.demo_mode == "on",
     )
