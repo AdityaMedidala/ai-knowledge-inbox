@@ -42,7 +42,7 @@ export function AnswerView({ markdown, validRefs, verdicts, activeRef, onSelect 
   const withVerdicts = verdicts ? insertVerdictMarkers(markdown, verdicts) : markdown
 
   return (
-    <div className="space-y-3 text-sm leading-relaxed text-body [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_li]:ml-5 [&_ol]:list-decimal [&_strong]:font-semibold [&_ul]:list-disc">
+    <div className="space-y-3 text-sm leading-relaxed text-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_li]:ml-5 [&_ol]:list-decimal [&_strong]:font-semibold [&_ul]:list-disc">
       <Markdown remarkPlugins={[remarkGfm]} components={components}>
         {linkCitations(withVerdicts, validRefs)}
       </Markdown>

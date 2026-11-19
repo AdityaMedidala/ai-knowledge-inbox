@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { insertVerdictMarkers } from './verdicts.ts'
+import { insertVerdictMarkers, summarizeVerdicts, verdictKind } from './verdicts.ts'
 
 const v = (index: number) => `[✓](#verdict-${index})`
 
@@ -45,4 +45,15 @@ test('repeated sentences are matched left to right', () => {
     { index: 1, sentence: 'Yes.' },
   ])
   assert.equal(out, `Yes.${v(0)} Yes.${v(1)}`)
+})
+
+test('uncited sentences are their own kind and are left out of the cited count', () => {
+  const sentences = [
+    { verdict: 'supported', decided_by: 'jev' },
+    { verdict: 'unsupported', decided_by: 'no_citation' },
+    { verdict: 'unsupported', decided_by: 'jev' },
+    { verdict: 'partial', decided_by: 'groq' },
+  ] as const
+  assert.deepEqual(sentences.map(verdictKind), ['supported', 'uncited', 'unsupported', 'partial'])
+  assert.deepEqual(summarizeVerdicts(sentences), { cited: 3, supported: 1, uncited: 1 })
 })

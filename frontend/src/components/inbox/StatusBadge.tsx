@@ -1,17 +1,14 @@
-import { CheckCircle2, Clock, Loader2, XCircle } from 'lucide-react'
+import { Clock, Loader2, XCircle } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import type { ItemSummary } from '@/lib/api'
 
-/** Icon + word for every status, so colour is never the only signal. */
+/** Icon + word, so colour is never the only signal. Ready items show no badge: ready is the
+ * normal state, and only the exceptions need calling out. */
 export function StatusBadge({ status }: { status: ItemSummary['status'] }) {
   switch (status) {
     case 'ready':
-      return (
-        <Badge variant="secondary">
-          <CheckCircle2 aria-hidden /> Ready
-        </Badge>
-      )
+      return null
     case 'failed':
       return (
         <Badge variant="destructive">

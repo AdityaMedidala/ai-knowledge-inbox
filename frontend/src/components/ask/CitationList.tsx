@@ -13,7 +13,7 @@ export function CitationList({ heading, citations, activeRef }: CitationListProp
     <section className="space-y-2" aria-label={heading}>
       <h3 className="section-label">{heading}</h3>
       <ol className="space-y-2">
-        {citations.map((citation) => (
+        {[...citations].sort((a, b) => a.ref - b.ref).map((citation) => (
           <CitationCard
             key={citation.ref}
             citation={citation}

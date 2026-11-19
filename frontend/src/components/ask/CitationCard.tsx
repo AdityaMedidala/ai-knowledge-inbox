@@ -1,7 +1,6 @@
 import { ExternalLink, FileText } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import type { Citation } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -14,15 +13,22 @@ function citationCardId(ref: number): string {
   return `cite-${ref}`
 }
 
-function ScoreBadge({ score }: { score: number | null }) {
+function ScoreText({ score }: { score: number | null }) {
   if (score === null) {
     return (
-      <Badge variant="outline" title="Found by keyword search only; no similarity score.">
+      <span
+        className="shrink-0 text-xs text-muted-foreground"
+        title="Found by keyword search only; no similarity score."
+      >
         keyword match
-      </Badge>
+      </span>
     )
   }
-  return <Badge variant="outline">score {score.toFixed(2)}</Badge>
+  return (
+    <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+      score {score.toFixed(2)}
+    </span>
+  )
 }
 
 export function CitationCard({ citation, active }: CitationCardProps) {
@@ -65,9 +71,9 @@ export function CitationCard({ citation, active }: CitationCardProps) {
             <p className="text-xs text-muted-foreground">{citation.section}</p>
           )}
         </div>
-        <ScoreBadge score={citation.score} />
+        <ScoreText score={citation.score} />
       </div>
-      <p className="leading-relaxed text-body">{citation.snippet}</p>
+      <p className="leading-relaxed text-foreground">{citation.snippet}</p>
     </li>
   )
 }

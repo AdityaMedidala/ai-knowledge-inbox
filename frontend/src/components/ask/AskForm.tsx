@@ -4,7 +4,6 @@ import type { FormEvent, KeyboardEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { QUESTION_MAX_CHARS } from '@/lib/limits'
-import { cn } from '@/lib/utils'
 
 interface AskFormProps {
   question: string
@@ -45,7 +44,7 @@ export function AskForm({ question, onQuestionChange, busy, onAsk, onCancel }: A
           onChange={(e) => onQuestionChange(e.target.value)}
           onKeyDown={onKeyDown}
           aria-invalid={tooLong}
-          aria-describedby="question-hint"
+          aria-describedby={tooLong ? 'question-error' : undefined}
           className="h-12 pr-28 pl-5 shadow-frost"
         />
         <div className="absolute top-1/2 right-1.5 -translate-y-1/2">
@@ -60,12 +59,11 @@ export function AskForm({ question, onQuestionChange, busy, onAsk, onCancel }: A
           )}
         </div>
       </div>
-      <p
-        id="question-hint"
-        className={cn('px-5 text-xs', tooLong ? 'text-destructive' : 'text-muted-foreground')}
-      >
-        {tooLong ? `Questions are limited to ${QUESTION_MAX_CHARS} characters.` : 'Enter to ask'}
-      </p>
+      {tooLong && (
+        <p id="question-error" className="px-5 text-xs text-destructive">
+          Questions are limited to {QUESTION_MAX_CHARS} characters.
+        </p>
+      )}
     </form>
   )
 }

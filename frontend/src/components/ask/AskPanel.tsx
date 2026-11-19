@@ -105,12 +105,24 @@ export function AskPanel() {
         />
 
         {done && state.timings && (
-          <p className="text-xs text-muted-foreground">
-            Answered in {Math.round(state.timings.total)} ms
-            {state.requestId && <span className="font-mono"> · request_id {state.requestId}</span>}
-          </p>
+          <AnswerFooter totalMs={state.timings.total} requestId={state.requestId} />
         )}
       </div>
+    </div>
+  )
+}
+
+/** Time taken, with the request_id one click away (it is shown directly only on errors). */
+function AnswerFooter({ totalMs, requestId }: { totalMs: number; requestId: string | null }) {
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-3 text-xs text-muted-foreground">
+      <p>Answered in {(totalMs / 1000).toFixed(1)} s</p>
+      {requestId && (
+        <details>
+          <summary className="cursor-pointer hover:text-foreground">Details</summary>
+          <p className="mt-1 font-mono">request_id {requestId}</p>
+        </details>
+      )}
     </div>
   )
 }

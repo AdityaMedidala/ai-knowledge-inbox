@@ -35,6 +35,10 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
   const TypeIcon = isUrl ? Link2 : FileText
   const heading = headingOf(item)
   const domain = isUrl ? domainOf(item.source_url) : null
+  const chunks =
+    item.status === 'ready'
+      ? `${item.chunk_count} ${item.chunk_count === 1 ? 'chunk' : 'chunks'}`
+      : null
 
   return (
     <li
@@ -47,19 +51,14 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
     >
       <TypeIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
       <div className="min-w-0 flex-1 space-y-0.5">
-        <div className="flex items-baseline gap-2">
-          <p className="min-w-0 flex-1 truncate text-sm font-medium text-foreground" title={heading}>
-            <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
-            {heading}
-          </p>
-          <time
-            dateTime={item.created_at}
-            title={new Date(item.created_at).toLocaleString()}
-            className="shrink-0 text-xs text-muted-foreground"
-          >
-            {relativeTime(item.created_at)}
-          </time>
-        </div>
+        <p
+          className="truncate text-sm font-medium text-foreground"
+          title={chunks ? `${heading} · ${chunks}` : heading}
+        >
+          <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
+          {heading}
+          {chunks && <span className="sr-only">, {chunks}</span>}
+        </p>
         <div className="flex min-w-0 items-center gap-2 text-xs whitespace-nowrap text-muted-foreground">
           <StatusBadge status={item.status} />
           {domain && item.source_url && (
@@ -72,16 +71,14 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
               {domain}
             </a>
           )}
-          {item.status === 'ready' && (
-            <span>
-              {item.chunk_count} {item.chunk_count === 1 ? 'chunk' : 'chunks'}
-            </span>
-          )}
+          <time dateTime={item.created_at} title={new Date(item.created_at).toLocaleString()}>
+            {relativeTime(item.created_at)}
+          </time>
         </div>
         {item.status === 'failed' && (
           <p className="text-xs text-destructive">
             {item.error?.message ?? 'Processing failed.'}
-            {item.error?.code && <span className="ml-1 font-mono opacity-80">({item.error.code})</span>}
+            {item.error?.code && <span className="ml-1 font-mono">({item.error.code})</span>}
           </p>
         )}
       </div>

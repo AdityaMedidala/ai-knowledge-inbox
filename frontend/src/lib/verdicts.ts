@@ -68,3 +68,30 @@ export function insertVerdictMarkers(markdown: string, sentences: readonly Sente
   for (const { at, token } of inserts.reverse()) out = out.slice(0, at) + token + out.slice(at)
   return out
 }
+
+export interface JudgedSentence {
+  verdict: 'supported' | 'partial' | 'unsupported'
+  decided_by: string
+}
+
+export type VerdictKind = JudgedSentence['verdict'] | 'uncited'
+
+/** The server marks a sentence with no citation `unsupported` without checking it; the UI shows
+ * it as its own neutral kind so "not checked" never looks like "contradicted by the sources". */
+export function verdictKind(sentence: JudgedSentence): VerdictKind {
+  return sentence.decided_by === 'no_citation' ? 'uncited' : sentence.verdict
+}
+
+export function summarizeVerdicts(sentences: readonly JudgedSentence[]): {
+  cited: number
+  supported: number
+  uncited: number
+} {
+  const kinds = sentences.map(verdictKind)
+  const uncited = kinds.filter((kind) => kind === 'uncited').length
+  return {
+    cited: kinds.length - uncited,
+    supported: kinds.filter((kind) => kind === 'supported').length,
+    uncited,
+  }
+}
