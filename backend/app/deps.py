@@ -6,7 +6,6 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from app.config import Settings
-from app.providers.base import ChatModel, Embedder, Reranker
 from app.providers.factory import Providers
 from app.services.answering import AnsweringService
 from app.services.retrieval import RetrievalConfig, RetrievalService
@@ -23,18 +22,6 @@ def get_settings(request: Request) -> Settings:
 
 def get_providers(request: Request) -> Providers:
     return request.app.state.providers
-
-
-def get_embedder(request: Request) -> Embedder:
-    return get_providers(request).embedder
-
-
-def get_chat_model(request: Request) -> ChatModel:
-    return get_providers(request).chat
-
-
-def get_reranker(request: Request) -> Reranker | None:
-    return get_providers(request).reranker
 
 
 def get_repository(request: Request) -> Iterator[Repository]:
@@ -86,7 +73,4 @@ SettingsDep = Annotated[Settings, Depends(get_settings)]
 RepositoryDep = Annotated[Repository, Depends(get_repository)]
 WorkerDep = Annotated[IngestionWorker, Depends(get_worker)]
 SubmissionDep = Annotated[SubmissionService, Depends(get_submission)]
-EmbedderDep = Annotated[Embedder, Depends(get_embedder)]
-ChatModelDep = Annotated[ChatModel, Depends(get_chat_model)]
-RerankerDep = Annotated[Reranker | None, Depends(get_reranker)]
 AnsweringDep = Annotated[AnsweringService, Depends(get_answering)]
