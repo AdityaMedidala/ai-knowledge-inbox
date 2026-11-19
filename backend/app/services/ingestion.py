@@ -20,8 +20,8 @@ from app.domain.errors import (
 from app.domain.models import Item, ItemErrorCode, ItemStatus, ItemType
 from app.providers.base import Embedder
 from app.services.chunker import ChunkLimits, build_embed_text, chunk_document
-from app.services.extractor import extract_document
 from app.services.fetcher import FetchedPage
+from app.services.renderer import PageRenderer, extract_with_fallback
 from app.store.repository import Repository
 from app.utils.text import sha256_hex
 from app.utils.timing import Timer
@@ -52,6 +52,7 @@ class JobResult:
 class IngestionSettings:
     limits: ChunkLimits
     max_attempts: int
+    render_min_chars: int = 500  # only used with a renderer
 
 
 class IngestionService:
@@ -61,11 +62,13 @@ class IngestionService:
         embedder: Embedder,
         fetcher: PageFetcher,
         settings: IngestionSettings,
+        renderer: PageRenderer | None = None,
     ) -> None:
         self._repo = repo
         self._embedder = embedder
         self._fetcher = fetcher
         self._settings = settings
+        self._renderer = renderer
 
     def process(self, item_id: str) -> JobResult:
         item = self._claim(item_id)
@@ -131,7 +134,7 @@ class IngestionService:
             redirects=page.redirects,
             ms=timer.ms,
         )
-        doc = extract_document(page)
+        doc = extract_with_fallback(page, self._renderer, self._settings.render_min_chars)
         logger.info(
             "ingest.extracted", chars=len(doc.text), title=doc.title, extractor=doc.extractor
         )
@@ -141,6 +144,7 @@ class IngestionService:
             extracted_text=doc.text,
             content_hash=sha256_hex(doc.text),
             raw_content=doc.raw_content,
+            extractor=doc.extractor,
         )
         return doc.title, doc.text
 

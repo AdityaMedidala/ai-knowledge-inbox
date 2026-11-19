@@ -4,20 +4,28 @@ from app.config import Settings
 from app.providers.base import Embedder
 from app.services.chunker import ChunkLimits
 from app.services.ingestion import IngestionService, IngestionSettings, JobResult, PageFetcher
+from app.services.renderer import PageRenderer
 from app.store.session import repository_session
 from app.worker import IngestionWorker, Recover, RunJob, exponential_backoff
 
 
-def build_worker(settings: Settings, embedder: Embedder, fetcher: PageFetcher) -> IngestionWorker:
+def build_worker(
+    settings: Settings,
+    embedder: Embedder,
+    fetcher: PageFetcher,
+    renderer: PageRenderer | None = None,
+) -> IngestionWorker:
     return IngestionWorker(
-        _job_runner(settings, embedder, fetcher),
+        _job_runner(settings, embedder, fetcher, renderer),
         _recoverer(settings),
         concurrency=settings.worker_concurrency,
         backoff=exponential_backoff(settings.ingest_retry_base_s),
     )
 
 
-def _job_runner(settings: Settings, embedder: Embedder, fetcher: PageFetcher) -> RunJob:
+def _job_runner(
+    settings: Settings, embedder: Embedder, fetcher: PageFetcher, renderer: PageRenderer | None
+) -> RunJob:
     ingestion = IngestionSettings(
         limits=ChunkLimits(
             max_tokens=settings.chunk_tokens,
@@ -25,11 +33,12 @@ def _job_runner(settings: Settings, embedder: Embedder, fetcher: PageFetcher) ->
             max_block_tokens=settings.chunk_max_block_tokens,
         ),
         max_attempts=settings.ingest_max_attempts,
+        render_min_chars=settings.render_min_chars,
     )
 
     def run_job(item_id: str) -> JobResult:
         with repository_session(settings.db_path, settings.embedding_dim) as repo:
-            return IngestionService(repo, embedder, fetcher, ingestion).process(item_id)
+            return IngestionService(repo, embedder, fetcher, ingestion, renderer).process(item_id)
 
     return run_job
 

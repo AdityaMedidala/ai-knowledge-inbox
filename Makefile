@@ -4,7 +4,7 @@ UV := cd $(BACKEND) && uv run
 # tests run offline after `make install`.
 export TIKTOKEN_CACHE_DIR := $(abspath $(BACKEND)/.cache/tiktoken)
 
-.PHONY: install dev dev-backend dev-frontend test test-backend test-frontend lint lint-backend lint-frontend fmt build-frontend types check-vec smoke eval seed
+.PHONY: install install-render dev dev-backend dev-frontend test test-backend test-frontend lint lint-backend lint-frontend fmt build-frontend types check-vec smoke eval seed
 
 FRONTEND := frontend
 NPM := cd $(FRONTEND) && npm
@@ -15,6 +15,11 @@ install:
 	cd $(BACKEND) && uv sync
 	$(UV) python -m scripts.warm_caches
 	$(NPM) install
+
+# Optional JS-rendering fallback (JS_RENDER=on): Playwright + headless Chromium (~100 MB).
+install-render:
+	cd $(BACKEND) && uv sync --extra render
+	$(UV) playwright install chromium
 
 # Backend on :8000 and Vite on :5173 (proxies /api to the backend).
 dev:

@@ -76,6 +76,12 @@ class Settings(BaseSettings):
     fetch_timeout_s: float = Field(default=10, gt=0)
     fetch_max_bytes: int = Field(default=5_000_000, gt=0)
     fetch_max_redirects: int = Field(default=3, ge=0)
+    # Headless-browser fallback for pages whose text only appears after JavaScript runs. Needs
+    # the "render" extra: `uv sync --extra render && uv run playwright install chromium`.
+    js_render: Literal["off", "on"] = "off"
+    render_min_chars: int = Field(default=500, ge=0)  # render when plain extraction is shorter
+    render_timeout_s: float = Field(default=15, gt=0)  # hard cap per page, network idle or not
+    render_max_pages: int = Field(default=2, ge=1)  # pages rendered at once (one browser)
     note_max_chars: int = Field(default=50_000, gt=0)
     question_max_chars: int = Field(default=1_000, gt=0)
 

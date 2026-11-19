@@ -170,13 +170,22 @@ class ItemsRepository:
         extracted_text: str,
         content_hash: str,
         raw_content: str | None = None,
+        extractor: str | None = None,
     ) -> None:
         """Record extraction results. Only valid while the item is being processed."""
         cursor = self._conn.execute(
             "UPDATE items SET title = COALESCE(?, title), extracted_text = ?, content_hash = ?, "
-            "raw_content = COALESCE(?, raw_content), updated_at = ? "
+            "raw_content = COALESCE(?, raw_content), extractor = ?, updated_at = ? "
             "WHERE id = ? AND status = 'processing'",
-            (title, extracted_text, content_hash, raw_content, utc_now_iso(self._clock), item_id),
+            (
+                title,
+                extracted_text,
+                content_hash,
+                raw_content,
+                extractor,
+                utc_now_iso(self._clock),
+                item_id,
+            ),
         )
         if cursor.rowcount != 1:
             current = self.get_item(item_id)

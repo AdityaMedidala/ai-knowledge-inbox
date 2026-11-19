@@ -7,7 +7,7 @@ from app.utils.text import PREVIEW_CHARS, preview_of
 
 ITEM_COLUMNS = (
     "id, type, title, source_url, normalized_url, content_hash, raw_content, extracted_text, "
-    "status, error_code, error_message, attempts, chunk_count, created_at, updated_at"
+    "status, error_code, error_message, attempts, chunk_count, created_at, updated_at, extractor"
 )
 # List view: explicit columns, never raw_content (fetched HTML can be megabytes) and only the
 # head of extracted_text, enough to build the preview.
@@ -50,4 +50,5 @@ def row_to_item(row: sqlite3.Row) -> Item:
         chunk_count=row["chunk_count"],
         created_at=row["created_at"],
         updated_at=row["updated_at"],
+        extractor=row["extractor"],
     )

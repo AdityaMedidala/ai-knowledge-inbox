@@ -23,6 +23,9 @@ dependencies = [
 cohere = [
     "cohere>=7.3",
 ]
+render = [
+    "playwright>=1.65.2",
+]
 
 [dependency-groups]
 dev = [
@@ -52,5 +55,6 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = ["browser: needs Playwright + Chromium (uv sync --extra render); skipped otherwise"]
 # trafilatura imports urllib3.contrib.socks; we never use SOCKS proxies.
 filterwarnings = ["ignore:SOCKS support in urllib3:urllib3.exceptions.DependencyWarning"]

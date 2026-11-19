@@ -46,11 +46,17 @@ class ItemSummary(BaseModel):
 
 class ItemDetail(ItemSummary):
     extracted_text: str | None = Field(description="Markdown the item was chunked from.")
+    extractor: str | None = Field(
+        description="What produced extracted_text: plain, trafilatura, fallback, or rendered "
+        "(headless browser, JS_RENDER=on). Null for notes."
+    )
 
     @classmethod
     def from_item(cls, item: models.Item) -> "ItemDetail":
         summary = ItemSummary.from_domain(item.summary())
-        return cls(**summary.model_dump(), extracted_text=item.extracted_text)
+        return cls(
+            **summary.model_dump(), extracted_text=item.extracted_text, extractor=item.extractor
+        )
 
 
 class ItemList(BaseModel):

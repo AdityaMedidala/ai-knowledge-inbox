@@ -21,7 +21,21 @@ def apply_migrations(
     conn.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
     _guard_embedding_config(conn, embedding_model, embedding_dim, db_label)
     conn.executescript(render_schema(embedding_dim))
+    _add_missing_columns(conn)
     logger.info("db.migrated", embedding_model=embedding_model, embedding_dim=embedding_dim)
+
+
+# Columns added after the first release: CREATE TABLE IF NOT EXISTS leaves an existing table as is.
+ADDED_COLUMNS = {"items": {"extractor": "TEXT"}}
+
+
+def _add_missing_columns(conn: sqlite3.Connection) -> None:
+    for table, columns in ADDED_COLUMNS.items():
+        present = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        for name, sql_type in columns.items():
+            if name not in present:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {name} {sql_type}")
+                logger.info("db.column_added", table=table, column=name)
 
 
 def render_schema(embedding_dim: int) -> str:

@@ -27,6 +27,7 @@ class ItemErrorCode(StrEnum):
     UNSUPPORTED_CONTENT = "UNSUPPORTED_CONTENT"
     CONTENT_TOO_LARGE = "CONTENT_TOO_LARGE"
     EMPTY_CONTENT = "EMPTY_CONTENT"
+    SITE_BLOCKED = "SITE_BLOCKED"  # the site refused the headless browser (bot protection)
     EMBEDDING_FAILED = "EMBEDDING_FAILED"
     INTERNAL_ERROR = "INTERNAL_ERROR"  # an unexpected bug; details are in the logs
 
@@ -59,6 +60,7 @@ class Item:
     chunk_count: int
     created_at: str
     updated_at: str
+    extractor: str | None = None  # which extractor produced extracted_text; None for notes
 
     def summary(self) -> "ItemSummary":
         return ItemSummary(

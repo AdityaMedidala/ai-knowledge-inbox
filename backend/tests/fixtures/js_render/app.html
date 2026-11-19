@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head><title>JS-only article</title></head>
+<body>
+  <div id="root">Loading…</div>
+  <img src="/pixel.png" alt="">
+  <ul id="probes"></ul>
+  <script>
+    const paragraphs = Array.from({ length: 10 }, (_, n) =>
+      `<p>Paragraph ${n}: this text only exists after JavaScript runs on the page. ` +
+      `It describes the rendered article in detail, part ${n}.</p>`).join("");
+    document.getElementById("root").innerHTML =
+      `<article><h1>Rendered by JavaScript</h1>${paragraphs}</article>`;
+
+    // Requests a page might make toward internal addresses; each must be refused.
+    const probe = (name, url) => fetch(url, { mode: "no-cors" })
+      .then(() => "loaded", () => "blocked")
+      .then((result) => {
+        const li = document.createElement("li");
+        li.textContent = `${name}: ${result}`;
+        document.getElementById("probes").appendChild(li);
+      });
+    probe("private", "http://10.0.0.1/secret");
+    probe("redirect", "/to-metadata");
+  </script>
+</body>
+</html>

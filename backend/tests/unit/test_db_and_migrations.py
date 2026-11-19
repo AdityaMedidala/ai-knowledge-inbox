@@ -59,3 +59,14 @@ def test_meta_guard_rejects_changed_embedding_config(tmp_path: Path, model: str,
     assert "delete the DB" in message
     meta = dict(conn.execute("SELECT key, value FROM meta").fetchall())
     assert meta == {"embedding_model": "m", "embedding_dim": "4"}
+
+
+def test_columns_added_after_release_are_added_to_an_existing_database(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "x.db")
+    migrate(conn)
+    conn.execute("ALTER TABLE items DROP COLUMN extractor")  # a database from before the column
+
+    migrate(conn)
+
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(items)")}
+    assert "extractor" in columns

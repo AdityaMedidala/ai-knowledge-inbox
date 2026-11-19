@@ -77,6 +77,7 @@ class Repository:
         extracted_text: str,
         content_hash: str,
         raw_content: str | None = None,
+        extractor: str | None = None,
     ) -> None:
         self._items.set_content(
             item_id,
@@ -84,6 +85,7 @@ class Repository:
             extracted_text=extracted_text,
             content_hash=content_hash,
             raw_content=raw_content,
+            extractor=extractor,
         )
 
     def recover_interrupted(self) -> list[str]:

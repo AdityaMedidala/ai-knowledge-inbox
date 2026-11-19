@@ -91,6 +91,10 @@ class EmbeddingConfigMismatchError(RuntimeError):
     pass
 
 
+class RenderSetupError(RuntimeError):
+    """JS_RENDER=on but Playwright or its Chromium is missing; raised at startup."""
+
+
 class ProviderErrorKind(StrEnum):
     RATE_LIMITED = "rate_limited"
     TIMEOUT = "timeout"

@@ -11,11 +11,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health, ingest, items, query
 from app.config import Settings
+from app.domain.errors import RenderSetupError
 from app.errors import register_exception_handlers
 from app.ingest_jobs import build_worker
 from app.logging import configure_logging
 from app.middleware import AccessLogMiddleware, UnhandledErrorMiddleware
 from app.providers.factory import build_providers
+from app.render_setup import start_renderer
 from app.services.fetcher import Fetcher, build_fetch_client
 from app.services.ingestion import PageFetcher
 from app.store.db import connect
@@ -55,13 +57,22 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         max_bytes=settings.fetch_max_bytes,
         max_redirects=settings.fetch_max_redirects,
     )
-    worker = build_worker(settings, app.state.providers.embedder, fetcher)
+    try:
+        renderer = await start_renderer(settings)
+    except RenderSetupError as exc:
+        logger.error("app.startup_failed", reason=str(exc))  # the one line to read in the logs
+        fetch_client.close()
+        app.state.providers.close()
+        raise
+    worker = build_worker(settings, app.state.providers.embedder, fetcher, renderer)
     await worker.start()
     app.state.worker = worker
     try:
         yield
     finally:
         await worker.stop()  # before closing what running jobs use
+        if renderer is not None:
+            await renderer.close()
         fetch_client.close()
         app.state.providers.close()
         logger.info("app.shutdown")

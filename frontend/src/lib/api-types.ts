@@ -276,6 +276,11 @@ export interface components {
              * @description Markdown the item was chunked from.
              */
             extracted_text: string | null;
+            /**
+             * Extractor
+             * @description What produced extracted_text: plain, trafilatura, fallback, or rendered (headless browser, JS_RENDER=on). Null for notes.
+             */
+            extractor: string | null;
         };
         /** ItemError */
         ItemError: {
@@ -288,7 +293,7 @@ export interface components {
          * @description Why an item failed asynchronously. Stored on the item, never an HTTP status.
          * @enum {string}
          */
-        ItemErrorCode: "FETCH_FAILED" | "FETCH_BLOCKED" | "FETCH_TIMEOUT" | "UNSUPPORTED_CONTENT" | "CONTENT_TOO_LARGE" | "EMPTY_CONTENT" | "EMBEDDING_FAILED" | "INTERNAL_ERROR";
+        ItemErrorCode: "FETCH_FAILED" | "FETCH_BLOCKED" | "FETCH_TIMEOUT" | "UNSUPPORTED_CONTENT" | "CONTENT_TOO_LARGE" | "EMPTY_CONTENT" | "SITE_BLOCKED" | "EMBEDDING_FAILED" | "INTERNAL_ERROR";
         /** ItemList */
         ItemList: {
             /** Items */

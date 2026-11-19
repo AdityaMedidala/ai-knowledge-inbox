@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS items (
   content_hash    TEXT,
   raw_content     TEXT,
   extracted_text  TEXT,
+  extractor       TEXT,          -- plain | trafilatura | fallback | rendered; NULL for notes
   status          TEXT NOT NULL CHECK (status IN ('pending','processing','ready','failed')),
   error_code      TEXT,
   error_message   TEXT,
