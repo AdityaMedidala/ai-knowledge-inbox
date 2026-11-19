@@ -18,6 +18,7 @@ from app.services.retrieval import (
     RetrievalService,
     cap_per_item,
     decide_mode,
+    drop_duplicate_text,
     fuse_rrf,
 )
 from app.store.repository import Repository
@@ -47,14 +48,16 @@ class ReverseReranker:
         return [RerankResult(index=i, score=(i + 1) / n) for i in reversed(range(n))]
 
 
-def candidate(chunk_id: int, item_id: str, similarity: float | None = 0.9) -> RetrievedChunk:
+def candidate(
+    chunk_id: int, item_id: str, similarity: float | None = 0.9, text: str | None = None
+) -> RetrievedChunk:
     record = ChunkRecord(
         id=chunk_id,
         item_id=item_id,
         ordinal=0,
         section=None,
         context_header="",
-        text=f"chunk {chunk_id}",
+        text=text if text is not None else f"chunk {chunk_id}",
         token_count=2,
         item_title=None,
         item_type=ItemType.NOTE,
@@ -153,3 +156,33 @@ def test_reranker_reorders_candidates(repo: Repository) -> None:
     result = service.retrieve("question", top_k=5)
     assert [c.chunk.text for c in result.chunks] == ["second", "first"]
     assert [c.rerank for c in result.chunks] == [1.0, 0.5]
+
+
+def test_drop_duplicate_text_keeps_the_highest_ranked_copy() -> None:
+    ranked = [
+        candidate(1, "a", text="Lucia and Jason."),
+        candidate(2, "b", text="Something else."),
+        candidate(3, "a", text="  lucia AND\njason. "),
+        candidate(4, "c", text="Lucia and Jason."),
+    ]
+    assert [c.chunk.id for c in drop_duplicate_text(ranked)] == [1, 2]
+
+
+def test_retrieve_never_returns_two_chunks_with_the_same_text(repo: Repository) -> None:
+    make_ready(repo, [("Lucia is the protagonist.", [1, 0, 0, 0])])
+    make_ready(repo, [("Lucia is the protagonist.", [0.99, 0.01, 0, 0])], content_hash="copy")
+    service = RetrievalService(repo, StubEmbedder([1, 0, 0, 0]), None, CONFIG)
+
+    result = service.retrieve("Who is Lucia?", top_k=5)
+
+    assert [c.chunk.text for c in result.chunks] == ["Lucia is the protagonist."]
+
+
+def test_drop_duplicate_text_collapses_near_copies_that_would_show_the_same_card() -> None:
+    shared = "Lucia fights for her family and lands in the Leonida Penitentiary. " * 6
+    ranked = [
+        candidate(1, "a", text=shared + "A life with Jason could be her way out."),
+        candidate(2, "a", text=shared + "Home to the neon-soaked streets of Vice City."),
+        candidate(3, "a", text="Jason grew up around grifters and crooks."),
+    ]
+    assert [c.chunk.id for c in drop_duplicate_text(ranked)] == [1, 3]

@@ -235,3 +235,38 @@ def test_random_documents_satisfy_invariants(seed: int) -> None:
         limits.max_tokens, limits.overlap_tokens, max(limits.max_block_tokens, limits.max_tokens)
     )
     chunk(random_document(rng), limits)
+
+
+def test_a_repeated_section_is_kept_once_and_ordinals_stay_contiguous() -> None:
+    rng = random.Random(7)
+    about, story = sentences(rng, 6), sentences(rng, 6)
+    # Pages repeat whole blocks (Rockstar's "About" appears twice), which used to yield two
+    # identical chunks that later showed up as two identical source cards.
+    doc = f"## About\n\n{about}\n\n## Story\n\n{story}\n\n## About\n\n{about}"
+    assert count_tokens(doc) > LIMITS.max_tokens
+
+    chunks = chunk_document(doc, title="Doc", limits=LIMITS)
+
+    keys = [" ".join(c.text.split()).casefold() for c in chunks]
+    assert len(keys) == len(set(keys))
+    assert sum(about in c.text for c in chunks) == 1
+    assert any(story in c.text for c in chunks)
+    assert [c.ordinal for c in chunks] == list(range(len(chunks)))
+
+
+def test_repeated_paragraphs_are_dropped_but_new_text_and_short_lines_survive() -> None:
+    rng = random.Random(11)
+    story, other = sentences(rng, 6), sentences(rng, 6)
+    # The Rockstar page renders Lucia's block twice; only the last line differs.
+    doc = (
+        f"## Lucia\n\n{story}\n\nRead more.\n\nA life with Jason could be her way out.\n\n"
+        f"## Places\n\n{other}\n\n"
+        f"## Lucia again\n\n{story}\n\nRead more.\n\nHome to the neon-soaked streets."
+    )
+    assert count_tokens(doc) > LIMITS.max_tokens
+
+    text = "\n\n".join(c.text for c in chunk_document(doc, title="Doc", limits=LIMITS))
+
+    assert text.count(story) == 1
+    assert "Home to the neon-soaked streets." in text
+    assert text.count("Read more.") == 2

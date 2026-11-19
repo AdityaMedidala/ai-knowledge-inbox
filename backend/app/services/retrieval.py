@@ -10,7 +10,9 @@ from dataclasses import dataclass, replace
 from app.domain.models import KeywordHit, RetrievalMode, RetrievedChunk, VectorHit
 from app.providers.base import Embedder, Reranker
 from app.services.chunker import build_embed_text
+from app.services.citations import make_snippet
 from app.store.repository import Repository
+from app.utils.text import match_key
 from app.utils.timing import Timer
 
 
@@ -64,6 +66,20 @@ def fuse_rrf(
     return sorted(fused, key=lambda hit: (-hit.rrf, hit.chunk_id))
 
 
+def drop_duplicate_text(chunks: Sequence[RetrievedChunk]) -> list[RetrievedChunk]:
+    """Keep order; drop a candidate whose text, or whose source-card snippet, matches a
+    higher-ranked one from any item. Identical text gives an identical snippet, so keying on the
+    snippet also catches near-copies that would show as two identical source cards."""
+    seen: set[str] = set()
+    kept = []
+    for candidate in chunks:
+        key = match_key(make_snippet(candidate.chunk.text))
+        if key not in seen:
+            seen.add(key)
+            kept.append(candidate)
+    return kept
+
+
 def cap_per_item(chunks: Sequence[RetrievedChunk], max_per_item: int) -> list[RetrievedChunk]:
     """Keep order; drop chunks once their item already has `max_per_item` earlier ones."""
     kept: list[RetrievedChunk] = []
@@ -104,7 +120,8 @@ class RetrievalService:
             candidates = self._search(question, query_embedding)
         with Timer() as rerank_timer:
             ranked = self._rerank(question, candidates)
-        chunks = cap_per_item(ranked, self._config.max_chunks_per_item)[:top_k]
+        unique = drop_duplicate_text(ranked)
+        chunks = cap_per_item(unique, self._config.max_chunks_per_item)[:top_k]
         mode = decide_mode(chunks, self._config)
         return RetrievalResult(
             mode=mode,

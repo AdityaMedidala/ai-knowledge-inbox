@@ -10,9 +10,11 @@ from dataclasses import dataclass
 
 from app.domain.models import ChunkRecord, NewChunk
 from app.services.markdown_blocks import Block, BlockKind, Section, parse_sections
+from app.utils.text import match_key
 from app.utils.tokens import count_tokens, split_by_tokens, truncate_to_tokens
 
 MIN_CHUNK_TOKENS = 50
+MIN_REPEAT_CHARS = 60  # shorter repeated paragraphs ("Read more.") are kept
 CONTEXT_HEADER_MAX_TOKENS = 40
 # The embedder (bge-small) truncates at 512 of ITS tokens; cl100k undercounts them ~1.15x on
 # English prose. Chunk and block limits are chosen so header + text stays under the limit.
@@ -67,8 +69,9 @@ def chunk_document(markdown: str, *, title: str | None, limits: ChunkLimits) -> 
     if count_tokens(text) <= limits.max_tokens:
         drafts = [_Draft(sections[0], text)]  # short documents are exactly one chunk
     else:
-        packed = [draft for section in sections for draft in _pack_section(section, limits)]
-        drafts = _merge_tiny(packed, limits.max_tokens)
+        unique = _drop_repeated_paragraphs(sections)
+        packed = [draft for section in unique for draft in _pack_section(section, limits)]
+        drafts = _drop_repeats(_merge_tiny(packed, limits.max_tokens))
     return [
         NewChunk(
             ordinal=ordinal,
@@ -79,6 +82,39 @@ def chunk_document(markdown: str, *, title: str | None, limits: ChunkLimits) -> 
         )
         for ordinal, draft in enumerate(drafts)
     ]
+
+
+def _drop_repeated_paragraphs(sections: list[Section]) -> list[Section]:
+    """Drop a prose paragraph that repeats an earlier one in the document. Pages often render
+    the same block twice (desktop and mobile copies); left in, they become near-identical
+    chunks. Short lines ("Read more.") and tables/code are kept: repeating those is normal."""
+    seen: set[str] = set()
+    kept_sections = []
+    for section in sections:
+        blocks = []
+        for block in section.blocks:
+            key = match_key(block.text)
+            if block.kind is BlockKind.TEXT and len(key) >= MIN_REPEAT_CHARS:
+                if key in seen:
+                    continue
+                seen.add(key)
+            blocks.append(block)
+        if blocks:
+            kept_sections.append(Section(section.path, section.heading_line, blocks))
+    return kept_sections
+
+
+def _drop_repeats(drafts: list[_Draft]) -> list[_Draft]:
+    """Pages repeat blocks (a promo under every section, a copied caption); a repeat adds no
+    information but takes a retrieval slot, so only its first occurrence is kept."""
+    seen: set[str] = set()
+    kept = []
+    for draft in drafts:
+        key = match_key(draft.text)
+        if key not in seen:
+            seen.add(key)
+            kept.append(draft)
+    return kept
 
 
 # --- splitting blocks into units ------------------------------------------------------------

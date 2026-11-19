@@ -54,5 +54,10 @@ def normalize_note(text: str) -> str:
     return " ".join(unicodedata.normalize("NFC", text).split())
 
 
+def match_key(text: str) -> str:
+    """Key under which two chunk texts count as the same: normalize_note, then casefolded."""
+    return normalize_note(text).casefold()
+
+
 def sha256_hex(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
