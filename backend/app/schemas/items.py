@@ -24,9 +24,14 @@ class ItemSummary(BaseModel):
     preview: str | None = Field(
         description="First ~160 characters of the text; null until a URL has been extracted."
     )
+    deletable: bool = Field(
+        default=True, description="False for the demo items on a demo instance (DELETE gives 403)."
+    )
 
     @classmethod
-    def from_domain(cls, summary: models.ItemSummary) -> "ItemSummary":
+    def from_domain(
+        cls, summary: models.ItemSummary, *, protect_seeded: bool = False
+    ) -> "ItemSummary":
         error = None
         if summary.error_code is not None:
             error = ItemError(code=summary.error_code, message=summary.error_message or "")
@@ -41,6 +46,7 @@ class ItemSummary(BaseModel):
             created_at=summary.created_at,
             updated_at=summary.updated_at,
             preview=summary.preview,
+            deletable=not (protect_seeded and summary.seeded),
         )
 
 
@@ -52,8 +58,8 @@ class ItemDetail(ItemSummary):
     )
 
     @classmethod
-    def from_item(cls, item: models.Item) -> "ItemDetail":
-        summary = ItemSummary.from_domain(item.summary())
+    def from_item(cls, item: models.Item, *, protect_seeded: bool = False) -> "ItemDetail":
+        summary = ItemSummary.from_domain(item.summary(), protect_seeded=protect_seeded)
         return cls(
             **summary.model_dump(), extracted_text=item.extracted_text, extractor=item.extractor
         )

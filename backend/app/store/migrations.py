@@ -26,7 +26,9 @@ def apply_migrations(
 
 
 # Columns added after the first release: CREATE TABLE IF NOT EXISTS leaves an existing table as is.
-ADDED_COLUMNS = {"items": {"extractor": "TEXT"}}
+ADDED_COLUMNS = {
+    "items": {"extractor": "TEXT", "seeded": "INTEGER NOT NULL DEFAULT 0"},
+}
 
 
 def _add_missing_columns(conn: sqlite3.Connection) -> None:

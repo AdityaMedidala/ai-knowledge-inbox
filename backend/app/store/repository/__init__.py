@@ -91,6 +91,9 @@ class Repository:
     def recover_interrupted(self) -> list[str]:
         return self._items.recover_interrupted()
 
+    def mark_seeded(self, item_id: str) -> None:
+        self._items.mark_seeded(item_id)
+
     def stats(self) -> InboxStats:
         return self._items.stats()
 

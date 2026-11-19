@@ -207,7 +207,7 @@ export interface components {
          * ErrorCode
          * @enum {string}
          */
-        ErrorCode: "VALIDATION_ERROR" | "BAD_REQUEST" | "NOT_FOUND" | "METHOD_NOT_ALLOWED" | "DUPLICATE_ITEM" | "URL_NOT_ALLOWED" | "UPSTREAM_UNAVAILABLE" | "RATE_LIMITED" | "INBOX_FULL" | "INTERNAL_ERROR";
+        ErrorCode: "VALIDATION_ERROR" | "BAD_REQUEST" | "NOT_FOUND" | "METHOD_NOT_ALLOWED" | "DUPLICATE_ITEM" | "URL_NOT_ALLOWED" | "UPSTREAM_UNAVAILABLE" | "RATE_LIMITED" | "INBOX_FULL" | "ITEM_PROTECTED" | "INTERNAL_ERROR";
         /**
          * ErrorEnvelope
          * @description Shape of every non-2xx JSON response.
@@ -276,6 +276,12 @@ export interface components {
              * @description First ~160 characters of the text; null until a URL has been extracted.
              */
             preview: string | null;
+            /**
+             * Deletable
+             * @description False for the demo items on a demo instance (DELETE gives 403).
+             * @default true
+             */
+            deletable: boolean;
             /**
              * Extracted Text
              * @description Markdown the item was chunked from.
@@ -350,6 +356,12 @@ export interface components {
              * @description First ~160 characters of the text; null until a URL has been extracted.
              */
             preview: string | null;
+            /**
+             * Deletable
+             * @description False for the demo items on a demo instance (DELETE gives 403).
+             * @default true
+             */
+            deletable: boolean;
         };
         /**
          * ItemType
@@ -716,6 +728,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Demo item (demo mode) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
             };
             /** @description No item with this id */
             404: {

@@ -7,13 +7,14 @@ from app.utils.text import PREVIEW_CHARS, preview_of
 
 ITEM_COLUMNS = (
     "id, type, title, source_url, normalized_url, content_hash, raw_content, extracted_text, "
-    "status, error_code, error_message, attempts, chunk_count, created_at, updated_at, extractor"
+    "status, error_code, error_message, attempts, chunk_count, created_at, updated_at, extractor, "
+    "seeded"
 )
 # List view: explicit columns, never raw_content (fetched HTML can be megabytes) and only the
 # head of extracted_text, enough to build the preview.
 SUMMARY_COLUMNS = (
     "id, type, title, source_url, status, error_code, error_message, chunk_count, created_at, "
-    f"updated_at, substr(extracted_text, 1, {PREVIEW_CHARS * 2}) AS preview_source"
+    f"updated_at, seeded, substr(extracted_text, 1, {PREVIEW_CHARS * 2}) AS preview_source"
 )
 
 
@@ -30,6 +31,7 @@ def row_to_summary(row: sqlite3.Row) -> ItemSummary:
         created_at=row["created_at"],
         updated_at=row["updated_at"],
         preview=preview_of(row["preview_source"]),
+        seeded=bool(row["seeded"]),
     )
 
 
@@ -51,4 +53,5 @@ def row_to_item(row: sqlite3.Row) -> Item:
         created_at=row["created_at"],
         updated_at=row["updated_at"],
         extractor=row["extractor"],
+        seeded=bool(row["seeded"]),
     )

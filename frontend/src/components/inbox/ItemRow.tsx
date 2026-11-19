@@ -82,15 +82,18 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
           </p>
         )}
       </div>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label={`Delete ${heading}`}
-        disabled={remove.isPending}
-        onClick={() => remove.mutate(item.id)}
-      >
-        <Trash2 />
-      </Button>
+      {/* Demo items on a demo instance can't be deleted (the API answers 403), so no button. */}
+      {item.deletable && (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={`Delete ${heading}`}
+          disabled={remove.isPending}
+          onClick={() => remove.mutate(item.id)}
+        >
+          <Trash2 />
+        </Button>
+      )}
     </li>
   )
 }

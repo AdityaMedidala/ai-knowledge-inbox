@@ -61,6 +61,7 @@ class Item:
     created_at: str
     updated_at: str
     extractor: str | None = None  # which extractor produced extracted_text; None for notes
+    seeded: bool = False  # a demo item, added by the seed
 
     def summary(self) -> "ItemSummary":
         return ItemSummary(
@@ -75,6 +76,7 @@ class Item:
             created_at=self.created_at,
             updated_at=self.updated_at,
             preview=preview_of(self.extracted_text),
+            seeded=self.seeded,
         )
 
 
@@ -93,6 +95,7 @@ class ItemSummary:
     created_at: str
     updated_at: str
     preview: str | None
+    seeded: bool = False
 
 
 @dataclass(frozen=True, slots=True)

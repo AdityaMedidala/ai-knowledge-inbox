@@ -37,7 +37,7 @@ def test_list_items_shape_has_no_raw_content(client: TestClient) -> None:
     [item] = client.get("/items").json()["items"]
     assert set(item) == {
         "id", "type", "title", "source_url", "status", "error", "chunk_count",
-        "created_at", "updated_at", "preview",
+        "created_at", "updated_at", "preview", "deletable",
     }  # fmt: skip
 
 

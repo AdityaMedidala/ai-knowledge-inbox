@@ -144,7 +144,8 @@ def _rate_limits(settings: Settings) -> dict[str, SlidingWindowLimiter]:
 def _start_seeding(
     settings: Settings, embedder: Embedder, stop: threading.Event
 ) -> asyncio.Task[int] | None:
-    """SEED_ON_EMPTY=on: index the demo items in the background, so startup is not delayed."""
-    if settings.seed_on_empty == "off":
+    """SEED_ON_EMPTY=on or DEMO_MODE=on: index the demo items in the background, so startup is
+    not delayed (demo mode also restores any that are missing)."""
+    if settings.seed_on_empty == "off" and settings.demo_mode == "off":
         return None
     return asyncio.create_task(asyncio.to_thread(seed_if_empty, settings, embedder, stop))

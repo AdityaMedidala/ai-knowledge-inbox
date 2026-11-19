@@ -11,6 +11,8 @@ from app.config import Settings
 from app.main import create_app
 from app.rate_limit import SlidingWindowLimiter
 from app.seeding import SEED_NOTE_KEYS, seed_if_empty
+from app.store.db import connect
+from app.store.session import repository_session
 
 DEMO_ITEMS = len(SEED_NOTE_KEYS) + 4  # the notes plus the 4 eval web pages
 
@@ -79,8 +81,17 @@ def test_seed_on_empty_runs_in_the_background_at_startup(settings: Settings) -> 
 # --- demo mode ------------------------------------------------------------------------------
 
 
+def no_demo_items(settings: Settings) -> Path:
+    """A seed directory with an empty demo set, so limit tests start from an empty inbox."""
+    seed_dir = settings.data_dir.parent / "empty-seed"
+    seed_dir.mkdir(parents=True, exist_ok=True)
+    (seed_dir / "eval_set.json").write_text('{"items": [], "questions": []}')
+    return seed_dir
+
+
 def demo(settings: Settings, **limits: int) -> TestClient:
-    return TestClient(create_app(settings.model_copy(update={"demo_mode": "on", **limits})))
+    update = {"demo_mode": "on", "seed_dir": no_demo_items(settings), **limits}
+    return TestClient(create_app(settings.model_copy(update=update)))
 
 
 def test_sliding_window_frees_a_slot_once_the_oldest_hit_expires() -> None:
@@ -150,3 +161,59 @@ def test_rate_limit_keys_on_the_proxy_appended_address(settings: Settings) -> No
         other = client.post("/ingest", json=note(3), headers={"X-Forwarded-For": "5.6.7.8"})
 
     assert (first.status_code, spoofed.status_code, other.status_code) == (202, 429, 202)
+
+
+# --- protected demo items -------------------------------------------------------------------
+
+
+def wait_for_demo_items(client: TestClient) -> list[dict]:
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        items = client.get("/items", params={"limit": 50}).json()["items"]
+        seeded = [i for i in items if not i["deletable"]]
+        if len(seeded) == DEMO_ITEMS and all(i["status"] == "ready" for i in seeded):
+            return items
+        time.sleep(0.1)
+    raise AssertionError("demo items were not seeded in time")
+
+
+def test_demo_items_cannot_be_deleted_but_your_own_can(settings: Settings) -> None:
+    app = create_app(settings.model_copy(update={"demo_mode": "on"}))
+    with TestClient(app) as client:
+        demo_item = wait_for_demo_items(client)[0]
+        own = client.post("/ingest", json=note(1)).json()["item"]
+
+        refused = client.delete(f"/items/{demo_item['id']}")
+        assert own["deletable"] is True
+        assert client.delete(f"/items/{own['id']}").status_code == 204
+
+    assert refused.status_code == 403
+    assert refused.json()["error"]["code"] == "ITEM_PROTECTED"
+    assert "can't be deleted" in refused.json()["error"]["message"]
+
+
+def test_demo_mode_restores_missing_demo_items_on_startup(settings: Settings) -> None:
+    on = settings.model_copy(update={"demo_mode": "on"})
+    with TestClient(create_app(on)) as client:
+        gone = wait_for_demo_items(client)[0]
+    with repository_session(on.db_path, on.embedding_dim) as repo:  # deleted before protection
+        repo.delete_item(gone["id"])
+
+    with TestClient(create_app(on)) as client:
+        items = wait_for_demo_items(client)
+
+    assert gone["title"] in {i["title"] for i in items}
+    assert len(items) == DEMO_ITEMS
+
+
+def test_demo_items_seeded_before_protection_are_marked(settings: Settings) -> None:
+    with TestClient(create_app(settings)) as client:
+        seed_if_empty(settings, client.app.state.providers.embedder, threading.Event())  # type: ignore[union-attr]
+    conn = connect(settings.db_path)  # an older deploy: the seeded column did not exist yet
+    conn.execute("UPDATE items SET seeded = 0")
+    conn.close()
+
+    with TestClient(create_app(settings.model_copy(update={"demo_mode": "on"}))) as client:
+        items = wait_for_demo_items(client)
+
+    assert len(items) == DEMO_ITEMS

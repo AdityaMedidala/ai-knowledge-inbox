@@ -10,7 +10,7 @@ from pathlib import Path
 import structlog
 
 from app.config import Settings
-from app.domain.errors import AppError
+from app.domain.errors import AppError, DuplicateItemError
 from app.domain.models import ItemType
 from app.ingest_jobs import ingestion_settings
 from app.providers.base import Embedder
@@ -45,13 +45,24 @@ def seed_if_empty(settings: Settings, embedder: Embedder, stop: threading.Event)
 
 
 def _seed(settings: Settings, embedder: Embedder, stop: threading.Event) -> int:
+    """Outside demo mode: seed only an empty inbox. In demo mode: re-add any demo item that is
+    missing (someone deleted it before deletes were blocked, or the set grew) and mark every demo
+    item as seeded, which protects it from deletion."""
     items = demo_items(settings.seed_dir)
+    restore = settings.demo_mode == "on"
     with repository_session(settings.db_path, settings.embedding_dim) as repo:
-        if repo.stats().items > 0:
+        if not restore and repo.stats().items > 0:
             logger.info("seed.skipped", reason="inbox_not_empty")
             return 0
         submission = SubmissionService(repo, note_max_chars=settings.note_max_chars)
-        ids = [item_id for item in items if (item_id := _submit(submission, item))]
+        added = []
+        for item in items:
+            item_id, created = _submit_or_find(submission, item)
+            if item_id is None:
+                continue
+            repo.mark_seeded(item_id)
+            if created:
+                added.append(item_id)
         service = IngestionService(
             repo,
             embedder,
@@ -59,22 +70,25 @@ def _seed(settings: Settings, embedder: Embedder, stop: threading.Event) -> int:
             ingestion_settings(settings, max_attempts=1),
         )
         ready = 0
-        for item_id in ids:
+        for item_id in added:
             if stop.is_set():
-                logger.info("seed.interrupted", remaining=len(ids) - ready)
+                logger.info("seed.interrupted", remaining=len(added) - ready)
                 break
             ready += service.process(item_id).outcome is Outcome.READY
-    logger.info("seed.done", items=len(ids), ready=ready)
+    logger.info("seed.done", added=len(added), ready=ready, demo_items=len(items))
     return ready
 
 
-def _submit(submission: SubmissionService, item: CorpusItem) -> str | None:
+def _submit_or_find(submission: SubmissionService, item: CorpusItem) -> tuple[str | None, bool]:
+    """(item id, whether it was just created). An existing copy is found via the duplicate check."""
     try:
         if item.type == ItemType.URL:
             assert item.url is not None  # noqa: S101 — url items always carry one
-            return submission.submit_url(item.url).id
+            return submission.submit_url(item.url).id, True
         assert item.content is not None  # noqa: S101 — note items always carry text
-        return submission.submit_note(item.content, item.title).id
-    except AppError as exc:  # a duplicate from a concurrent save; nothing to seed
-        logger.info("seed.item_skipped", key=item.key, error_code=exc.code)
-        return None
+        return submission.submit_note(item.content, item.title).id, True
+    except DuplicateItemError as exc:
+        return str(exc.details["existing_id"]), False  # type: ignore[index]
+    except AppError as exc:
+        logger.warning("seed.item_skipped", key=item.key, error_code=exc.code)
+        return None, False

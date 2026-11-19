@@ -208,6 +208,9 @@ class ItemsRepository:
             ).fetchall()
         return [row["id"] for row in rows]
 
+    def mark_seeded(self, item_id: str) -> None:
+        self._conn.execute("UPDATE items SET seeded = 1 WHERE id = ?", (item_id,))
+
     def stats(self) -> InboxStats:
         """Every item in any status, and the chunks of the ready ones."""
         row = self._conn.execute(
