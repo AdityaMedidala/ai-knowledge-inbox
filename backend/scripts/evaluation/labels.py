@@ -1,7 +1,7 @@
 """Sentence and question labels: synthetic error sentences and the three labellers.
 
 Labeller ids (provenance is recorded, names are not):
-  A      labels proposed by an LLM            eval/labels.json
+  A      labels proposed by an LLM            eval/labels_A.json
   B      independent second model (Gemini),   eval/labels_B.json   (blind: never saw A or tags)
   final  adjudicated by the project owner     "final" column of DISAGREEMENTS.md / REVIEW.md
 
@@ -23,7 +23,7 @@ from app.services.verification import split_sentences
 from scripts.evaluation.corpus import EVAL_DIR
 
 SYNTHETIC = EVAL_DIR / "synthetic.json"
-PROPOSED = EVAL_DIR / "labels.json"
+PROPOSED = EVAL_DIR / "labels_A.json"
 SECOND = EVAL_DIR / "labels_B.json"
 LABELLERS = {"A": "LLM-proposed", "B": "second model (Gemini), blind", "final": "adjudicated"}
 SENTENCE_LABELS = ("supported", "partial", "unsupported", "skip")  # skip = not a claim

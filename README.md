@@ -19,7 +19,7 @@ Save notes and URLs, then ask questions answered only from them, with numbered c
 
 ## Quick start
 
-**a) Live link.** Open the demo above. It has sample notes and four documentation pages. Limits: 10 saves and 30 questions per hour per address, 100 items in total.
+**a) Live link.** Open the demo above. It has sample notes and four documentation pages, which cannot be deleted there. Limits: 10 saves and 30 questions per hour per address, 100 items in total.
 
 **b) Docker** (one container: API, frontend and demo data):
 
@@ -83,7 +83,7 @@ All errors use one envelope: `{"error": {"code", "message", "details"}, "request
 | POST | `/ingest` | Save a note `{type: "note", content, title?}` or a URL `{type: "url", url}`; processed in the background | 202, 409 duplicate, 422 |
 | GET | `/items` | List items, newest first, cursor pagination, filter by `status` and `type` | 200 |
 | GET | `/items/{id}` | One item with its extracted text | 200, 404 |
-| DELETE | `/items/{id}` | Delete an item with its chunks and vectors | 204, 404 |
+| DELETE | `/items/{id}` | Delete an item with its chunks and vectors | 204, 403 demo item, 404 |
 | GET | `/items/stats` | Item and chunk counts | 200 |
 | POST | `/query` | Answer with citations (JSON) | 200, 422, 503 |
 | POST | `/query/stream` | The same answer as server-sent events | 200 |
@@ -134,14 +134,14 @@ curl -s -X POST localhost:8000/query -H 'content-type: application/json' \
 | Relevance gate at 0.59 (test split) | 0 errors, but the dev margin is 0.009 on each side, and near-miss questions score inside the answerable range. |
 | Verifier accuracy (143 cited sentences) | Jev 92%, Jev + escalation 93%, LLM verifier 90%. The confidence intervals overlap. |
 | The one real wrong-citation sentence | Missed by every verifier (1 of 50 unsupported let through); all 48 synthetic errors were caught. |
-| Prompt injection (dev answers) | 4 of 39 repeated a planted instruction with the "cite both sides" rule, 2 before it. The biggest weakness. |
+| Prompt injection (answers repeating a planted instruction) | 2 of 39 dev before the disagreement rule → 4 with "cite both sides" → 1 dev / 0 test after rewording the rule → with source escaping, 0 of 8 injection-tagged questions (also 0 before). The last survivor (a22) is not injection-tagged and has not been re-run. The biggest weakness. |
 
 ## Known limitations
 
-- **Injection that imitates a closing tag.** Sources are wrapped in `<source>…</source>` and the prompt says to treat them as data, but source text is not escaped. A saved page containing `</source>` followed by instructions can look as if it sits outside the sources. The eval shows injection already gets through without this trick.
+- **Prompt injection.** Source text is escaped (`<`, `>`, `&`), so a saved page cannot close its `<source>` wrapper or add a fake `<system>` tag. Instructions written as ordinary text still reach the model; the prompt tells it to ignore them, and the eval shows that this mostly works, not always.
 - **JS-only pages.** The fetcher does not run JavaScript, so single-page apps give little or no text. An optional headless-browser fallback exists (`make install-render`, then `JS_RENDER=on`). It is off by default and disabled in demo mode.
 - **Small, self-built eval set.** 85 questions on 17 items, written for this project. Labels come from two models and were adjudicated by me. One run per verifier, so run-to-run variance is not measured.
-- **Single user.** There are no accounts. On the shared demo anyone can add or delete items.
+- **Single user.** There are no accounts. On the shared demo anyone can add items and delete the ones added since; the demo items are protected (403) and restored on restart.
 
 ## Scope
 

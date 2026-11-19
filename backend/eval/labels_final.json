@@ -1,5 +1,5 @@
 {
-  "_about": "Final (gold) labels adjudicated by the project owner where labellers A and B disagreed, plus rows set by rule. Row ids match labels.json. reasons: why each final was set; \"wrong citation\" marks a citation error type.",
+  "_about": "Final (gold) labels adjudicated by the project owner where labellers A and B disagreed, plus rows set by rule. Row ids match labels_A.json. reasons: why each final was set; \"wrong citation\" marks a citation error type.",
   "by": "project owner",
   "labels": {
     "a01.0": "unsupported",

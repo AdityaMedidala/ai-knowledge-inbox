@@ -28,7 +28,7 @@ DISAGREEMENTS = EVAL_DIR / "DISAGREEMENTS.md"
 FINAL = EVAL_DIR / "labels_final.json"
 FINAL_ABOUT = (
     "Final (gold) labels adjudicated by the project owner where labellers A and B disagreed, "
-    "plus rows set by rule. Row ids match labels.json. reasons: why each final was set; "
+    "plus rows set by rule. Row ids match labels_A.json. reasons: why each final was set; "
     '"wrong citation" marks a citation error type.'
 )
 UNCITED_RULE = ("unsupported", "rule: uncited")
@@ -76,7 +76,7 @@ def write_disagreements(updates: dict[str, tuple[str, str]] | None = None) -> li
     if not b["sentences"] and not b["questions"]:
         raise SystemExit('no labels_B.json yet; run: make eval ARGS="import-labels"')
     synthetic = load_synthetic()
-    # A's sentence labels: labels.json for real sentences, synthetic.json for injected ones.
+    # A's sentence labels: labels_A.json for real sentences, synthetic.json for injected ones.
     rows = {
         r.row: r
         for answer in load_answers()
