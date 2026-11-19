@@ -38,12 +38,12 @@ export function CitationCard({ citation, active }: CitationCardProps) {
       ref={ref}
       id={citationCardId(citation.ref)}
       className={cn(
-        'space-y-1.5 rounded-lg border bg-background p-3 text-sm transition-colors',
-        active && 'border-primary bg-primary/5 ring-1 ring-primary',
+        'surface-card space-y-2 p-4 text-sm transition-colors',
+        active && 'border-primary ring-1 ring-primary',
       )}
     >
       <div className="flex items-start gap-2">
-        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full border bg-muted px-1.5 text-xs font-semibold">
+        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-soft px-1.5 text-xs font-semibold text-primary">
           {citation.ref}
         </span>
         <div className="min-w-0 flex-1">
@@ -52,12 +52,12 @@ export function CitationCard({ citation, active }: CitationCardProps) {
               href={citation.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium hover:underline"
+              className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
             >
               {title} <ExternalLink className="size-3" aria-hidden />
             </a>
           ) : (
-            <span className="inline-flex items-center gap-1 font-medium">
+            <span className="inline-flex items-center gap-1 font-medium text-foreground">
               <FileText className="size-3" aria-hidden /> {title}
             </span>
           )}
@@ -67,7 +67,7 @@ export function CitationCard({ citation, active }: CitationCardProps) {
         </div>
         <ScoreBadge score={citation.score} />
       </div>
-      <p className="leading-relaxed text-muted-foreground">{citation.snippet}</p>
+      <p className="leading-relaxed text-body">{citation.snippet}</p>
     </li>
   )
 }

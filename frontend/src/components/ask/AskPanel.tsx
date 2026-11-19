@@ -30,7 +30,7 @@ export function AskPanel() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-5">
       <AskForm busy={isActive} onAsk={onAsk} onCancel={cancel} />
 
       {/* Always mounted, so screen readers announce each status change. */}
@@ -40,7 +40,7 @@ export function AskPanel() {
       </p>
 
       {state.status === 'idle' && (
-        <p className="text-sm text-muted-foreground">
+        <p className="px-5 text-sm text-muted-foreground">
           Answers come only from your saved items. Each claim links to its source, and when
           verification is on, each sentence shows whether its sources support it.
         </p>
@@ -63,7 +63,7 @@ export function AskPanel() {
       </div>
 
       {state.error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="border-unsupported/30 bg-unsupported-soft">
           <CircleX aria-hidden />
           <AlertTitle>{state.answer ? 'The answer was interrupted' : "Couldn't answer"}</AlertTitle>
           <AlertDescription>

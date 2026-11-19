@@ -1,4 +1,4 @@
-import { CircleCheck, CircleDashed, CircleX } from 'lucide-react'
+import { CircleCheck, CircleX, Contrast } from 'lucide-react'
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { SentenceVerdict } from '@/lib/api'
@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils'
 type VerdictName = SentenceVerdict['verdict']
 
 const VERDICTS: Record<VerdictName, { Icon: typeof CircleCheck; label: string; tone: string }> = {
-  supported: { Icon: CircleCheck, label: 'supported', tone: 'text-emerald-700 dark:text-emerald-400' },
-  partial: { Icon: CircleDashed, label: 'partly supported', tone: 'text-amber-700 dark:text-amber-400' },
-  unsupported: { Icon: CircleX, label: 'unsupported', tone: 'text-destructive' },
+  supported: { Icon: CircleCheck, label: 'supported', tone: 'text-supported' },
+  partial: { Icon: Contrast, label: 'partly supported', tone: 'text-partial' },
+  unsupported: { Icon: CircleX, label: 'unsupported', tone: 'text-unsupported' },
 }
 
 function detail(sentence: SentenceVerdict): string {
@@ -27,7 +27,7 @@ export function VerdictMarker({ sentence }: { sentence: SentenceVerdict }) {
           tabIndex={0}
           aria-label={`Verification: ${label}. ${detail(sentence)}`}
           className={cn(
-            'ml-1 inline-flex items-center gap-0.5 rounded px-1 align-middle text-[0.7rem] leading-4',
+            'ml-1 inline-flex items-center gap-0.5 rounded-full px-1 align-middle text-[0.7rem] leading-4',
             tone,
           )}
         >
@@ -42,7 +42,7 @@ export function VerdictMarker({ sentence }: { sentence: SentenceVerdict }) {
 
 export function VerdictLegend() {
   return (
-    <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
+    <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs" aria-label="Legend">
       {Object.values(VERDICTS).map(({ Icon, label, tone }) => (
         <li key={label} className={cn('inline-flex items-center gap-1', tone)}>
           <Icon className="size-3" aria-hidden /> {label}

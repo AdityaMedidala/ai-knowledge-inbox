@@ -70,7 +70,7 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
           <TabsTrigger value="note">Note</TabsTrigger>
           <TabsTrigger value="url">URL</TabsTrigger>
         </TabsList>
-        <TabsContent value="note" className="space-y-2">
+        <TabsContent value="note" className="space-y-2 pt-1">
           <Input
             aria-label="Title (optional)"
             placeholder="Title (optional)"
@@ -93,7 +93,7 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
           />
           <FieldError id="content-error" problem={problem} field="content" />
         </TabsContent>
-        <TabsContent value="url" className="space-y-2">
+        <TabsContent value="url" className="space-y-2 pt-1">
           <Input
             type="url"
             aria-label="URL"
@@ -108,7 +108,7 @@ export function IngestForm({ onShowItem }: IngestFormProps) {
         </TabsContent>
       </Tabs>
       {existingId ? (
-        <p className="text-sm text-amber-800 dark:text-amber-400" role="status">
+        <p className="text-sm text-partial" role="status">
           Already saved ·{' '}
           <button type="button" className="font-medium underline" onClick={() => onShowItem(existingId)}>
             Show it

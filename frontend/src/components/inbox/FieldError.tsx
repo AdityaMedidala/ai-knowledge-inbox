@@ -4,7 +4,7 @@ import type { Field, Problem } from '@/lib/ingest-validation'
 export function FieldError({ id, problem, field }: { id: string; problem: Problem | null; field: Field }) {
   if (problem?.field !== field) return null
   return (
-    <p id={id} className="text-xs text-destructive">
+    <p id={id} className="px-4 text-xs text-destructive">
       {problem.message}
     </p>
   )

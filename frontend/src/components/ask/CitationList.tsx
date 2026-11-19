@@ -11,7 +11,7 @@ export function CitationList({ heading, citations, activeRef }: CitationListProp
   if (citations.length === 0) return null
   return (
     <section className="space-y-2" aria-label={heading}>
-      <h3 className="text-sm font-semibold">{heading}</h3>
+      <h3 className="section-label">{heading}</h3>
       <ol className="space-y-2">
         {citations.map((citation) => (
           <CitationCard

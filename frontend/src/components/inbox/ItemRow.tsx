@@ -40,14 +40,14 @@ export function ItemRow({ item, elementId, highlighted }: ItemRowProps) {
     <li
       id={elementId}
       className={cn(
-        'flex items-start gap-3 rounded-lg border bg-background p-3 transition-colors',
-        highlighted && 'border-primary ring-1 ring-primary',
-        item.status === 'failed' && 'border-destructive/40',
+        'flex items-start gap-3 rounded-2xl border bg-background p-3 transition-colors',
+        item.status === 'failed' && 'border-unsupported/30',
+        highlighted && 'border-foreground/40 bg-muted',
       )}
     >
       <TypeIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
       <div className="min-w-0 flex-1 space-y-1.5">
-        <p className="truncate text-sm font-medium" title={heading}>
+        <p className="truncate text-sm font-medium text-foreground" title={heading}>
           <span className="sr-only">{isUrl ? 'Link: ' : 'Note: '}</span>
           {heading}
         </p>

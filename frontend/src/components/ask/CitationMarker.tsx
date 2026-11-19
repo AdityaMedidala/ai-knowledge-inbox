@@ -18,7 +18,7 @@ export function CitationMarker({ refNumber, active, onSelect }: CitationMarkerPr
         'mx-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full border px-1.5 align-middle text-[0.65rem] font-semibold leading-none transition-colors',
         active
           ? 'border-primary bg-primary text-primary-foreground'
-          : 'border-border bg-muted text-foreground hover:border-primary',
+          : 'border-primary/25 bg-primary-soft text-primary hover:border-primary',
       )}
     >
       {refNumber}
