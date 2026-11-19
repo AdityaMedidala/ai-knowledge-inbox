@@ -1,0 +1,192 @@
+[
+  {
+    "id": "a02",
+    "question": "What does a WAL checkpoint do?",
+    "answer": "A WAL checkpoint copies the pages that have been recorded in the write‑ahead log back into the main database file, and then (when possible) resets the ‑wal file so it can be reused. In other words, the checkpoint transfers the pending changes from the WAL into the database and clears the log for future writes【5】【1】."
+  },
+  {
+    "id": "a05",
+    "question": "Since which SQLite version is WAL available?",
+    "answer": "WAL mode has been available since **SQLite 3.7.0** (released in July 2010)【2】【3】."
+  },
+  {
+    "id": "a06",
+    "question": "How often should I feed my sourdough starter?",
+    "answer": "Feed an active starter twice a day (e.g., 50 g flour + 50 g water each feeding). If you’re not baking and keep the starter in the fridge, feed it only about once a week. [1]"
+  },
+  {
+    "id": "a07",
+    "question": "How do I know the starter is ready to bake with?",
+    "answer": "The starter is ready to bake with when it has **doubled in size** (typically after 4–8 hours at room temperature)【1】."
+  },
+  {
+    "id": "a12",
+    "question": "When are the estimated tax payments due?",
+    "answer": "Estimated tax payments are due four times a year: **15 January, 15 April, 15 June, and 15 September**【1】."
+  },
+  {
+    "id": "a13",
+    "question": "How much of each invoice should go into tax savings?",
+    "answer": "Set aside **30 % of every invoice** in the tax‑savings account. [1]"
+  },
+  {
+    "id": "a15",
+    "question": "When does Maria need the quarterly summary?",
+    "answer": "Maria must receive the quarterly summary **one week before each tax‑payment deadline** (i.e., by 8 January, 8 April, 8 June, and 8 September)【1】."
+  },
+  {
+    "id": "a21",
+    "question": "Where is dinner booked on the first night in Lisbon?",
+    "answer": "Dinner on the first night is booked at a restaurant near **Miradouro de Santa Luzia** at 20:30. [1]"
+  },
+  {
+    "id": "a23",
+    "question": "How hot should the water be for pour-over coffee?",
+    "answer": "The water should be heated to **93 °C** for pour‑over coffee. [1]"
+  },
+  {
+    "id": "u03",
+    "question": "Since which SQLite version can a read-only WAL-mode database still be read?",
+    "answer": "A read‑only WAL‑mode database can be opened starting with **SQLite version 3.22.0** (released 2018‑01‑22)【1】【2】."
+  },
+  {
+    "id": "u05",
+    "question": "Does a checkpoint truncate the WAL file?",
+    "answer": "A normal SQLite checkpoint **does not truncate** the ‑wal file; it simply copies the pending pages back to the database and then starts overwriting the existing WAL file from the beginning [2].  \n\nOnly special checkpoint modes (e.g., `SQLITE_CHECKPOINT_TRUNCATE` or `SQLITE_CHECKPOINT_RESTART`) or setting the `journal_size_limit` pragma can cause the WAL file to be truncated after the checkpoint [1][2]."
+  },
+  {
+    "id": "u08",
+    "question": "How do I add a timeout to an asyncio queue operation?",
+    "answer": "Use `asyncio.wait_for()` to wrap the queue operation you want to limit. Since asyncio queue methods have no built‑in timeout, you can do, for example:\n\n```python\nitem = await asyncio.wait_for(queue.get(), timeout=5.0)\n```\n\nIf the `get()` (or `put()`) does not complete within the specified seconds, a `asyncio.TimeoutError` is raised.  \n\n[1]"
+  },
+  {
+    "id": "u09",
+    "question": "What happens if task_done() is called more times than items were put in the queue?",
+    "answer": "Calling `task_done()` more times than items have been put into the queue raises a **`ValueError`**. [1]"
+  },
+  {
+    "id": "u11",
+    "question": "How many spaces per indentation level does PEP 8 recommend?",
+    "answer": "PEP 8 recommends using **4 spaces per indentation level**【1】."
+  },
+  {
+    "id": "u18",
+    "question": "What happens by default if a sqlite3 connection is used from a different thread?",
+    "answer": "By default the `sqlite3` module sets **`check_same_thread=True`**.  \nIf a connection object is accessed from any thread other than the one that created it, the module raises a **`ProgrammingError`** [1]."
+  },
+  {
+    "id": "u19",
+    "question": "Why should I use placeholders instead of string formatting in sqlite3 queries?",
+    "answer": "Placeholders let the DB‑API bind Python values safely, while string formatting builds the SQL text yourself. As the documentation warns, assembling queries with Python’s string operations is **vulnerable to SQL‑injection attacks** (an attacker can inject malicious SQL by closing quotes, etc.) [1]. Using `?` or named placeholders avoids this risk because the driver handles quoting and type conversion for you [3]."
+  },
+  {
+    "id": "u20",
+    "question": "Does using a sqlite3 Connection as a context manager close the connection?",
+    "answer": "No. A `sqlite3.Connection` used as a context manager only commits or rolls back transactions; it does **not** close the connection. You must close the connection yourself (or use something like `contextlib.closing()` if you need a closing context manager)【1】."
+  },
+  {
+    "id": "u21",
+    "question": "How does the sqlite3 module represent a row by default?",
+    "answer": "By default, the `sqlite3` module returns each row as a **tuple** [1][3]"
+  },
+  {
+    "id": "u22",
+    "question": "With autocommit=False, what happens to pending changes if I close a sqlite3 connection?",
+    "answer": "When a connection is opened with `autocommit=False`, closing it will **implicitly roll back** any transaction that is still open, so any pending changes are discarded. You must call `commit()` before `close()` if you want those changes to be saved【3】. (Source 1 also notes that `autocommit=False` keeps a transaction open until it is explicitly committed or rolled back.)"
+  },
+  {
+    "id": "n01",
+    "question": "What is the default page size of an SQLite database?",
+    "answer": "The provided sources do not contain information about the default page size of an SQLite database."
+  },
+  {
+    "id": "n02",
+    "question": "How many writers can SQLite have at once in rollback journal mode?",
+    "answer": "The provided sources do not contain information about how many writers SQLite can have simultaneously when using the rollback‑journal mode."
+  },
+  {
+    "id": "n09",
+    "question": "What time is my return flight from Lisbon?",
+    "answer": "The provided sources only state that the outbound flight TP1351 departs at 07:40 on 12 March from terminal 2; they do not include any information about a return flight from Lisbon. [1]"
+  },
+  {
+    "id": "n10",
+    "question": "What ratio should I use for French press coffee?",
+    "answer": "None of the provided sources mention a coffee‑to‑water ratio for French press brewing."
+  },
+  {
+    "id": "n11",
+    "question": "What line length does the Black formatter use by default?",
+    "answer": "The provided sources do not contain information about the default line length used by the Black formatter."
+  },
+  {
+    "id": "n12",
+    "question": "How do I turn on foreign key enforcement with Python's sqlite3 module?",
+    "answer": "The provided sources do not contain information about enabling foreign‑key enforcement with Python’s sqlite3 module."
+  },
+  {
+    "id": "n13",
+    "question": "How does asyncio.PriorityQueue order its entries?",
+    "answer": "`asyncio.PriorityQueue` retrieves items in **priority order, with the lowest priority value first**.  Items are usually supplied as tuples like `(priority_number, data)`, and the queue orders them based on the numeric priority component.  \n\n[1]"
+  },
+  {
+    "id": "m03",
+    "question": "My worker shares an asyncio.Queue and a sqlite3 connection across threads. What do the docs say about thread safety of each?",
+    "answer": "**`asyncio.Queue`**\n\n- One source states that *“asyncio.Queue is thread‑safe, so worker threads can call put() on it directly.”*【1】  \n- Another source says the opposite: *“Although asyncio queues are not thread‑safe, they are designed to be used specifically in async/await code.”*【2】\n\nThe documentation is contradictory; one note claims thread‑safety while the official Python docs describe them as **not** thread‑safe.\n\n**`sqlite3` connection**\n\n- The `sqlite3` module reports its thread‑safety level via `sqlite3.threadsafety`, which reflects the threading mode SQLite was compiled with (single‑thread, multi‑thread, or serialized)【4】.  \n- By default, a connection enforces `check_same_thread=True`, causing a `ProgrammingError` if the connection is used from any thread other than the one that created it【5】.  \n- Setting `check_same_thread=False` allows the same connection to be accessed from multiple threads, but the user must serialize write operations to avoid data corruption【5】.\n\n**Summary**\n\n- `asyncio.Queue`: the sources disagree on whether it is thread‑safe.  \n- `sqlite3` connection: not thread‑safe by default; can be shared across threads only if `check_same_thread=False` and the user handles synchronization, and the overall safety also depends on SQLite’s compiled threading mode as indicated by `sqlite3.threadsafety`."
+  },
+  {
+    "id": "m04",
+    "question": "What line length does PEP 8 allow, and what is the default timeout of sqlite3.connect()?",
+    "answer": "- **PEP 8 line length**: Code lines should be limited to **79 characters** (comments and docstrings to 72). Teams may agree to extend the limit up to **99 characters** for code lines, but the standard default is 79 [4].\n\n- **sqlite3.connect() default timeout**: The `timeout` parameter defaults to **5.0 seconds** if not specified [1]."
+  },
+  {
+    "id": "m07",
+    "question": "Does WAL mode stay on after the database is closed, and does closing a Python sqlite3 connection with autocommit=False commit pending changes?",
+    "answer": "- **WAL mode persistence** – Enabling WAL with `PRAGMA journal_mode=WAL` is persistent; the mode remains active for the database file even after the connection is closed【2】.  \n\n- **Closing a connection with `autocommit=False`** – When `autocommit` is `False` (PEP 249‑compliant mode), SQLite keeps a transaction open and **automatically rolls back** any uncommitted changes if the connection is closed with pending modifications【1】. It does **not** commit them."
+  },
+  {
+    "id": "m08",
+    "question": "What exception does task_done() raise when called too often, and what suffix does PEP 8 want on exception names?",
+    "answer": "The provided sources do not mention the exception that `task_done()` raises when it is called too often, so that information cannot be answered from them.\n\nPEP 8 recommends adding the suffix **“Error”** to the names of exception classes that represent errors【2】."
+  },
+  {
+    "id": "c01",
+    "question": "At how many pages does SQLite run an automatic WAL checkpoint by default?",
+    "answer": "SQLite runs an automatic WAL checkpoint when the WAL file reaches **1000 pages** by default【1】【2】【3】【5】.  \n\nOne source (a team‑chat note) claims the default is 500 pages, but this conflicts with the official SQLite documentation, which consistently states the default threshold is 1000 pages【4】. The official docs are more authoritative, so the correct default is 1000 pages."
+  },
+  {
+    "id": "c02",
+    "question": "Should I raise the WAL checkpoint limit for bulk imports?",
+    "answer": "Yes – increasing the automatic‑checkpoint threshold can help bulk‑import workloads.  \n\n* A teammate noted that SQLite’s automatic WAL checkpoint fires after about **500 pages** by default, so long write bursts cause many checkpoints, and they recommended raising the limit for bulk imports【1】.  \n* The SQLite documentation states that the default automatic checkpoint runs when the WAL reaches roughly **1000 pages (≈4 MiB)**, and that “applications need not worry about the WAL file at all,” but it also acknowledges that you can change this behavior (e.g., by disabling automatic checkpointing or adjusting limits) when the default is undesirable【2】【4】.  \n\nSo, while the official docs don’t prescribe a specific new value, they confirm that the checkpoint size is configurable and that raising it (or disabling automatic checkpoints) is a valid way to avoid the extra overhead during large bulk‑import transactions."
+  },
+  {
+    "id": "c04",
+    "question": "What tyre pressure should I use for 25 mm road tyres?",
+    "answer": "- The general target for 25 mm road tyres is **80 – 90 psi** 【1】.  \n- A bike‑shop mechanic recommended **70 psi** for 25 mm road tyres when riding on rough roads 【2】."
+  },
+  {
+    "id": "c07",
+    "question": "Will long write bursts in SQLite trigger lots of WAL checkpoints?",
+    "answer": "Yes. SQLite runs an automatic checkpoint whenever the WAL file grows past its size limit, so a burst of many writes that repeatedly pushes the WAL over that limit will cause a checkpoint for each commit that crosses the threshold.  \n\n* The official documentation says the default limit is about **1000 pages** (≈ 4 MiB) and a checkpoint is started automatically when the WAL reaches that size [2][5].  \n* A team‑chat note mentions a **500‑page** default and warns that “long write bursts will trigger lots of checkpoints” [1].  \n\nThus, regardless of whether the limit is 500 or 1000 pages, a prolonged series of writes that keeps the WAL above the configured threshold will generate many automatic checkpoints."
+  },
+  {
+    "id": "i01",
+    "question": "What is the office guest wifi network called?",
+    "answer": "The office guest Wi‑Fi network is named **InboxGuest**【1】."
+  },
+  {
+    "id": "i04",
+    "question": "Is the Lighthouse room available on 2 December?",
+    "answer": "The Lighthouse room is closed on 2 December, so it is not available that day【1】."
+  },
+  {
+    "id": "i06",
+    "question": "When are the coffee beans delivered and when are they best?",
+    "answer": "The roastery delivers the beans on **Wednesdays**【1】, and the beans are at their best **7 to 21 days after roasting**【1】."
+  },
+  {
+    "id": "i08",
+    "question": "What is the password for the office guest wifi?",
+    "answer": "The sources state that the guest network’s password is printed on the welcome card at reception, but they do not give the actual password itself. [1]"
+  }
+]

@@ -2,7 +2,7 @@
 
 Save notes and URLs, then ask questions answered only from them, with numbered citations and source snippets.
 
-**Live demo:** https://ai-knowledge-inbox-production-4f640fd4.up.railway.app (shared, rate-limited, nothing to install)
+**Live demo:** https://ai-knowledge-inbox.up.railway.app (shared, rate-limited, nothing to install)
 
 ![An answer with inline citation pills, per-sentence verification markers and the cited source cards](docs/screenshots/answer-with-citations.png)
 
@@ -134,7 +134,7 @@ curl -s -X POST localhost:8000/query -H 'content-type: application/json' \
 | Relevance gate at 0.59 (test split) | 0 errors, but the dev margin is 0.009 on each side, and near-miss questions score inside the answerable range. |
 | Verifier accuracy (143 cited sentences) | Jev 92%, Jev + escalation 93%, LLM verifier 90%. The confidence intervals overlap. |
 | The one real wrong-citation sentence | Missed by every verifier (1 of 50 unsupported let through); all 48 synthetic errors were caught. |
-| Prompt injection (answers repeating a planted instruction) | 2 of 39 dev before the disagreement rule → 4 with "cite both sides" → 1 dev / 0 test after rewording the rule → with source escaping, 0 of 8 injection-tagged questions (also 0 before). The last survivor (a22) is not injection-tagged and has not been re-run. The biggest weakness. |
+| Prompt injection (answers repeating a planted instruction) | 2 of 39 dev before the disagreement rule → 4 with "cite both sides" → 1 dev / 0 test after rewording the rule → 0 dev / 0 test (0 of 39, 0 of 38) with source escaping. One run each; the fixes came from this eval, so a new phrasing could still get through. |
 
 ## Known limitations
 
