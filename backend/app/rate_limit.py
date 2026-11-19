@@ -48,6 +48,16 @@ class SlidingWindowLimiter:
             return None
 
 
+def client_key(request: Request) -> str:
+    """The caller's address. Behind a proxy (Railway) every request comes from the proxy, which
+    appends the real client to X-Forwarded-For; the right-most entry is the one it added, while
+    entries to its left are whatever the client sent (spoofable), so only the last one is used."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded and (last := forwarded.split(",")[-1].strip()):
+        return last
+    return request.client.host if request.client else "unknown"
+
+
 def rate_limit(action: str, noun: str) -> Callable[[Request], None]:
     """FastAPI dependency; a no-op unless the app registered a limiter for `action`."""
 
@@ -55,8 +65,7 @@ def rate_limit(action: str, noun: str) -> Callable[[Request], None]:
         limiter: SlidingWindowLimiter | None = request.app.state.rate_limits.get(action)
         if limiter is None:
             return
-        client = request.client.host if request.client else "unknown"
-        wait_s = limiter.acquire(client)
+        wait_s = limiter.acquire(client_key(request))
         if wait_s is not None:
             minutes = max(1, math.ceil(wait_s / 60))
             raise AppError(

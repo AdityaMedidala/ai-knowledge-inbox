@@ -136,3 +136,17 @@ def test_without_demo_mode_there_are_no_limits(client: TestClient) -> None:
     codes = {client.post("/ingest", json=note(n)).status_code for n in range(15)}
     assert codes == {202}
     assert client.get("/health").json()["demo_mode"] is False
+
+
+def test_rate_limit_keys_on_the_proxy_appended_address(settings: Settings) -> None:
+    with demo(settings, demo_ingests_per_hour=1) as client:
+        first = client.post(
+            "/ingest", json=note(1), headers={"X-Forwarded-For": "6.6.6.6, 1.2.3.4"}
+        )
+        # Spoofing a new left-most address does not reset the limit for 1.2.3.4.
+        spoofed = client.post(
+            "/ingest", json=note(2), headers={"X-Forwarded-For": "7.7.7.7, 1.2.3.4"}
+        )
+        other = client.post("/ingest", json=note(3), headers={"X-Forwarded-For": "5.6.7.8"})
+
+    assert (first.status_code, spoofed.status_code, other.status_code) == (202, 429, 202)
