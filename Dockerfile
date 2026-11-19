@@ -51,7 +51,7 @@ COPY backend/app ./app
 COPY backend/eval/eval_set.json ./seed/eval_set.json
 COPY backend/eval/corpus ./seed/corpus
 COPY --from=frontend /src/frontend/dist ./static
-COPY docker/start.sh ./start.sh
+COPY docker-entrypoint.sh ./start.sh
 
 # /data is where the volume goes (compose: named volume; Railway: a service Volume). No VOLUME
 # instruction: Railway rejects it, and both platforms attach the volume explicitly.

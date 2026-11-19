@@ -1,6 +1,6 @@
 # Evaluation
 
-Detailed tables: [`backend/eval/results/TABLES.md`](backend/eval/results/TABLES.md) · labels: [`REVIEW.md`](backend/eval/REVIEW.md), [`DISAGREEMENTS.md`](backend/eval/DISAGREEMENTS.md) · raw results: `backend/eval/results/*.json`.
+Detailed tables: [`results/TABLES.md`](results/TABLES.md) · labels: [`labels.json`](labels.json) (A), [`labels_B.json`](labels_B.json) (B), [`labels_final.json`](labels_final.json) (adjudicated) · dataset: [`eval_set.json`](eval_set.json), [`synthetic.json`](synthetic.json) · raw results: [`results/`](results/).
 
 ## Headline findings
 
@@ -19,7 +19,7 @@ Detailed tables: [`backend/eval/results/TABLES.md`](backend/eval/results/TABLES.
 - **Corpus:** 13 notes (one with a planted wrong fact, two conflicting, three with injected instructions) plus 4 technical web pages. The pages were fetched once through the app's fetcher and replayed from `eval/corpus/`, so extraction, chunking and embedding are the real pipeline.
 - **Questions and split:** 85 questions across 6 kinds (answerable 39, near-miss 14, out-of-scope 8, multi-source 8, conflicting 8, injection 8). Stratified 43 dev / 42 test with a fixed seed; thresholds and the prompt wording were chosen on dev only.
 - **Answers:** generated once at temperature 0 with `openai/gpt-oss-120b`. All 77 went through OpenRouter pinned to the Groq provider with fallbacks off; each answer records its provider and prompt hash. 52 synthetic sentences were appended (22 blatant, 30 subtle).
-- **Labels:** proposed by an LLM (labeller A), labelled independently and blind by Gemini (labeller B), adjudicated by the project owner (final). A and B agree on 138 of 143 cited sentences (κ 0.93); uncited sentences are `unsupported` by rule, as in the app.
+- **Labels:** proposed by an LLM (labeller A, `labels.json`), labelled independently and blind by Gemini (labeller B, `labels_B.json`: it saw each sentence with only its cited source text, not A's label), adjudicated by the project owner where A and B disagreed (`labels_final.json`, with a reason per row). Gold = the adjudicated label, else `unsupported` for an uncited sentence (as in the app), else the label A and B agree on. A and B agree on 138 of 143 cited sentences (κ 0.93). To redo it: `make eval ARGS=blind` writes the blind parts for B, `import-labels` reads B's answers, `disagreements` lists the A/B differences and `adjudicate row=label --reason …` records a final.
 
 ## Caveats
 

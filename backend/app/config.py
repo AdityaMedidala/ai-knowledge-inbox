@@ -48,7 +48,9 @@ class Settings(BaseSettings):
     openrouter_base_url: str = "https://openrouter.ai"
     jev_model: str = "typesafe/jev-1.14"
     # Jev verdicts whose top probability is below this are re-checked by Groq (when configured).
-    verify_escalate_below: float = Field(default=0.55, ge=0, le=1)  # chosen on dev (EVAL.md)
+    verify_escalate_below: float = Field(
+        default=0.55, ge=0, le=1
+    )  # chosen on dev (backend/eval/README.md)
     verify_timeout_s: float = Field(default=30, gt=0)
 
     openai_max_retries: int = Field(default=2, ge=0)  # SDK retries 429/5xx/timeouts w/ backoff
@@ -73,7 +75,9 @@ class Settings(BaseSettings):
     max_chunks_per_item: int = Field(default=3, gt=0)
     # Provisional values for bge-small cosine similarity; calibrated against the eval set in M6.
     relevance_min_full: float = Field(default=0.70, ge=0, le=1)
-    relevance_min_partial: float = Field(default=0.59, ge=0, le=1)  # chosen on dev (EVAL.md)
+    relevance_min_partial: float = Field(
+        default=0.59, ge=0, le=1
+    )  # chosen on dev (backend/eval/README.md)
 
     fetch_timeout_s: float = Field(default=10, gt=0)
     fetch_max_bytes: int = Field(default=5_000_000, gt=0)

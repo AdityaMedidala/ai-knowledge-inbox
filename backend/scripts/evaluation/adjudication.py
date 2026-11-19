@@ -1,13 +1,15 @@
 """Adjudication between labeller A (LLM-proposed) and B (second model, blind).
 
-`disagreements` writes eval/DISAGREEMENTS.md: the rows where A and B differ, with a blank
-"final" column for the project owner, and returns agreement and Cohen's kappa per set.
+The final (gold) labels live in eval/labels_final.json: {row: label} plus {row: reason}.
+`disagreements` lists the rows where A and B differ in eval/DISAGREEMENTS.md (a generated,
+git-ignored view) and returns agreement and Cohen's kappa per set; `adjudicate row=label`
+records a final in labels_final.json.
 
 Adjudication rule applied automatically: an uncited sentence is `unsupported`, because that is
-how the app treats it (by rule, never sent to a verifier). Its reason column says
-"rule: uncited". Finals already typed into DISAGREEMENTS.md survive a rewrite.
+how the app treats it (by rule, never sent to a verifier). Its reason says "rule: uncited".
 """
 
+import json
 from collections import Counter
 from dataclasses import dataclass
 
@@ -20,9 +22,15 @@ from scripts.evaluation.labels import (
     load_synthetic,
     sentence_rows,
 )
-from scripts.evaluation.review import cell, read_overrides
+from scripts.evaluation.review import cell
 
 DISAGREEMENTS = EVAL_DIR / "DISAGREEMENTS.md"
+FINAL = EVAL_DIR / "labels_final.json"
+FINAL_ABOUT = (
+    "Final (gold) labels adjudicated by the project owner where labellers A and B disagreed, "
+    "plus rows set by rule. Row ids match labels.json. reasons: why each final was set; "
+    '"wrong citation" marks a citation error type.'
+)
 UNCITED_RULE = ("unsupported", "rule: uncited")
 
 
@@ -36,16 +44,28 @@ def cohen_kappa(pairs: list[tuple[str, str]]) -> float:
     return 1.0 if expected == 1 else (observed - expected) / (1 - expected)
 
 
+def _load_final() -> tuple[dict[str, str], dict[str, str]]:
+    if not FINAL.exists():
+        return {}, {}
+    data = json.loads(FINAL.read_text("utf-8"))
+    return data["labels"], data["reasons"]
+
+
+def _save_final(adjudicated: dict[str, tuple[str, str]]) -> None:
+    """Write {row: (reason, final)} to labels_final.json."""
+    data = {
+        "_about": FINAL_ABOUT,
+        "by": "project owner",
+        "labels": {row: final for row, (_, final) in sorted(adjudicated.items())},
+        "reasons": {row: reason for row, (reason, _) in sorted(adjudicated.items())},
+    }
+    FINAL.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", "utf-8")
+
+
 def _read_table() -> dict[str, tuple[str, str]]:
-    """{row id: (reason, final)} for rows with a final already in DISAGREEMENTS.md."""
-    if not DISAGREEMENTS.exists():
-        return {}
-    kept = {}
-    for line in DISAGREEMENTS.read_text("utf-8").splitlines():
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 7 and cells[0].startswith("`") and cells[6]:
-            kept[cells[0].strip("`")] = (cells[5], cells[6])
-    return kept
+    """{row id: (reason, final)} for every adjudicated row."""
+    labels, reasons = _load_final()
+    return {row: (reasons.get(row, ""), label) for row, label in labels.items()}
 
 
 def write_disagreements(updates: dict[str, tuple[str, str]] | None = None) -> list[str]:
@@ -70,12 +90,15 @@ def write_disagreements(updates: dict[str, tuple[str, str]] | None = None) -> li
     pairs: dict[str, list[tuple[str, str]]] = {"real": [], "blatant": [], "subtle": []}
     pairs["questions"] = []
     listed: set[str] = set()
+    adjudicated: dict[str, tuple[str, str]] = {}
 
     def add(row_id: str, tag: str, text: str, label_a: str, label_b: str) -> None:
         reason, final = kept.get(row_id, ("", ""))
         row = rows.get(row_id)
         if row is not None and not row.refs:
             final, reason = UNCITED_RULE
+        if final:
+            adjudicated[row_id] = (reason, final)
         table.append(
             f"| `{row_id}` | {tag} | {text} | {label_a} | {label_b} | {reason} | {final} |"
         )
@@ -114,23 +137,27 @@ def write_disagreements(updates: dict[str, tuple[str, str]] | None = None) -> li
         "",
     ]
     DISAGREEMENTS.write_text("\n".join([*header, *table]) + "\n", "utf-8")
+    _save_final(adjudicated)
     report = ["| set | rows | agree | Cohen's kappa |", "|---|---|---|---|"]
     for name, items in pairs.items():
         agree = sum(x == y for x, y in items)
         report.append(f"| {name} | {len(items)} | {agree} | {cohen_kappa(items):.2f} |")
     extra = len(listed) - n_disagree
-    return [*report, f"wrote eval/DISAGREEMENTS.md ({n_disagree} disagreements, {extra} extra)"]
+    return [
+        *report,
+        f"wrote eval/DISAGREEMENTS.md ({n_disagree} disagreements, {extra} extra) "
+        f"and eval/labels_final.json ({len(adjudicated)} finals)",
+    ]
 
 
 def read_final() -> dict[str, str]:
-    """Adjudicated labels: DISAGREEMENTS.md "final", overridden by REVIEW.md "final"."""
-    final = read_overrides(DISAGREEMENTS) if DISAGREEMENTS.exists() else {}
-    return {**final, **read_overrides()}
+    """Adjudicated labels from eval/labels_final.json."""
+    return _load_final()[0]
 
 
 def read_reasons() -> dict[str, str]:
     """{row: reason} for adjudicated rows (e.g. "wrong citation" marks a real error type)."""
-    return {row: reason for row, (reason, _) in _read_table().items()}
+    return _load_final()[1]
 
 
 REASON_TO_ERROR = {"wrong citation": "wrong_citation"}
